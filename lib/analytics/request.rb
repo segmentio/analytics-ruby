@@ -1,5 +1,7 @@
 
+require 'json'
 require 'faraday'
+require 'faraday_middleware'
 require 'typhoeus'
 require 'typhoeus/adapters/faraday'
 
@@ -12,9 +14,8 @@ module Analytics
     @@headers = { accept: "application/json" }
     @@endpoint = "/v1/import"
 
-    def initialize(options)
+    def initialize(options = {})
 
-      options ||= {}
       options[:url] ||= @@url
       options[:ssl] ||= @@ssl
       options[:headers] ||= @@headers
@@ -25,13 +26,21 @@ module Analytics
         faraday.response :json, :content_type => /\bjson$/
         faraday.adapter :typhoeus
       end
+
+      puts "Conn created"
     end
 
     def post(secret, batch)
-      @conn.post do |req|
-        req.url @endpoint
-        req.body JSON.dump(secret: secret, batch: batch)
+
+      result = @conn.post do |req|
+        puts "Posting! #{@endpoint}"
+        puts JSON.dump(secret: secret, batch: batch)
+        req.url(@endpoint)
+        req.body = JSON.dump(secret: secret, batch: batch)
       end
+
+      puts result.status
+      puts result.body["error"]
     end
   end
 end

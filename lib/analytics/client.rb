@@ -13,7 +13,8 @@ module Analytics
       @queue = Queue.new
       Thread.new {
         puts "Starting new thread!"
-        @consumer = Analytics::Consumer.new(@queue)
+        @consumer = Analytics::Consumer.new(@queue, @secret)
+        @consumer.run
       }
     end
 

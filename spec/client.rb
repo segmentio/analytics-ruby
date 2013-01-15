@@ -17,6 +17,7 @@ module Analytics
     it "should not error with the required options" do
       @client.track(user_id: "user",
                     event:   "Event")
+      sleep 2
     end
 
   end
