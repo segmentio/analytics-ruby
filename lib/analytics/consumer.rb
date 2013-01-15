@@ -8,7 +8,7 @@ module Analytics
     def initialize(queue, secret, options = {})
       @current_batch = []
       @queue = queue
-      @batch_size = 1
+      @batch_size = 4
       @secret = secret
       puts "Consumer intialized"
     end
@@ -24,9 +24,16 @@ module Analytics
 
     def flush
 
-      while @current_batch.length < @batch_size do
+      puts "Waiting for messages"
+
+      # Block until we have something to send
+      @current_batch << @queue.pop()
+
+      while @current_batch.length < @batch_size && !@queue.empty? do
         @current_batch << @queue.pop()
       end
+
+      puts "Posting #{@current_batch.length} elements."
 
       request = Analytics::Request.new
       request.post(@secret, @current_batch)

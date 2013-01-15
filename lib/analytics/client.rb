@@ -47,6 +47,8 @@ module Analytics
 
       add_context(context)
 
+      puts "Adding track"
+
       @queue << { event:      event,
                   sessionId:  session_id,
                   userId:     user_id,
@@ -80,6 +82,8 @@ module Analytics
       fail ArgumentError, "Must supply traits as a hash" unless traits.is_a? Hash
 
       add_context(context)
+
+      puts "Adding identify"
 
       @queue << { sessionId: session_id,
                   userId:    user_id,
