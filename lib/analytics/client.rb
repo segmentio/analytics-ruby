@@ -1,6 +1,8 @@
 
 require 'time'
 require 'thread'
+require 'analytics/consumer'
+require 'analytics/request'
 
 module Analytics
 
@@ -9,6 +11,10 @@ module Analytics
     def initialize (options)
       @secret = options[:secret]
       @queue = Queue.new
+      Thread.new {
+        puts "Starting new thread!"
+        @consumer = Analytics::Consumer.new(@queue)
+      }
     end
 
     # Public: Tracks an event
@@ -82,8 +88,6 @@ module Analytics
                   action:    "identify" }
     end
 
-    def request
-    end
 
     private
 

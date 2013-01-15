@@ -8,6 +8,7 @@ module Analytics
     def initialize(queue, options = {})
       @current_batch = []
       @queue = queue
+      puts "Consumer intialized"
     end
 
 
@@ -17,7 +18,7 @@ module Analytics
         @current_batch << @queue.pop()
       end
 
-
+      @current_batch.each { |x| puts x }
     end
 
   end
