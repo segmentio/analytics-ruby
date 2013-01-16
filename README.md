@@ -12,9 +12,10 @@ Setting up a new analytics solution can be a real pain. The APIs from each analy
 [Segment.io](https://segment.io) wraps all those APIs in one beautiful, simple API. Then we route your analytics data wherever you want, whether it's Google Analytics, Mixpanel, Customer io, Chartbeat, or any of our other integrations. After you set up Segment.io you can swap or add analytics providers at any time with a single click. You won't need to touch code or push to production. You'll save valuable development time so that you can focus on what really matters: your product.
 
 ```ruby
-import analytics
-analytics.init('MY_API_SECRET')
-analytics.track(user_id='ilya@segment.io', event='Played a Song')
+gem "analytics-ruby"; require "analytics"
+Analytics.init "secrettoken"
+analytics.track(user_id: "ilya@segment.io", 
+             event: "Played a Song")
 ```
 
 and turn on integrations with just one click at [Segment.io](https://segment.io).
@@ -46,7 +47,7 @@ You can create separate analytics-ruby clients, but the easiest and recommended 
 
 ```ruby
 gem 'analytics-ruby'; require 'analytics'
-Analytics.init 'secret-token'
+Analytics.init 'secrettoken'
 ```
 
 #### Identify a User
@@ -55,9 +56,9 @@ Whenever a user triggers an event, you’ll want to track it.
 
 ```ruby
 Analytics.identify(session_id: 'ajsk2jdj29fj298', 
-                              user_id: 'ilya@segment.io', 
-                              traits: { "subscriptionPlan": "Free",
-                                             "friends": 30 })
+        user_id: 'ilya@segment.io', 
+        traits: { subscription_plan: "Free",
+                friends: 30 })
 ```
 
 **session_id** (String) is a unique id associated with an anonymous user **before** they are logged in. Even if the user
