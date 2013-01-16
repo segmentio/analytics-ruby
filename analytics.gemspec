@@ -1,7 +1,7 @@
 $:.unshift(File.join(File.dirname(__FILE__), 'lib'))
 
 Gem::Specification.new do |spec|
-  spec.name    = "analytics_ruby"
+  spec.name    = "analytics-ruby"
   spec.version = "0.0.1"
   spec.files   = `git ls-files`.split("\n")
   spec.require_paths = ['lib']

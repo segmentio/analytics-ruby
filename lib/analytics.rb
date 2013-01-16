@@ -1,5 +1,4 @@
 
-require 'rubygems'
 require 'forwardable'
 
 require 'analytics/client'
