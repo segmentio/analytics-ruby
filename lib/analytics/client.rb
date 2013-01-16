@@ -23,7 +23,6 @@ module Analytics
       check_secret
 
       Thread.new {
-        puts "Starting new thread!"
         @consumer = Analytics::Consumer.new(@queue, @secret, options)
         @consumer.run
       }

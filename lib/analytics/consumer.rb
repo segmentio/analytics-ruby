@@ -13,6 +13,7 @@ module Analytics
       @secret = secret
     end
 
+    # public: Continuously runs the loop to check for new events
     def run
       while true do
         flush
