@@ -14,8 +14,8 @@ Setting up a new analytics solution can be a real pain. The APIs from each analy
 ```ruby
 gem "analytics-ruby"; require "analytics"
 Analytics.init "secrettoken"
-analytics.track(user_id: "ilya@segment.io", 
-             event: "Played a Song")
+Analytics.track(user_id: "ilya@segment.io", 
+                event: "Played a Song")
 ```
 
 and turn on integrations with just one click at [Segment.io](https://segment.io).
