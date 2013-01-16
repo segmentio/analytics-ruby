@@ -22,10 +22,8 @@ module Analytics
 
       check_secret
 
-      Thread.new {
-        @consumer = Analytics::Consumer.new(@queue, @secret, options)
-        @consumer.run
-      }
+      @consumer = Analytics::Consumer.new(@queue, @secret, options)
+      Thread.new { @consumer.run }
     end
 
     # Public: Tracks an event
@@ -106,10 +104,10 @@ module Analytics
     #
     # returns Boolean of whether the item was added to the queue.
     def enqueue(action)
-      remaining_space = @queue.length < @max_queue_size
-      @queue << action if remaining_space
+      queue_full = @queue.length >= @max_queue_size
+      @queue << action unless queue_full
 
-      remaining_space
+      !queue_full
     end
 
     # Private: Ensures that a user id was passed in.
