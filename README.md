@@ -56,9 +56,9 @@ Whenever a user triggers an event, you’ll want to track it.
 
 ```ruby
 Analytics.identify(session_id: 'ajsk2jdj29fj298', 
-               user_id: 'ilya@segment.io', 
-               traits: { subscription_plan: "Free",
-                           friends: 30 })
+                   user_id: 'ilya@segment.io', 
+                   traits: { subscription_plan: "Free",
+                             friends: 30 })
 ```
 
 **session_id** (String) is a unique id associated with an anonymous user **before** they are logged in. Even if the user
@@ -76,11 +76,11 @@ Whenever a user triggers an event on your site, you’ll want to track it so tha
 
 ```ruby
 Analytics.track(session_id: 'skdj2jj2dj2j3i5', 
-                          user_id: 'calvin@segment.io', 
-                          event: 'Made a Comment', 
-                          properties: {
-                             thatAided: "No-One",
-                             comment:   "its 4AM!" })
+                user_id: 'ilya@segment.io', 
+                event: 'Drank some milk', 
+                properties: {
+                    fat: 0.02,
+                    quantity:   '4 gallons' })
 ```
 
 
