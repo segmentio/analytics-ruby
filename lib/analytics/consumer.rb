@@ -11,11 +11,19 @@ module Analytics
     # The consumer continuously takes messages off the queue
     # and makes requests to the segment.io api
     #
+    # queue   - Queue synchronized between client and consumer
+    # secret  - String of the project's secret
+    # options - Hash of consumer options
+    #           batch_size - Fixnum of how many items to send in a batch
+    #           on_error   - Proc of what to do on an error
+    #
     def initialize(queue, secret, options = {})
-      @current_batch = []
       @queue = queue
-      @batch_size = options[:batch_size] || Analytics::Defaults::Queue::BATCH_SIZE
       @secret = secret
+      @batch_size = options[:batch_size] || Analytics::Defaults::Queue::BATCH_SIZE
+      @on_error = options[:on_error] || Proc.new { |status, error| }
+
+      @current_batch = []
     end
 
     # public: Continuously runs the loop to check for new events
@@ -40,18 +48,15 @@ module Analytics
       end
 
       req = Analytics::Request.new
-      res = req.post(@secret, @current_batch)
 
-      onError(res) unless res.status == 200
+      begin
+        res = req.post(@secret, @current_batch)
+        @on_error.call(res.status, res.body["error"]) unless res.status == 200
+      rescue Exception => msg
+        @on_error.call(-1, "Connection error: #{msg}")
+      end
 
       @current_batch = []
-    end
-
-    # private: Error handler whenever the api does not
-    #          return a valid response
-    def onError(res)
-      puts res.status
-      puts res.body
     end
 
   end
