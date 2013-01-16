@@ -96,7 +96,7 @@ module Analytics
 
     private
 
-    # Private: ensures that a user id was passed in
+    # Private: Ensures that a user id was passed in.
     #
     # session_id - String of the session
     # user_id    - String of the user id
@@ -110,6 +110,9 @@ module Analytics
       fail ArgumentError, message unless valid
     end
 
+    # Private: Adds contextual information to the call
+    #
+    # context - Hash of call context
     def add_context(context)
       context[:library] = "analytics-ruby"
     end

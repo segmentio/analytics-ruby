@@ -1,5 +1,6 @@
 
-require 'json'
+require 'analytics/defaults'
+require 'multi_json'
 require 'faraday'
 require 'faraday_middleware'
 require 'typhoeus'
@@ -9,17 +10,12 @@ module Analytics
 
   class Request
 
-    @@url = "http://localhost:7001"
-    @@ssl = { verify: false }
-    @@headers = { accept: "application/json" }
-    @@endpoint = "/v1/import"
-
     def initialize(options = {})
 
-      options[:url] ||= @@url
-      options[:ssl] ||= @@ssl
-      options[:headers] ||= @@headers
-      @endpoint = options[:endpoint] || @@endpoint
+      options[:url] ||= Analytics::Defaults::Request::BASE_URL
+      options[:ssl] ||= Analytics::Defaults::Request::SSL
+      options[:headers] ||= Analytics::Defaults::Request::HEADERS
+      @path = options[:path] || Analytics::Defaults::Request::PATH
 
       @conn = Faraday.new(options) do |faraday|
         faraday.request :json
@@ -33,10 +29,10 @@ module Analytics
     def post(secret, batch)
 
       result = @conn.post do |req|
-        puts "Posting! #{@endpoint}"
-        puts JSON.dump(secret: secret, batch: batch)
-        req.url(@endpoint)
-        req.body = JSON.dump(secret: secret, batch: batch)
+        puts "Posting! #{@path}"
+        puts MultiJson.dump(secret: secret, batch: batch)
+        req.url(@path)
+        req.body = MultiJson.dump(secret: secret, batch: batch)
       end
 
       puts result.status

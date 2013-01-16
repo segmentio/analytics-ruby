@@ -1,4 +1,5 @@
 
+require 'analytics/defaults'
 require 'analytics/request'
 
 module Analytics
@@ -8,7 +9,7 @@ module Analytics
     def initialize(queue, secret, options = {})
       @current_batch = []
       @queue = queue
-      @batch_size = 4
+      @batch_size = options[:batch_size] || Analytics::Defaults::Queue::BATCH_SIZE
       @secret = secret
       puts "Consumer intialized"
     end
