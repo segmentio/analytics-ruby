@@ -10,6 +10,8 @@ module Analytics
 
   class Request
 
+    # Creates a new request object
+    #
     def initialize(options = {})
 
       options[:url] ||= Analytics::Defaults::Request::BASE_URL
@@ -22,21 +24,14 @@ module Analytics
         faraday.response :json, :content_type => /\bjson$/
         faraday.adapter :typhoeus
       end
-
-      puts "Conn created"
     end
 
-    def post(secret, batch)
 
-      result = @conn.post do |req|
-        puts "Posting! #{@path}"
-        puts MultiJson.dump(secret: secret, batch: batch)
+    def post(secret, batch)
+      @conn.post do |req|
         req.url(@path)
         req.body = MultiJson.dump(secret: secret, batch: batch)
       end
-
-      puts result.status
-      puts result.body["error"]
     end
   end
 end

@@ -11,7 +11,7 @@ module Analytics
 
     module Queue
       BATCH_SIZE = 100 unless defined? Analytics::Defaults::Queue::BATCH_SIZE
-      MAX_QUEUE_SIZE = 10000 unless defined? Analytics::Defaults::Queue::MAX_QUEUE_SIZE
+      MAX_SIZE = 10000 unless defined? Analytics::Defaults::Queue::MAX_SIZE
     end
 
   end

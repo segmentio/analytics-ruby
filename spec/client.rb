@@ -4,7 +4,7 @@ module Analytics
 
   describe Analytics::Client, "#track" do
 
-    before(:all) { @client = Analytics::Client.new(secret: "secret") }
+    before(:all) { @client = Analytics::Client.new(secret: "testsecret") }
 
     it "should error without an event" do
       expect { @client.track(user_id: "user") }.to raise_error(ArgumentError)
@@ -17,7 +17,6 @@ module Analytics
     it "should not error with the required options" do
       @client.track(user_id: "user",
                     event:   "Event")
-      sleep 2
     end
 
   end
