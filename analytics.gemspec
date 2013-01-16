@@ -6,7 +6,7 @@ require 'analytics/version'
 Gem::Specification.new do |spec|
   spec.name    = 'analytics-ruby'
   spec.version = Analytics::VERSION
-  spec.files   = `git ls-files`.split('\n')
+  spec.files   = Dir.glob('**/*')
   spec.require_paths = ['lib']
   spec.summary = 'Segment.io analytics library'
   spec.authors = ['friends@segment.io']
