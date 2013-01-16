@@ -10,7 +10,7 @@ module Analytics
 
   class Request
 
-    # Creates a new request object
+    # public: Creates a new request object to send analytics batch
     #
     def initialize(options = {})
 
@@ -26,7 +26,8 @@ module Analytics
       end
     end
 
-
+    # public: Posts
+    #
     def post(secret, batch)
       @conn.post do |req|
         req.url(@path)

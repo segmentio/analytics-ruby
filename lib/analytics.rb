@@ -1,6 +1,5 @@
 
 require 'forwardable'
-
 require 'analytics/client'
 
 module Analytics
@@ -8,6 +7,7 @@ module Analytics
 
   def_delegators :@client, :track, :identify
 
+  # By default use a single client for the module
   def self.init(options = {})
     @client = Analytics::Client.new(options)
   end

@@ -3,10 +3,10 @@ module Analytics
   module Defaults
 
     module Request
-      BASE_URL = "https://api.segment.io" unless defined? Analytics::Defaults::Request::BASE_URL
-      PATH = "/v1/import" unless defined? Analytics::Defaults::Request::PATH
+      BASE_URL = 'https://api.segment.io' unless defined? Analytics::Defaults::Request::BASE_URL
+      PATH = '/v1/import' unless defined? Analytics::Defaults::Request::PATH
       SSL = { verify: false } unless defined? Analytics::Defaults::Request::SSL
-      HEADERS = { accept: "application/json" } unless defined? Analytics::Defaults::Request::HEADERS
+      HEADERS = { accept: 'application/json' } unless defined? Analytics::Defaults::Request::HEADERS
     end
 
     module Queue

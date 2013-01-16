@@ -50,7 +50,7 @@ module Analytics
       check_timestamp(timestamp)
 
       if event.nil? || event.empty?
-        fail ArgumentError, "Must supply event as a non-empty string"
+        fail ArgumentError, 'Must supply event as a non-empty string'
       end
 
       add_context(context)
@@ -61,7 +61,7 @@ module Analytics
                 context:    context,
                 properties: properties,
                 timestamp:  timestamp.iso8601,
-                action:     "track" })
+                action:     'track' })
     end
 
     # Public: Identifies a user
@@ -85,7 +85,7 @@ module Analytics
       ensure_user(session_id, user_id)
       check_timestamp(timestamp)
 
-      fail ArgumentError, "Must supply traits as a hash" unless traits.is_a? Hash
+      fail ArgumentError, 'Must supply traits as a hash' unless traits.is_a? Hash
 
       add_context(context)
 
@@ -94,7 +94,7 @@ module Analytics
                 context:   context,
                 traits:    traits,
                 timestamp: timestamp.iso8601,
-                action:    "identify" })
+                action:    'identify' })
     end
 
 
@@ -116,7 +116,7 @@ module Analytics
     # user_id    - String of the user id
     #
     def ensure_user(session_id, user_id)
-      message = "Must supply either a non-empty session_id or user_id (or both)"
+      message = 'Must supply either a non-empty session_id or user_id (or both)'
 
       valid = user_id.is_a?(String) && !user_id.empty?
       valid ||= session_id.is_a?(String) && !session_id.empty?
@@ -128,17 +128,17 @@ module Analytics
     #
     # context - Hash of call context
     def add_context(context)
-      context[:library] = "analytics-ruby"
+      context[:library] = 'analytics-ruby'
     end
 
     # Private: Checks that the secret is properly initialized
     def check_secret
-      fail "Secret must be initialized" if @secret.nil?
+      fail 'Secret must be initialized' if @secret.nil?
     end
 
     # Private: Checks the timstamp option to make sure it is a Time.
     def check_timestamp(timestamp)
-      fail ArgumentError, "Timestamp must be a Time" unless timestamp.is_a? Time
+      fail ArgumentError, 'Timestamp must be a Time' unless timestamp.is_a? Time
     end
   end
 end
