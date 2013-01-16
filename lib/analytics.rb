@@ -1,5 +1,6 @@
 
 require 'forwardable'
+require 'analytics/version'
 require 'analytics/client'
 
 module Analytics
