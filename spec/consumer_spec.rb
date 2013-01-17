@@ -1,7 +1,6 @@
-require_relative '../lib/analytics'
-require_relative './spec_helper'
-
+require 'analytics'
 require 'thread'
+require 'spec_helper'
 
 describe Analytics::Consumer do
 
@@ -47,7 +46,7 @@ describe Analytics::Consumer do
       on_error.should_receive(:call).at_most(0).times
 
       queue = Queue.new
-      queue << AnalyticsHelpers::Raw::TRACK
+      queue << AnalyticsHelpers::Requested::TRACK
       consumer = Analytics::Consumer.new(queue, 'testsecret', { on_error: on_error })
       consumer.flush
     end

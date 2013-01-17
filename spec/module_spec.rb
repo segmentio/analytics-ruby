@@ -1,5 +1,5 @@
 require 'analytics'
-
+require 'spec_helper'
 
 describe Analytics, '#init' do
 
