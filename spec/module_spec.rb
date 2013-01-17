@@ -28,7 +28,7 @@ describe Analytics do
 
 
   describe '#identify' do
-    it 'should error without a user or session' do
+    it 'should error without a user_id' do
       expect { Analytics.identify traits: {} }.to raise_error(ArgumentError)
     end
 

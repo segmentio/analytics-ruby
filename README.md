@@ -47,16 +47,12 @@ Whenever a user triggers an event, you’ll want to track it.
 
 ```ruby
 Analytics.identify(
-  session_id: 'ajsk2jdj29fj298', 
   user_id: 'ilya@segment.io', 
   traits: {subscription_plan: "Free", friends: 30}
 )
 ```
 
-**session_id** (String) is a unique id associated with an anonymous user **before** they are logged in. Even if the user
-is logged in, you can still send us the **session_id** or you can just use `nil`.
-
-**user_id** (String) is the user's id **after** they are logged in. It's the same id you'd use to identify a signed-in user in your system. Note: you must provide either a `session_id` or a `user_id`.
+**user_id** (String) is the user's id **after** they are logged in. It's the same id you'd use to identify a signed-in user in your system. 
 
 **traits** (Hash) is a Hash with keys like `subscriptionPlan` or `favoriteGenre`. This argument is optional, but highly recommended—you’ll find these properties extremely useful later.
 
@@ -68,17 +64,13 @@ Whenever a user triggers an event on your site, you’ll want to track it so tha
 
 ```ruby
 Analytics.track(
-  session_id: 'skdj2jj2dj2j3i5', 
   user_id: 'ilya@segment.io', 
   event: 'Drank some milk', 
   properties: {fat: 0.02, quantity: '4 gallons'}
 )
 ```
 
-**session_id** (String) is a unique id associated with an anonymous user **before** they are logged in. Even if the user
-is logged in, you can still send us the **session_id** or you can just use `nil`.
-
-**user_id** (String) is the user's id **after** they are logged in. It's the same id as which you would recognize a signed-in user in your system. Note: you must provide either a `session_id` or a `user_id`.
+**user_id** (String) is the user's id **after** they are logged in. It's the same id as which you would recognize a signed-in user in your system.
 
 **event** (String) describes what this user just did. It's a human readable description like "Played a Song", "Printed a Report" or "Updated Status".
 
