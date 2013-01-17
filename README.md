@@ -13,19 +13,6 @@ Setting up a new analytics solution can be a real pain. The APIs from each analy
 
 [Segment.io](https://segment.io) wraps all those APIs in one beautiful, simple API. Then we route your analytics data wherever you want, whether it's Google Analytics, Mixpanel, Customer io, Chartbeat, or any of our other integrations. After you set up Segment.io you can swap or add analytics providers at any time with a single click. You won't need to touch code or push to production. You'll save valuable development time so that you can focus on what really matters: your product.
 
-```ruby
-gem "analytics-ruby"; require "analytics"
-Analytics.init "secrettoken"
-Analytics.track(user_id: "ilya@segment.io", 
-                event: "Played a Song")
-```
-
-and turn on integrations with just one click at [Segment.io](https://segment.io).
-
-![](http://i.imgur.com/YnBWI.png)
-
-More on integrations [here](#integrations).
-
 ### High Performance
 
 This client uses an internal queue to efficiently send your events in aggregate, rather than making an HTTP
@@ -39,16 +26,18 @@ without worrying that it will make too many HTTP requests and slow down the prog
 If you haven't yet, get an API secret [here](https://segment.io).
 
 #### Install
-```bash
-gem install analytics-ruby
+
+Add analytics-ruby to your project's Gemfile
+```ruby
+gem "analytics-ruby"
 ```
 
 #### Initialize the client
 
-You can create separate analytics-ruby clients, but the easiest and recommended way is to just use the module:
+You can create separate analytics-ruby clients, but the easiest and recommended way is 
+to just use the module. If you're using Rails, put this in `config/initializers/analytics.rb`
 
 ```ruby
-gem 'analytics-ruby'; require 'analytics'
 Analytics.init 'secrettoken'
 ```
 
@@ -57,16 +46,17 @@ Analytics.init 'secrettoken'
 Whenever a user triggers an event, you’ll want to track it.
 
 ```ruby
-Analytics.identify(session_id: 'ajsk2jdj29fj298', 
-                   user_id: 'ilya@segment.io', 
-                   traits: { subscription_plan: "Free",
-                             friends: 30 })
+Analytics.identify(
+  session_id: 'ajsk2jdj29fj298', 
+  user_id: 'ilya@segment.io', 
+  traits: {subscription_plan: "Free", friends: 30}
+)
 ```
 
 **session_id** (String) is a unique id associated with an anonymous user **before** they are logged in. Even if the user
 is logged in, you can still send us the **session_id** or you can just use `nil`.
 
-**user_id** (String) is the user's id **after** they are logged in. It's the same id as which you would recognize a signed-in user in your system. Note: you must provide either a `session_id` or a `user_id`.
+**user_id** (String) is the user's id **after** they are logged in. It's the same id you'd use to identify a signed-in user in your system. Note: you must provide either a `session_id` or a `user_id`.
 
 **traits** (Hash) is a Hash with keys like `subscriptionPlan` or `favoriteGenre`. This argument is optional, but highly recommended—you’ll find these properties extremely useful later.
 
@@ -77,14 +67,13 @@ is logged in, you can still send us the **session_id** or you can just use `nil`
 Whenever a user triggers an event on your site, you’ll want to track it so that you can analyze and segment by those events later.
 
 ```ruby
-Analytics.track(session_id: 'skdj2jj2dj2j3i5', 
-                user_id: 'ilya@segment.io', 
-                event: 'Drank some milk', 
-                properties: {
-                    fat: 0.02,
-                    quantity:   '4 gallons' })
+Analytics.track(
+  session_id: 'skdj2jj2dj2j3i5', 
+  user_id: 'ilya@segment.io', 
+  event: 'Drank some milk', 
+  properties: {fat: 0.02, quantity: '4 gallons'}
+)
 ```
-
 
 **session_id** (String) is a unique id associated with an anonymous user **before** they are logged in. Even if the user
 is logged in, you can still send us the **session_id** or you can just use `nil`.
