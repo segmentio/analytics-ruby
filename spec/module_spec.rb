@@ -17,7 +17,7 @@ describe Analytics do
       expect { Analytics.track user_id: 'user' }.to raise_error(ArgumentError)
     end
 
-    it 'should error without a user or session' do
+    it 'should error without a user_id' do
       expect { Analytics.track event: 'Event' }.to raise_error(ArgumentError)
     end
 

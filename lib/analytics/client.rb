@@ -31,23 +31,21 @@ module Analytics
     #
     # options - Hash
     #           :event      - String of event name.
-    #           :sessionId  - String of the user session. (optional with userId)
-    #           :userId     - String of the user id. (optional with sessionId)
-    #           :context    - Hash of context. (optional)
+    #           :user_id    - String of the user id.
     #           :properties - Hash of event properties. (optional)
     #           :timestamp  - Time of when the event occurred. (optional)
+    #           :context    - Hash of context. (optional)
     def track(options)
 
       check_secret
 
       event = options[:event]
-      session_id = options[:session_id]
       user_id = options[:user_id]
-      context = options[:context] || {}
       properties = options[:properties] || {}
       timestamp = options[:timestamp] || Time.new
+      context = options[:context] || {}
 
-      ensure_user(session_id, user_id)
+      ensure_user(user_id)
       check_timestamp(timestamp)
 
       if event.nil? || event.empty?
@@ -57,7 +55,6 @@ module Analytics
       add_context(context)
 
       enqueue({ event:      event,
-                sessionId:  session_id,
                 userId:     user_id,
                 context:    context,
                 properties: properties,
@@ -68,30 +65,27 @@ module Analytics
     # public: Identifies a user
     #
     # options - Hash
-    #           :sessionId - String of the user session. (optional with userId)
-    #           :userId    - String of the user id. (optional with sessionId)
-    #           :context   - Hash of context. (optional)
+    #           :user_id   - String of the user id
     #           :traits    - Hash of user traits. (optional)
     #           :timestamp - Time of when the event occurred. (optional)
+    #           :context   - Hash of context. (optional)
     def identify(options)
 
       check_secret
 
-      session_id = options[:session_id]
       user_id = options[:user_id]
-      context = options[:context] || {}
       traits = options[:traits] || {}
       timestamp = options[:timestamp] || Time.new
+      context = options[:context] || {}
 
-      ensure_user(session_id, user_id)
+      ensure_user(user_id)
       check_timestamp(timestamp)
 
       fail ArgumentError, 'Must supply traits as a hash' unless traits.is_a? Hash
 
       add_context(context)
 
-      enqueue({ sessionId: session_id,
-                userId:    user_id,
+      enqueue({ userId:    user_id,
                 context:   context,
                 traits:    traits,
                 timestamp: timestamp.iso8601,
@@ -119,14 +113,12 @@ module Analytics
 
     # private: Ensures that a user id was passed in.
     #
-    # session_id - String of the session
     # user_id    - String of the user id
     #
-    def ensure_user(session_id, user_id)
-      message = 'Must supply either a non-empty session_id or user_id (or both)'
+    def ensure_user(user_id)
+      message = 'Must supply a non-empty user_id'
 
       valid = user_id.is_a?(String) && !user_id.empty?
-      valid ||= session_id.is_a?(String) && !session_id.empty?
 
       fail ArgumentError, message unless valid
     end

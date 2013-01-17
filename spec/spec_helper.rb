@@ -21,14 +21,12 @@ module AnalyticsHelpers
               }
 
   USER_ID = 'Bret'
-  SESSION_ID = '4815162342'
 
   # Hashes sent to the client
   module Queued
     TRACK = TRACK.merge({ user_id: USER_ID })
 
-    IDENTIFY = IDENTIFY.merge({ user_id:    USER_ID,
-                                session_id: SESSION_ID })
+    IDENTIFY = IDENTIFY.merge({ user_id:    USER_ID  })
   end
 
   # Hashes which are sent from the consumer
@@ -37,7 +35,6 @@ module AnalyticsHelpers
                           action: 'track' })
 
     IDENTIFY = IDENTIFY.merge({ userId:    USER_ID,
-                                sessionId: SESSION_ID,
                                 action:    'identify' })
   end
 end

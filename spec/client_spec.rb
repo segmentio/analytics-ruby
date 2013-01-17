@@ -26,7 +26,7 @@ describe Analytics::Client do
       expect { @client.track(user_id: 'user') }.to raise_error(ArgumentError)
     end
 
-    it 'should error without a user or session' do
+    it 'should error without a user_id' do
       expect { @client.track(event: 'Event') }.to raise_error(ArgumentError)
     end
 
