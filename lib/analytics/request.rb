@@ -27,8 +27,9 @@ module Analytics
       end
     end
 
-    # public: Posts
+    # public: Posts the secret and batch of messages to the API.
     #
+    # returns - Response of the status and error if it exists
     def post(secret, batch)
 
       status, error = nil, nil

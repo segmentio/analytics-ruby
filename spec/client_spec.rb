@@ -31,8 +31,7 @@ describe Analytics::Client do
     end
 
     it 'should not error with the required options' do
-      @client.track(user_id: 'user',
-                    event:   'Event')
+      @client.track AnalyticsHelpers::Queued::TRACK
     end
 
   end
@@ -49,8 +48,7 @@ describe Analytics::Client do
     end
 
     it 'should not error with the required options' do
-      @client.identify(user_id:    'user',
-                       properties: { dog: true })
+      @client.identify AnalyticsHelpers::Queued::IDENTIFY
     end
 
   end

@@ -9,11 +9,12 @@ module Analytics
 
   class Client
 
-    # Public: Creates a new client
+    # public: Creates a new client
     #
     # options - Hash
     #           :secret         - String of your project's secret
     #           :max_queue_size - Fixnum of the max calls to remain queued (optional)
+    #           :on_error       - Proc which handles error calls from the API
     def initialize (options = {})
 
       @queue = Queue.new
@@ -26,7 +27,7 @@ module Analytics
       Thread.new { @consumer.run }
     end
 
-    # Public: Tracks an event
+    # public: Tracks an event
     #
     # options - Hash
     #           :event      - String of event name.
@@ -64,7 +65,7 @@ module Analytics
                 action:     'track' })
     end
 
-    # Public: Identifies a user
+    # public: Identifies a user
     #
     # options - Hash
     #           :sessionId - String of the user session. (optional with userId)
@@ -97,7 +98,7 @@ module Analytics
                 action:    'identify' })
     end
 
-    # Public: Returns the number of queued messages
+    # public: Returns the number of queued messages
     #
     # returns Fixnum of messages in the queue
     def queued_messages
@@ -106,7 +107,7 @@ module Analytics
 
     private
 
-    # Private: Enqueues the action.
+    # private: Enqueues the action.
     #
     # returns Boolean of whether the item was added to the queue.
     def enqueue(action)
@@ -116,7 +117,7 @@ module Analytics
       !queue_full
     end
 
-    # Private: Ensures that a user id was passed in.
+    # private: Ensures that a user id was passed in.
     #
     # session_id - String of the session
     # user_id    - String of the user id
@@ -130,19 +131,19 @@ module Analytics
       fail ArgumentError, message unless valid
     end
 
-    # Private: Adds contextual information to the call
+    # private: Adds contextual information to the call
     #
     # context - Hash of call context
     def add_context(context)
       context[:library] = 'analytics-ruby'
     end
 
-    # Private: Checks that the secret is properly initialized
+    # private: Checks that the secret is properly initialized
     def check_secret
       fail 'Secret must be initialized' if @secret.nil?
     end
 
-    # Private: Checks the timstamp option to make sure it is a Time.
+    # private: Checks the timstamp option to make sure it is a Time.
     def check_timestamp(timestamp)
       fail ArgumentError, 'Timestamp must be a Time' unless timestamp.is_a? Time
     end
