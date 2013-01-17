@@ -1,4 +1,4 @@
-require_relative '../lib/analytics'
+require 'analytics'
 
 
 describe Analytics, '#init' do
