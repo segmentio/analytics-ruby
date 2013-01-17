@@ -2,6 +2,7 @@
 ==========
 * Updated readme and install instruction courtesy of [@zeke](https://github.com/zeke)
 * Removed typhoeus and reverted to default adapter
+* Removing session_id in favor of a single user_id
 
 0.0.3 / 2013-1-16
 ==========
