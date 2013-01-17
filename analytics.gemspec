@@ -17,7 +17,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'faraday', ['~> 0.8', '< 0.10']
   spec.add_dependency 'faraday_middleware', ['~> 0.9.0']
   spec.add_dependency 'multi_json', ['~> 1.0']
-  spec.add_dependency 'typhoeus', ['~> 0.5.0']
 
   spec.add_development_dependency('rake')
   spec.add_development_dependency('rspec')

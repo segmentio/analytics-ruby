@@ -4,8 +4,6 @@ require 'analytics/response'
 require 'multi_json'
 require 'faraday'
 require 'faraday_middleware'
-require 'typhoeus'
-require 'typhoeus/adapters/faraday'
 
 module Analytics
 
@@ -23,7 +21,7 @@ module Analytics
       @conn = Faraday.new(options) do |faraday|
         faraday.request :json
         faraday.response :json, :content_type => /\bjson$/
-        faraday.adapter :typhoeus
+        faraday.adapter Faraday.default_adapter
       end
     end
 
