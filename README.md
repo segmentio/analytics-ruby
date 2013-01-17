@@ -3,6 +3,8 @@ analytics-ruby
 
 analytics-ruby is a ruby client for [Segment.io](https://segment.io).
 
+[![Build Status](https://travis-ci.org/segmentio/analytics-ruby.png?branch=master)](undefined)
+
 ### Ruby Analytics Made Simple
 
 [Segment.io](https://segment.io) is the cleanest, simplest API for recording analytics data.
