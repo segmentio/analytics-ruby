@@ -9,7 +9,10 @@ Gem::Specification.new do |spec|
   spec.files   = Dir.glob('**/*')
   spec.require_paths = ['lib']
   spec.summary = 'Segment.io analytics library'
-  spec.authors = ['friends@segment.io']
+  spec.description = 'The Segment.io ruby analytics library'
+  spec.authors = ['Segment.io']
+  spec.email = 'friends@segment.io'
+  spec.homepage = 'https://github.com/segmentio/analytics-ruby'
 
   spec.add_dependency 'faraday', ['~> 0.8', '< 0.10']
   spec.add_dependency 'faraday_middleware', ['~> 0.9.0']
