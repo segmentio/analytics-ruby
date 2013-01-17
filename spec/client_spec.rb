@@ -1,5 +1,4 @@
-require_relative '../lib/analytics'
-
+require 'analytics'
 
 describe Analytics::Client, '#track' do
 
