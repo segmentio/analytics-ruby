@@ -1,5 +1,6 @@
 
 require 'analytics/defaults'
+require 'analytics/response'
 require 'multi_json'
 require 'faraday'
 require 'faraday_middleware'
@@ -29,10 +30,23 @@ module Analytics
     # public: Posts
     #
     def post(secret, batch)
-      @conn.post do |req|
-        req.url(@path)
-        req.body = MultiJson.dump(secret: secret, batch: batch)
+
+      status, error = nil, nil
+
+      begin
+        res = @conn.post do |req|
+          req.url(@path)
+          req.body = MultiJson.dump(secret: secret, batch: batch)
+        end
+        status = res.status
+        error  = res.body["error"]
+
+      rescue Exception => err
+        status = -1
+        error = "Connection error: #{err}"
       end
+
+      Analytics::Response.new(status, error)
     end
   end
 end

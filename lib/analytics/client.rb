@@ -97,6 +97,12 @@ module Analytics
                 action:    'identify' })
     end
 
+    # Public: Returns the number of queued messages
+    #
+    # returns Fixnum of messages in the queue
+    def queued_messages
+      @queue.length
+    end
 
     private
 

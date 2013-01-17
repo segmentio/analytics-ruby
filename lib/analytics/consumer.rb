@@ -34,9 +34,7 @@ module Analytics
       end
     end
 
-    private
-
-    # private: Flush some events from our queue
+    # public: Flush some events from our queue
     #
     def flush
 
@@ -48,14 +46,8 @@ module Analytics
       end
 
       req = Analytics::Request.new
-
-      begin
-        res = req.post(@secret, @current_batch)
-        @on_error.call(res.status, res.body["error"]) unless res.status == 200
-      rescue Exception => msg
-        @on_error.call(-1, "Connection error: #{msg}")
-      end
-
+      res = req.post(@secret, @current_batch)
+      @on_error.call(res.status, res.error) unless res.status == 200
       @current_batch = []
     end
 
