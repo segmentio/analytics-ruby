@@ -38,7 +38,7 @@ You can create separate analytics-ruby clients, but the easiest and recommended 
 to just use the module. If you're using Rails, put this in `config/initializers/analytics.rb`
 
 ```ruby
-Analytics.init 'secrettoken'
+Analytics.init(secret: 'secrettoken')
 ```
 
 #### Identify a User
