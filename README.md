@@ -1,120 +1,15 @@
 analytics-ruby
 ==============
 
-analytics-ruby is a ruby client for [Segment.io](https://segment.io).
-
 [![Build Status](https://travis-ci.org/segmentio/analytics-ruby.png?branch=master)](https://travis-ci.org/segmentio/analytics-ruby)
 
-### Ruby Analytics Made Simple
+analytics-ruby is a ruby client for [Segment.io](https://segment.io)
 
-[Segment.io](https://segment.io) is the cleanest, simplest API for recording analytics data.
+## Documentation
 
-Setting up a new analytics solution can be a real pain. The APIs from each analytics provider are slightly different in odd ways, code gets messy, and developers waste a bunch of time fiddling with long-abandoned client libraries. We want to save you that pain and give you an clean, efficient, extensible analytics setup.
+Documentation is available at [https://segment.io/libraries/ruby](https://segment.io/libraries/ruby).
 
-[Segment.io](https://segment.io) wraps all those APIs in one beautiful, simple API. Then we route your analytics data wherever you want, whether it's Google Analytics, Mixpanel, Customer io, Chartbeat, or any of our other integrations. After you set up Segment.io you can swap or add analytics providers at any time with a single click. You won't need to touch code or push to production. You'll save valuable development time so that you can focus on what really matters: your product.
-
-### High Performance
-
-This client uses an internal queue to efficiently send your events in aggregate, rather than making an HTTP
-request every time. It is also non-blocking and asynchronous, meaning it makes batch requests on another thread. This allows your code to call `analytics.track` or `analytics.identify` without incurring a large performance cost on the calling thread. Because of this, analytics-ruby is safe to use in your high scale web server controllers, or in your backend services
-without worrying that it will make too many HTTP requests and slow down the program. You also no longer need to use a message queue to have analytics.
-
-[Feedback is very welcome!](mailto:friends@segment.io)
-
-## Quick-start
-
-If you haven't yet, get an API secret [here](https://segment.io).
-
-#### Install
-
-Add analytics-ruby to your project's Gemfile
-```ruby
-gem "analytics-ruby"
-```
-
-#### Initialize the client
-
-You can create separate analytics-ruby clients, but the easiest and recommended way is 
-to just use the module. If you're using Rails, put this in `config/initializers/analytics.rb`
-
-```ruby
-Analytics.init(secret: 'secrettoken')
-```
-
-#### Identify a User
-
-Whenever a user triggers an event, you’ll want to track it.
-
-```ruby
-Analytics.identify(
-  user_id: 'ilya@segment.io', 
-  traits: {subscription_plan: "Free", friends: 30}
-)
-```
-
-**user_id** (String) is the user's id **after** they are logged in. It's the same id you'd use to identify a signed-in user in your system. 
-
-**traits** (Hash) is a Hash with keys like `subscriptionPlan` or `favoriteGenre`. This argument is optional, but highly recommended—you’ll find these properties extremely useful later.
-
-**timestamp** (Time, optional) is a Time object representing when the identify took place. If the event just happened, don't bother adding a time and we'll use the server's time. If you are importing data from the past, make sure you provide this argument.
-
-#### Track an Action
-
-Whenever a user triggers an event on your site, you’ll want to track it so that you can analyze and segment by those events later.
-
-```ruby
-Analytics.track(
-  user_id: 'ilya@segment.io', 
-  event: 'Drank some milk', 
-  properties: {fat: 0.02, quantity: '4 gallons'}
-)
-```
-
-**user_id** (String) is the user's id **after** they are logged in. It's the same id as which you would recognize a signed-in user in your system.
-
-**event** (String) describes what this user just did. It's a human readable description like "Played a Song", "Printed a Report" or "Updated Status".
-
-**properties** (Hash) is a hash with items that describe the event in more detail. This argument is optional, but highly recommended—you’ll find these properties extremely useful later.
-
-**timestamp** (Time, optional) is a Time object representing when the identify took place. If the event just happened, leave it `nil` and we'll use the server's time. If you are importing data from the past, make sure you provide this argument.
-
-That's it, just two functions!
-
-## Integrations
-
-There are two main modes of analytics integration: client-side and server-side. You can use just one, or both.
-
-#### Client-side vs. Server-side
-
-* **Client-side analytics** - (via [analytics.js](https://github.com/segmentio/analytics.js)) works by loading in other integrations
-in the browser.
-
-* **Server-side analytics** - (via [analytics-node](https://github.com/segmentio/analytics-node), [analytics-python](https://github.com/segmentio/analytics-python) and other server-side libraries) works
-by sending the analytics request to [Segment.io](https://segment.io). Our servers then route the message to your desired integrations.
-
-Some analytics services have REST APIs while others only support client-side integrations.
-
-You can learn which integrations are supported server-side vs. client-side on your [project's integrations]((https://segment.io) page.
-
-## Advanced
-
-#### Batching Behavior
-
-By default, the client will flush:
-
-1. the first time it gets a message
-1. whenever messages are queued and there is no outstanding request
-
-The queue consumer runs in a different thread for each client to avoid blocking your webserver process. However, the consumer makes only a single outbound request at a time to avoid saturating your server's resources. If multiple messages are in the queue, they are sent together in a batch call.
-
-#### Importing Historical Data
-
-You can import historical data by adding the timestamp argument (of type
-Time) to the identify / track calls. Note: if you are tracking
-things that are happening now, we prefer that you leave the timestamp out and
-let our servers timestamp your requests.
-
-#### License
+## License
 
 ```
 WWWWWW||WWWWWW
