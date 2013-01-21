@@ -1,11 +1,11 @@
 
 require 'time'
 require 'thread'
-require 'analytics/defaults'
-require 'analytics/consumer'
-require 'analytics/request'
+require 'analytics-ruby/defaults'
+require 'analytics-ruby/consumer'
+require 'analytics-ruby/request'
 
-module Analytics
+module AnalyticsRuby
 
   class Client
 
@@ -19,11 +19,11 @@ module Analytics
 
       @queue = Queue.new
       @secret = options[:secret]
-      @max_queue_size = options[:max_queue_size] || Analytics::Defaults::Queue::MAX_SIZE
+      @max_queue_size = options[:max_queue_size] || AnalyticsRuby::Defaults::Queue::MAX_SIZE
 
       check_secret
 
-      @consumer = Analytics::Consumer.new(@queue, @secret, options)
+      @consumer = AnalyticsRuby::Consumer.new(@queue, @secret, options)
       Thread.new { @consumer.run }
     end
 

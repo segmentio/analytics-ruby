@@ -1,5 +1,5 @@
 
-module Analytics
+module AnalyticsRuby
 
   class Response
 

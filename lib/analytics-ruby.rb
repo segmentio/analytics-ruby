@@ -1,16 +1,19 @@
 
 require 'forwardable'
-require 'analytics/version'
-require 'analytics/client'
+require 'analytics-ruby/version'
+require 'analytics-ruby/client'
 
-module Analytics
+module AnalyticsRuby
   extend SingleForwardable
 
   def_delegators :@client, :track, :identify
 
   # By default use a single client for the module
   def self.init(options = {})
-    @client = Analytics::Client.new(options)
+    @client = AnalyticsRuby::Client.new(options)
   end
 
 end
+
+# Alias for AnalyticsRuby
+Analytics = AnalyticsRuby

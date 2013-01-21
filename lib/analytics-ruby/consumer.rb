@@ -1,8 +1,8 @@
 
-require 'analytics/defaults'
-require 'analytics/request'
+require 'analytics-ruby/defaults'
+require 'analytics-ruby/request'
 
-module Analytics
+module AnalyticsRuby
 
   class Consumer
 
@@ -20,7 +20,7 @@ module Analytics
     def initialize(queue, secret, options = {})
       @queue = queue
       @secret = secret
-      @batch_size = options[:batch_size] || Analytics::Defaults::Queue::BATCH_SIZE
+      @batch_size = options[:batch_size] || AnalyticsRuby::Defaults::Queue::BATCH_SIZE
       @on_error = options[:on_error] || Proc.new { |status, error| }
 
       @current_batch = []
@@ -45,7 +45,7 @@ module Analytics
         @current_batch << @queue.pop()
       end
 
-      req = Analytics::Request.new
+      req = AnalyticsRuby::Request.new
       res = req.post(@secret, @current_batch)
       @on_error.call(res.status, res.error) unless res.status == 200
       @current_batch = []

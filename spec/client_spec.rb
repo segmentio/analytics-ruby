@@ -1,4 +1,4 @@
-require 'analytics'
+require 'analytics-ruby'
 require 'spec_helper'
 
 

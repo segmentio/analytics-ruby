@@ -1,11 +1,11 @@
 
-require 'analytics/defaults'
-require 'analytics/response'
+require 'analytics-ruby/defaults'
+require 'analytics-ruby/response'
 require 'multi_json'
 require 'faraday'
 require 'faraday_middleware'
 
-module Analytics
+module AnalyticsRuby
 
   class Request
 
@@ -13,10 +13,10 @@ module Analytics
     #
     def initialize(options = {})
 
-      options[:url] ||= Analytics::Defaults::Request::BASE_URL
-      options[:ssl] ||= Analytics::Defaults::Request::SSL
-      options[:headers] ||= Analytics::Defaults::Request::HEADERS
-      @path = options[:path] || Analytics::Defaults::Request::PATH
+      options[:url] ||= AnalyticsRuby::Defaults::Request::BASE_URL
+      options[:ssl] ||= AnalyticsRuby::Defaults::Request::SSL
+      options[:headers] ||= AnalyticsRuby::Defaults::Request::HEADERS
+      @path = options[:path] || AnalyticsRuby::Defaults::Request::PATH
 
       @conn = Faraday.new(options) do |faraday|
         faraday.request :json
@@ -45,7 +45,7 @@ module Analytics
         error = "Connection error: #{err}"
       end
 
-      Analytics::Response.new(status, error)
+      AnalyticsRuby::Response.new(status, error)
     end
   end
 end
