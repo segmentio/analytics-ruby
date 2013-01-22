@@ -1,3 +1,7 @@
+0.1.0 / 2013-1-22
+===========
+* Updated docs to point at segment.io
+
 0.0.5 / 2013-1-21
 ===========
 * Renaming of all the files for proper bundling usage
