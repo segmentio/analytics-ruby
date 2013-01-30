@@ -7,7 +7,7 @@ analytics-ruby is a ruby client for [Segment.io](https://segment.io)
 
 ## Documentation
 
-Documentation is available at [https://segment.io/libraries/ruby](https://segment.io/libraries/ruby).
+Documentation is available at [segment.io/libraries/ruby](https://segment.io/libraries/ruby)
 
 ## License
 
