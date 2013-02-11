@@ -1,3 +1,8 @@
+0.1.1 / 2013-2-11
+===========
+* Updating dependencies
+* Adding actual support for MultiJson 1.0
+
 0.1.0 / 2013-1-22
 ===========
 * Updated docs to point at segment.io

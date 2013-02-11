@@ -1,7 +1,7 @@
 
 require 'analytics-ruby/defaults'
 require 'analytics-ruby/response'
-require 'multi_json'
+require 'analytics-ruby/json'
 require 'faraday'
 require 'faraday_middleware'
 
@@ -35,7 +35,7 @@ module AnalyticsRuby
       begin
         res = @conn.post do |req|
           req.url(@path)
-          req.body = MultiJson.dump(secret: secret, batch: batch)
+          req.body = AnalyticsRuby::JSON::dump(secret: secret, batch: batch)
         end
         status = res.status
         error  = res.body["error"]

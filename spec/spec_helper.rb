@@ -3,7 +3,7 @@ module AnalyticsHelpers
 
   SECRET = 'testsecret'
 
-  TRACK = { event:     'Baked a cake',
+  TRACK = { event:     'Ruby Library test event',
             properties: {
               type:     'Chocolate',
               is_a_lie: true,

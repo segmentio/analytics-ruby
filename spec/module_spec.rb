@@ -23,6 +23,7 @@ describe Analytics do
 
     it 'should not error with the required options' do
       Analytics.track AnalyticsHelpers::Queued::TRACK
+      sleep(1)
     end
   end
 
@@ -34,6 +35,7 @@ describe Analytics do
 
     it 'should not error with the required options' do
       Analytics.identify AnalyticsHelpers::Queued::IDENTIFY
+      sleep(1)
     end
   end
 end
