@@ -8,12 +8,12 @@ module AnalyticsRuby
     @client = AnalyticsRuby::Client.new(options)
   end
 
-  def self.track options
+  def self.track(options)
     return false unless @client
     @client.track(options)
   end
 
-  def self.identify options
+  def self.identify(options)
     return false unless @client
     @client.identify(options)
   end
