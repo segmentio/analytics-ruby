@@ -1,3 +1,7 @@
+0.1.2 / 2013-3-11
+===========
+* Fixing thrown exception on non-initialized tracks thanks to [sbellity](https://github.com/sbellity)
+
 0.1.1 / 2013-2-11
 ===========
 * Updating dependencies
