@@ -3,13 +3,30 @@ require 'spec_helper'
 
 describe Analytics do
 
+  describe '#not-initialized' do
+    it 'should ignore calls to track if not initialized' do
+      expect { Analytics.track({}) }.not_to raise_error
+    end
+
+    it 'should return false on track if not initialized' do
+      Analytics.track({}).should == false
+    end
+
+    it 'should ignore calls to identify if not initialized' do
+      expect { Analytics.identify({}) }.not_to raise_error
+    end
+
+    it 'should return false on identify if not initialized' do
+      Analytics.identify({}).should == false
+    end
+  end
+
   describe '#init' do
 
     it 'should successfully init' do
       Analytics.init secret: AnalyticsHelpers::SECRET
     end
   end
-
 
   describe '#track' do
 
