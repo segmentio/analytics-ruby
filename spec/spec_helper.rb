@@ -20,7 +20,7 @@ module AnalyticsHelpers
                 action:     'identify'
               }
 
-  USER_ID = 'Bret'
+  USER_ID = 1234
 
   # Hashes sent to the client
   module Queued
