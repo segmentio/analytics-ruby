@@ -2,23 +2,23 @@ require 'analytics-ruby/version'
 require 'analytics-ruby/client'
 
 module AnalyticsRuby
+  module ClassMethods
+    # By default use a single client for the module
+    def init(options = {})
+      @client = AnalyticsRuby::Client.new(options)
+    end
 
-  # By default use a single client for the module
-  def self.init(options = {})
-    @client = AnalyticsRuby::Client.new(options)
+    def track(options)
+      return false unless @client
+      @client.track(options)
+    end
+
+    def identify(options)
+      return false unless @client
+      @client.identify(options)
+    end
   end
-
-  def self.track(options)
-    return false unless @client
-    @client.track(options)
-  end
-
-  def self.identify(options)
-    return false unless @client
-    @client.identify(options)
-  end
-
-
+  extend ClassMethods
 end
 
 # Alias for AnalyticsRuby
