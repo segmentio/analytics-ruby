@@ -1,8 +1,11 @@
+0.1.4 / 2013-3-19
+===========
+* Adding ClassMethods for more extensibility by [arronmabrey](https://github.com/arronmabrey)
+
 0.1.3 / 2013-3-19
 ===========
 * Fixing user_id.to_s semantics, reported by [arronmabrey](https://github.com/arronmabrey)
 * Reduced faraday requirements by [arronmabrey](https://github.com/arronmabrey)
-* Adding ClassMethods for more extensibility by [arronmabrey](https://github.com/arronmabrey)
 
 0.1.2 / 2013-3-11
 ===========
