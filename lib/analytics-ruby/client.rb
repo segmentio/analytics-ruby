@@ -40,7 +40,7 @@ module AnalyticsRuby
       check_secret
 
       event = options[:event]
-      user_id = options[:user_id]
+      user_id = options[:user_id].to_s
       properties = options[:properties] || {}
       timestamp = options[:timestamp] || Time.new
       context = options[:context] || {}
@@ -73,7 +73,7 @@ module AnalyticsRuby
 
       check_secret
 
-      user_id = options[:user_id]
+      user_id = options[:user_id].to_s
       traits = options[:traits] || {}
       timestamp = options[:timestamp] || Time.new
       context = options[:context] || {}
@@ -116,11 +116,7 @@ module AnalyticsRuby
     # user_id    - String of the user id
     #
     def ensure_user(user_id)
-      message = 'Must supply a non-empty user_id'
-
-      valid = user_id.is_a?(String) && !user_id.empty?
-
-      fail ArgumentError, message unless valid
+      fail ArgumentError, 'Must supply a non-empty user_id' if user_id.empty?
     end
 
     # private: Adds contextual information to the call
