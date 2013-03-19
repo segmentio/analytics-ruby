@@ -24,7 +24,18 @@ module AnalyticsRuby
       check_secret
 
       @consumer = AnalyticsRuby::Consumer.new(@queue, @secret, options)
-      Thread.new { @consumer.run }
+      @thread = Thread.new { @consumer.run }
+    end
+
+    # public: Join on the thread to close
+    #
+    def close ()
+      @consumer.close
+      if @queue.length > 0
+        @thread.join
+      else
+        @thread.join(1)
+      end
     end
 
     # public: Tracks an event

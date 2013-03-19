@@ -18,6 +18,7 @@ module AnalyticsRuby
     #           on_error   - Proc of what to do on an error
     #
     def initialize(queue, secret, options = {})
+      @open = true
       @queue = queue
       @secret = secret
       @batch_size = options[:batch_size] || AnalyticsRuby::Defaults::Queue::BATCH_SIZE
@@ -29,7 +30,7 @@ module AnalyticsRuby
     # public: Continuously runs the loop to check for new events
     #
     def run
-      while true
+      while @open || !queue.empty?
         flush
       end
     end
@@ -49,6 +50,12 @@ module AnalyticsRuby
       res = req.post(@secret, @current_batch)
       @on_error.call(res.status, res.error) unless res.status == 200
       @current_batch = []
+    end
+
+    # public: Close the consumer.
+    #
+    def close
+      @open = false
     end
 
   end
