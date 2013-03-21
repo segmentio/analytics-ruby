@@ -58,4 +58,31 @@ describe Analytics::Consumer do
       queue.should be_empty
     end
   end
+
+  describe '#is_requesting?' do
+
+    it 'should not return true if there isn\'t a current batch' do
+
+      queue = Queue.new
+      consumer = Analytics::Consumer.new(queue, 'testsecret')
+
+      consumer.is_requesting?.should == false
+    end
+
+    it 'should return true if there is a current batch' do
+
+      queue = Queue.new
+      queue << AnalyticsHelpers::Requested::TRACK
+      consumer = Analytics::Consumer.new(queue, 'testsecret')
+
+      Thread.new {
+        consumer.flush
+        consumer.is_requesting?.should == false
+      }
+
+      # sleep barely long enough to let thread flush the queue.
+      sleep(0.001)
+      consumer.is_requesting?.should == true
+    end
+  end
 end

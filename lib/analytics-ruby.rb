@@ -17,6 +17,11 @@ module AnalyticsRuby
       return false unless @client
       @client.identify(options)
     end
+
+    def flush
+      return false unless @client
+      @client.flush
+    end
   end
   extend ClassMethods
 end

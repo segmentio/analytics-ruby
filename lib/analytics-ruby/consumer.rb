@@ -18,19 +18,20 @@ module AnalyticsRuby
     #           on_error   - Proc of what to do on an error
     #
     def initialize(queue, secret, options = {})
-      @open = true
       @queue = queue
       @secret = secret
       @batch_size = options[:batch_size] || AnalyticsRuby::Defaults::Queue::BATCH_SIZE
       @on_error = options[:on_error] || Proc.new { |status, error| }
 
       @current_batch = []
+
+      @mutex = Mutex.new
     end
 
     # public: Continuously runs the loop to check for new events
     #
     def run
-      while @open || !queue.empty?
+      while true
         flush
       end
     end
@@ -38,24 +39,33 @@ module AnalyticsRuby
     # public: Flush some events from our queue
     #
     def flush
-
       # Block until we have something to send
-      @current_batch << @queue.pop()
+      item = @queue.pop()
 
-      until @current_batch.length >= @batch_size || @queue.empty?
-        @current_batch << @queue.pop()
-      end
+      # Synchronize on additions to the current batch
+      @mutex.synchronize {
+        @current_batch << item
+        until @current_batch.length >= @batch_size || @queue.empty?
+          @current_batch << @queue.pop()
+        end
+      }
 
       req = AnalyticsRuby::Request.new
       res = req.post(@secret, @current_batch)
       @on_error.call(res.status, res.error) unless res.status == 200
-      @current_batch = []
+      @mutex.synchronize {
+        @current_batch = []
+      }
     end
 
-    # public: Close the consumer.
+    # public: Check whether we have outstanding requests.
     #
-    def close
-      @open = false
+    def is_requesting?
+      requesting = nil
+      @mutex.synchronize {
+        requesting = !@current_batch.empty?
+      }
+      requesting
     end
 
   end

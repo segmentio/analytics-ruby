@@ -55,4 +55,12 @@ describe Analytics do
       sleep(1)
     end
   end
+
+  describe '#flush' do
+
+    it 'should flush without error' do
+      Analytics.identify AnalyticsHelpers::Queued::IDENTIFY
+      Analytics.flush
+    end
+  end
 end

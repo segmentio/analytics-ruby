@@ -15,7 +15,7 @@ module AnalyticsRuby
     #           :secret         - String of your project's secret
     #           :max_queue_size - Fixnum of the max calls to remain queued (optional)
     #           :on_error       - Proc which handles error calls from the API
-    def initialize (options = {})
+    def initialize(options = {})
 
       @queue = Queue.new
       @secret = options[:secret]
@@ -27,14 +27,13 @@ module AnalyticsRuby
       @thread = Thread.new { @consumer.run }
     end
 
-    # public: Join on the thread to close
+    # public: Synchronously waits until the consumer has flushed the queue.
+    #         Use only for scripts which are not long-running, and will
+    #         specifically exit
     #
-    def close ()
-      @consumer.close
-      if @queue.length > 0
-        @thread.join
-      else
-        @thread.join(1)
+    def flush
+      while !@queue.empty? || @consumer.is_requesting?
+        sleep(0.1)
       end
     end
 

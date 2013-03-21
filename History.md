@@ -1,3 +1,7 @@
+0.2.0 / 2013-3-21
+===========
+* Adding flush method
+
 0.1.4 / 2013-3-19
 ===========
 * Adding ClassMethods for more extensibility by [arronmabrey](https://github.com/arronmabrey)
