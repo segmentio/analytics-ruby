@@ -18,6 +18,11 @@ module AnalyticsRuby
       @client.identify(options)
     end
 
+    def alias(options)
+      return false unless @client
+      @client.alias(options)
+    end
+
     def flush
       return false unless @client
       @client.flush

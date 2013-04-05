@@ -50,6 +50,24 @@ describe Analytics::Client do
     end
   end
 
+  describe '#alias' do
+    before :all do
+      @client = Analytics::Client.new secret: AnalyticsHelpers::SECRET
+    end
+
+    it 'should error without from' do
+      expect { @client.alias to: 1234 }.to raise_error(ArgumentError)
+    end
+
+    it 'should error without to' do
+      expect { @client.alias from: 1234 }.to raise_error(ArgumentError)
+    end
+
+    it 'should not error with the required options' do
+      @client.alias AnalyticsHelpers::ALIAS
+    end
+  end
+
   describe '#flush' do
     before(:all) do
       @client = Analytics::Client.new secret: AnalyticsHelpers::SECRET

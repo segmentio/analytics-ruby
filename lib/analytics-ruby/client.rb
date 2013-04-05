@@ -102,6 +102,35 @@ module AnalyticsRuby
                 action:    'identify' })
     end
 
+    # public: Aliases a user from one id to another
+    #
+    # options - Hash
+    #           :from      - String of the id to alias from
+    #           :to        - String of the id to alias to
+    #           :timestamp - Time of when the alias occured (optional)
+    #           :context   - Hash of context (optional)
+    def alias(options)
+
+      check_secret
+
+      from = options[:from].to_s
+      to = options[:to].to_s
+      timestamp = options[:timestamp] || Time.new
+      context = options[:context] || {}
+
+      ensure_user(from)
+      ensure_user(to)
+      check_timestamp(timestamp)
+
+      add_context(context)
+
+      enqueue({ from:      from,
+                to:        to,
+                context:   context,
+                timestamp: timestamp.iso8601,
+                action:    'alias' })
+    end
+
     # public: Returns the number of queued messages
     #
     # returns Fixnum of messages in the queue

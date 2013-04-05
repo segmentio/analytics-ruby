@@ -56,6 +56,21 @@ describe Analytics do
     end
   end
 
+  describe '#alias' do
+    it 'should error without from' do
+      expect { Analytics.alias to: 1234 }.to raise_error(ArgumentError)
+    end
+
+    it 'should error without to' do
+      expect { Analytics.alias from: 1234 }.to raise_error(ArgumentError)
+    end
+
+    it 'should not error with the required options' do
+      Analytics.alias AnalyticsHelpers::ALIAS
+      sleep(1)
+    end
+  end
+
   describe '#flush' do
 
     it 'should flush without error' do

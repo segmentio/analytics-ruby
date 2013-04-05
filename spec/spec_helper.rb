@@ -20,6 +20,9 @@ module AnalyticsHelpers
                 action:     'identify'
               }
 
+  ALIAS = { from: 1234,
+            to:   'abcd' }
+
   USER_ID = 1234
 
   # Hashes sent to the client

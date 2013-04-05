@@ -1,3 +1,7 @@
+0.3.0 / 2013-4-5
+===========
+* Adding alias call
+
 0.2.0 / 2013-3-21
 ===========
 * Adding flush method
