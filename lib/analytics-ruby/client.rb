@@ -62,6 +62,8 @@ module AnalyticsRuby
         fail ArgumentError, 'Must supply event as a non-empty string'
       end
 
+      fail ArgumentError, 'Properties must be a Hash' unless properties.is_a? Hash
+
       add_context(context)
 
       enqueue({ event:      event,

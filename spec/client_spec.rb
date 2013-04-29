@@ -29,6 +29,12 @@ describe Analytics::Client do
       expect { @client.track(event: 'Event') }.to raise_error(ArgumentError)
     end
 
+    it 'should error if properties is not a hash' do
+      expect {
+        @client.track(user_id: 'user', event: 'Event', properties: [1,2,3])
+      }.to raise_error(ArgumentError)
+    end
+
     it 'should not error with the required options' do
       @client.track AnalyticsHelpers::Queued::TRACK
     end

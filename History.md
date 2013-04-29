@@ -1,3 +1,7 @@
+0.3.1 / 2013-4-29
+===========
+* Adding check for properties to be a Hash
+
 0.3.0 / 2013-4-5
 ===========
 * Adding alias call
