@@ -34,8 +34,8 @@ module AnalyticsRuby
 
       begin
         res = @conn.post do |req|
-          req.options[:timeout] = 5
-          req.options[:open_timeout] = 2
+          req.options[:timeout] = 8
+          req.options[:open_timeout] = 3
           req.url(@path)
           req.body = AnalyticsRuby::JSON::dump(secret: secret, batch: batch)
         end

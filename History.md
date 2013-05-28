@@ -1,3 +1,7 @@
+0.3.2 / 2013-5-28
+===========
+* Adding faraday timeout by [@yanchenyun](https://github.com/yangchenyun)
+
 0.3.1 / 2013-4-29
 ===========
 * Adding check for properties to be a Hash
