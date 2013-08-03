@@ -1,3 +1,7 @@
+0.3.3 / 2013-8-2
+===========
+* Allow init/track/identify/alias to accept strings as keys. by [@shipstar](https://github.com/shipstar)
+
 0.3.2 / 2013-5-28
 ===========
 * Adding faraday timeout by [@yanchenyun](https://github.com/yangchenyun)
