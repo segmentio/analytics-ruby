@@ -4,6 +4,7 @@ require 'thread'
 require 'analytics-ruby/defaults'
 require 'analytics-ruby/consumer'
 require 'analytics-ruby/request'
+require 'analytics-ruby/util'
 
 module AnalyticsRuby
 
@@ -16,6 +17,8 @@ module AnalyticsRuby
     #           :max_queue_size - Fixnum of the max calls to remain queued (optional)
     #           :on_error       - Proc which handles error calls from the API
     def initialize(options = {})
+
+      Util.symbolize_keys!(options)
 
       @queue = Queue.new
       @secret = options[:secret]
@@ -48,6 +51,8 @@ module AnalyticsRuby
     def track(options)
 
       check_secret
+
+      Util.symbolize_keys!(options)
 
       event = options[:event]
       user_id = options[:user_id].to_s
@@ -85,6 +90,8 @@ module AnalyticsRuby
 
       check_secret
 
+      Util.symbolize_keys!(options)
+
       user_id = options[:user_id].to_s
       traits = options[:traits] || {}
       timestamp = options[:timestamp] || Time.new
@@ -114,6 +121,8 @@ module AnalyticsRuby
     def alias(options)
 
       check_secret
+
+      Util.symbolize_keys!(options)
 
       from = options[:from].to_s
       to = options[:to].to_s
