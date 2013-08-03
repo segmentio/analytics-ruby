@@ -4,6 +4,14 @@ require 'spec_helper'
 
 describe Analytics::Consumer do
 
+  describe "#init" do
+    it 'accepts string keys' do
+      queue = Queue.new
+      consumer = Analytics::Consumer.new(queue, 'secret', 'batch_size' => 100)
+      consumer.instance_variable_get(:@batch_size).should == 100
+    end
+  end
+
   describe '#flush' do
 
     it 'should not error if the endpoint is unreachable' do

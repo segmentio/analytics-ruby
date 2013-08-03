@@ -13,6 +13,10 @@ describe Analytics::Client do
     it 'should not error if a secret is supplied' do
       Analytics::Client.new secret: AnalyticsHelpers::SECRET
     end
+
+    it 'should not error if a secret is supplied as a string' do
+      Analytics::Client.new 'secret' => AnalyticsHelpers::SECRET
+    end
   end
 
   describe '#track' do
@@ -38,6 +42,10 @@ describe Analytics::Client do
     it 'should not error with the required options' do
       @client.track AnalyticsHelpers::Queued::TRACK
     end
+
+    it 'should not error when given string keys' do
+      @client.track Util.stringify_keys(AnalyticsHelpers::Queued::TRACK)
+    end
   end
 
 
@@ -53,6 +61,10 @@ describe Analytics::Client do
 
     it 'should not error with the required options' do
       @client.identify AnalyticsHelpers::Queued::IDENTIFY
+    end
+
+    it 'should not error with the required options as strings' do
+      @client.identify Util.stringify_keys(AnalyticsHelpers::Queued::IDENTIFY)
     end
   end
 
@@ -71,6 +83,10 @@ describe Analytics::Client do
 
     it 'should not error with the required options' do
       @client.alias AnalyticsHelpers::ALIAS
+    end
+
+    it 'should not error with the required options as strings' do
+      @client.alias Util.stringify_keys(AnalyticsHelpers::ALIAS)
     end
   end
 
