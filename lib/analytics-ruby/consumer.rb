@@ -1,6 +1,7 @@
 
 require 'analytics-ruby/defaults'
 require 'analytics-ruby/request'
+require 'analytics-ruby/util'
 
 module AnalyticsRuby
 
@@ -18,6 +19,8 @@ module AnalyticsRuby
     #           on_error   - Proc of what to do on an error
     #
     def initialize(queue, secret, options = {})
+      Util.symbolize_keys!(options)
+
       @queue = queue
       @secret = secret
       @batch_size = options[:batch_size] || AnalyticsRuby::Defaults::Queue::BATCH_SIZE
