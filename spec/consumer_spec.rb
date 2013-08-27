@@ -30,9 +30,8 @@ describe Analytics::Consumer do
 
     it 'should execute the error handler if the request is invalid' do
 
-      Analytics::Request.any_instance
-                        .stub(:post)
-                        .and_return(Analytics::Response.new(400, "Some error"))
+      Analytics::Request.any_instance.stub(:post).and_return(
+        Analytics::Response.new(400, "Some error"))
 
       on_error = Proc.new do |status, error|
         puts "#{status}, #{error}"
