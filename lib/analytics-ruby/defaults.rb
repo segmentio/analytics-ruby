@@ -5,8 +5,8 @@ module AnalyticsRuby
     module Request
       BASE_URL = 'https://api.segment.io' unless defined? AnalyticsRuby::Defaults::Request::BASE_URL
       PATH = '/v1/import' unless defined? AnalyticsRuby::Defaults::Request::PATH
-      SSL = { verify: false } unless defined? AnalyticsRuby::Defaults::Request::SSL
-      HEADERS = { accept: 'application/json' } unless defined? AnalyticsRuby::Defaults::Request::HEADERS
+      SSL = { :verify => false } unless defined? AnalyticsRuby::Defaults::Request::SSL
+      HEADERS = { :accept => 'application/json' } unless defined? AnalyticsRuby::Defaults::Request::HEADERS
     end
 
     module Queue
