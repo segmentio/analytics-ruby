@@ -1,3 +1,7 @@
+0.3.4 / 2013-8-26
+===========
+* Pass `Time` values as iso8601 timestamp strings
+
 0.3.3 / 2013-8-2
 ===========
 * Allow init/track/identify/alias to accept strings as keys. by [@shipstar](https://github.com/shipstar)
