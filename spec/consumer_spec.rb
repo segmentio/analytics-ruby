@@ -42,7 +42,7 @@ describe Analytics::Consumer do
 
       queue = Queue.new
       queue << {}
-      consumer = Analytics::Consumer.new(queue, 'secret', { on_error: on_error })
+      consumer = Analytics::Consumer.new queue, 'secret', :on_error => on_error
       consumer.flush
 
       Analytics::Request::any_instance.unstub(:post)
@@ -60,7 +60,7 @@ describe Analytics::Consumer do
 
       queue = Queue.new
       queue << AnalyticsHelpers::Requested::TRACK
-      consumer = Analytics::Consumer.new(queue, 'testsecret', { on_error: on_error })
+      consumer = Analytics::Consumer.new queue, 'testsecret', :on_error => on_error
       consumer.flush
 
       queue.should be_empty
