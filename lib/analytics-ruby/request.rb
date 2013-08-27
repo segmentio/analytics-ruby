@@ -37,7 +37,7 @@ module AnalyticsRuby
           req.options[:timeout] = 8
           req.options[:open_timeout] = 3
           req.url(@path)
-          req.body = AnalyticsRuby::JSON::dump(secret: secret, batch: batch)
+          req.body = AnalyticsRuby::JSON::dump(:secret => secret, :batch => batch)
         end
         status = res.status
         error  = res.body["error"]

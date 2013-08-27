@@ -68,15 +68,18 @@ module AnalyticsRuby
       end
 
       fail ArgumentError, 'Properties must be a Hash' unless properties.is_a? Hash
+      Util.isoify_dates!(properties)
 
       add_context(context)
 
-      enqueue({ event:      event,
-                userId:     user_id,
-                context:    context,
-                properties: properties,
-                timestamp:  timestamp.iso8601,
-                action:     'track' })
+      enqueue({
+        :event => event,
+        :userId => user_id,
+        :context =>  context,
+        :properties => properties,
+        :timestamp => timestamp.iso8601,
+        :action => 'track'
+      })
     end
 
     # public: Identifies a user
@@ -101,14 +104,17 @@ module AnalyticsRuby
       check_timestamp(timestamp)
 
       fail ArgumentError, 'Must supply traits as a hash' unless traits.is_a? Hash
+      Util.isoify_dates!(traits)
 
       add_context(context)
 
-      enqueue({ userId:    user_id,
-                context:   context,
-                traits:    traits,
-                timestamp: timestamp.iso8601,
-                action:    'identify' })
+      enqueue({
+        :userId => user_id,
+        :context => context,
+        :traits => traits,
+        :timestamp => timestamp.iso8601,
+        :action => 'identify'
+      })
     end
 
     # public: Aliases a user from one id to another
@@ -135,11 +141,13 @@ module AnalyticsRuby
 
       add_context(context)
 
-      enqueue({ from:      from,
-                to:        to,
-                context:   context,
-                timestamp: timestamp.iso8601,
-                action:    'alias' })
+      enqueue({
+        :from => from,
+        :to => to,
+        :context => context,
+        :timestamp => timestamp.iso8601,
+        :action => 'alias'
+      })
     end
 
     # public: Returns the number of queued messages

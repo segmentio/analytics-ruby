@@ -24,18 +24,18 @@ describe Analytics do
   describe '#init' do
 
     it 'should successfully init' do
-      Analytics.init secret: AnalyticsHelpers::SECRET
+      Analytics.init :secret => AnalyticsHelpers::SECRET
     end
   end
 
   describe '#track' do
 
     it 'should error without an event' do
-      expect { Analytics.track user_id: 'user' }.to raise_error(ArgumentError)
+      expect { Analytics.track :user_id => 'user' }.to raise_error(ArgumentError)
     end
 
     it 'should error without a user_id' do
-      expect { Analytics.track event: 'Event' }.to raise_error(ArgumentError)
+      expect { Analytics.track :event => 'Event' }.to raise_error(ArgumentError)
     end
 
     it 'should not error with the required options' do
@@ -47,7 +47,7 @@ describe Analytics do
 
   describe '#identify' do
     it 'should error without a user_id' do
-      expect { Analytics.identify traits: {} }.to raise_error(ArgumentError)
+      expect { Analytics.identify :traits => {} }.to raise_error(ArgumentError)
     end
 
     it 'should not error with the required options' do
@@ -58,11 +58,11 @@ describe Analytics do
 
   describe '#alias' do
     it 'should error without from' do
-      expect { Analytics.alias to: 1234 }.to raise_error(ArgumentError)
+      expect { Analytics.alias :to => 1234 }.to raise_error(ArgumentError)
     end
 
     it 'should error without to' do
-      expect { Analytics.alias from: 1234 }.to raise_error(ArgumentError)
+      expect { Analytics.alias :from => 1234 }.to raise_error(ArgumentError)
     end
 
     it 'should not error with the required options' do

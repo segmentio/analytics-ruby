@@ -10,4 +10,15 @@ module Util
   def self.stringify_keys(hash)
     hash.inject({}) { |memo, (k,v)| memo[k.to_s] = v; memo }
   end
+
+  def self.isoify_dates(hash)
+    hash.inject({}) { |memo, (k, v)|
+      memo[k] = v.respond_to?(:iso8601) ? v.iso8601 : v
+      memo
+    }
+  end
+
+  def self.isoify_dates!(hash)
+    hash.replace isoify_dates(hash)
+  end
 end
