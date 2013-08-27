@@ -19,7 +19,7 @@ module AnalyticsRuby
     #           on_error   - Proc of what to do on an error
     #
     def initialize(queue, secret, options = {})
-      Util.symbolize_keys!(options)
+      Util.symbolize_keys! options
 
       @queue = queue
       @secret = secret
@@ -43,19 +43,19 @@ module AnalyticsRuby
     #
     def flush
       # Block until we have something to send
-      item = @queue.pop()
+      item = @queue.pop
 
       # Synchronize on additions to the current batch
       @mutex.synchronize {
         @current_batch << item
         until @current_batch.length >= @batch_size || @queue.empty?
-          @current_batch << @queue.pop()
+          @current_batch << @queue.pop
         end
       }
 
       req = AnalyticsRuby::Request.new
-      res = req.post(@secret, @current_batch)
-      @on_error.call(res.status, res.error) unless res.status == 200
+      res = req.post @secret, @current_batch
+      @on_error.call res.status, res.error unless res.status == 200
       @mutex.synchronize {
         @current_batch = []
       }

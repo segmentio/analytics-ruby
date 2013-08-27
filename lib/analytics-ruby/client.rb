@@ -18,7 +18,7 @@ module AnalyticsRuby
     #           :on_error       - Proc which handles error calls from the API
     def initialize(options = {})
 
-      Util.symbolize_keys!(options)
+      Util.symbolize_keys! options
 
       @queue = Queue.new
       @secret = options[:secret]
@@ -26,7 +26,7 @@ module AnalyticsRuby
 
       check_secret
 
-      @consumer = AnalyticsRuby::Consumer.new(@queue, @secret, options)
+      @consumer = AnalyticsRuby::Consumer.new @queue, @secret, options
       @thread = Thread.new { @consumer.run }
     end
 
@@ -52,7 +52,7 @@ module AnalyticsRuby
 
       check_secret
 
-      Util.symbolize_keys!(options)
+      Util.symbolize_keys! options
 
       event = options[:event]
       user_id = options[:user_id].to_s
@@ -60,17 +60,17 @@ module AnalyticsRuby
       timestamp = options[:timestamp] || Time.new
       context = options[:context] || {}
 
-      ensure_user(user_id)
-      check_timestamp(timestamp)
+      ensure_user user_id
+      check_timestamp timestamp
 
       if event.nil? || event.empty?
         fail ArgumentError, 'Must supply event as a non-empty string'
       end
 
       fail ArgumentError, 'Properties must be a Hash' unless properties.is_a? Hash
-      Util.isoify_dates!(properties)
+      Util.isoify_dates! properties
 
-      add_context(context)
+      add_context context
 
       enqueue({
         :event => event,
@@ -93,20 +93,20 @@ module AnalyticsRuby
 
       check_secret
 
-      Util.symbolize_keys!(options)
+      Util.symbolize_keys! options
 
       user_id = options[:user_id].to_s
       traits = options[:traits] || {}
       timestamp = options[:timestamp] || Time.new
       context = options[:context] || {}
 
-      ensure_user(user_id)
-      check_timestamp(timestamp)
+      ensure_user user_id
+      check_timestamp timestamp
 
       fail ArgumentError, 'Must supply traits as a hash' unless traits.is_a? Hash
-      Util.isoify_dates!(traits)
+      Util.isoify_dates! traits
 
-      add_context(context)
+      add_context context
 
       enqueue({
         :userId => user_id,
@@ -128,18 +128,18 @@ module AnalyticsRuby
 
       check_secret
 
-      Util.symbolize_keys!(options)
+      Util.symbolize_keys! options
 
       from = options[:from].to_s
       to = options[:to].to_s
       timestamp = options[:timestamp] || Time.new
       context = options[:context] || {}
 
-      ensure_user(from)
-      ensure_user(to)
-      check_timestamp(timestamp)
+      ensure_user from
+      ensure_user to
+      check_timestamp timestamp
 
-      add_context(context)
+      add_context context
 
       enqueue({
         :from => from,

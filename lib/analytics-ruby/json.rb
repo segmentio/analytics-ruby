@@ -7,7 +7,7 @@ module AnalyticsRuby
   #
   # .dump was added in MultiJson 1.3
   module JSON
-    if MultiJson.respond_to?(:dump)
+    if MultiJson.respond_to? :dump
       def self.dump(*args)
         MultiJson.dump(*args)
       end

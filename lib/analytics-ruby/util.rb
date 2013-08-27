@@ -4,7 +4,7 @@ module Util
   end
 
   def self.symbolize_keys!(hash)
-    hash.replace symbolize_keys(hash)
+    hash.replace symbolize_keys hash
   end
 
   def self.stringify_keys(hash)
@@ -19,6 +19,6 @@ module Util
   end
 
   def self.isoify_dates!(hash)
-    hash.replace isoify_dates(hash)
+    hash.replace isoify_dates hash
   end
 end
