@@ -18,6 +18,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'faraday_middleware', ['>= 0.8', '< 0.10']
   spec.add_dependency 'multi_json', ['~> 1.0']
 
+  # Ruby 1.8 requires json for faraday_middleware
+  spec.add_dependency 'json', ['~> 1.7'] if RUBY_VERSION < "1.9"
+
   spec.add_development_dependency('rake')
   spec.add_development_dependency('rspec')
 end
