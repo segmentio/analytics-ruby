@@ -30,6 +30,3 @@ module AnalyticsRuby
   end
   extend ClassMethods
 end
-
-# Alias for AnalyticsRuby
-Analytics = AnalyticsRuby

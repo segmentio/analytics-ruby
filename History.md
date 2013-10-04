@@ -1,3 +1,8 @@
+0.5.0 / 2013-10-03
+==================
+
+* Removing global Analytics alias in favor of adding it to our config
+
 0.4.0 / 2013-08-30
 ==================
 * Adding support and tests for 1.8.7

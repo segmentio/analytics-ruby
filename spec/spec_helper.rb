@@ -1,5 +1,5 @@
 
-module AnalyticsHelpers
+module AnalyticsRubyHelpers
 
   SECRET = 'testsecret'
 

@@ -2,12 +2,12 @@ require 'analytics-ruby'
 require 'thread'
 require 'spec_helper'
 
-describe Analytics::Consumer do
+describe AnalyticsRuby::Consumer do
 
   describe "#init" do
     it 'accepts string keys' do
       queue = Queue.new
-      consumer = Analytics::Consumer.new(queue, 'secret', 'batch_size' => 100)
+      consumer = AnalyticsRuby::Consumer.new(queue, 'secret', 'batch_size' => 100)
       consumer.instance_variable_get(:@batch_size).should == 100
     end
   end
@@ -20,7 +20,7 @@ describe Analytics::Consumer do
 
       queue = Queue.new
       queue << {}
-      consumer = Analytics::Consumer.new(queue, 'secret')
+      consumer = AnalyticsRuby::Consumer.new(queue, 'secret')
       consumer.flush
 
       queue.should be_empty
@@ -30,8 +30,8 @@ describe Analytics::Consumer do
 
     it 'should execute the error handler if the request is invalid' do
 
-      Analytics::Request.any_instance.stub(:post).and_return(
-        Analytics::Response.new(400, "Some error"))
+      AnalyticsRuby::Request.any_instance.stub(:post).and_return(
+        AnalyticsRuby::Response.new(400, "Some error"))
 
       on_error = Proc.new do |status, error|
         puts "#{status}, #{error}"
@@ -41,10 +41,10 @@ describe Analytics::Consumer do
 
       queue = Queue.new
       queue << {}
-      consumer = Analytics::Consumer.new queue, 'secret', :on_error => on_error
+      consumer = AnalyticsRuby::Consumer.new queue, 'secret', :on_error => on_error
       consumer.flush
 
-      Analytics::Request::any_instance.unstub(:post)
+      AnalyticsRuby::Request::any_instance.unstub(:post)
 
       queue.should be_empty
     end
@@ -58,8 +58,8 @@ describe Analytics::Consumer do
       on_error.should_receive(:call).at_most(0).times
 
       queue = Queue.new
-      queue << AnalyticsHelpers::Requested::TRACK
-      consumer = Analytics::Consumer.new queue, 'testsecret', :on_error => on_error
+      queue << AnalyticsRubyHelpers::Requested::TRACK
+      consumer = AnalyticsRuby::Consumer.new queue, 'testsecret', :on_error => on_error
       consumer.flush
 
       queue.should be_empty
@@ -71,7 +71,7 @@ describe Analytics::Consumer do
     it 'should not return true if there isn\'t a current batch' do
 
       queue = Queue.new
-      consumer = Analytics::Consumer.new(queue, 'testsecret')
+      consumer = AnalyticsRuby::Consumer.new(queue, 'testsecret')
 
       consumer.is_requesting?.should == false
     end
@@ -79,8 +79,8 @@ describe Analytics::Consumer do
     it 'should return true if there is a current batch' do
 
       queue = Queue.new
-      queue << AnalyticsHelpers::Requested::TRACK
-      consumer = Analytics::Consumer.new(queue, 'testsecret')
+      queue << AnalyticsRubyHelpers::Requested::TRACK
+      consumer = AnalyticsRuby::Consumer.new(queue, 'testsecret')
 
       Thread.new {
         consumer.flush

@@ -2,27 +2,27 @@ require 'analytics-ruby'
 require 'spec_helper'
 
 
-describe Analytics::Client do
+describe AnalyticsRuby::Client do
 
   describe '#init' do
 
     it 'should error if no secret is supplied' do
-      expect { Analytics::Client.new }.to raise_error(RuntimeError)
+      expect { AnalyticsRuby::Client.new }.to raise_error(RuntimeError)
     end
 
     it 'should not error if a secret is supplied' do
-      Analytics::Client.new :secret => AnalyticsHelpers::SECRET
+      AnalyticsRuby::Client.new :secret => AnalyticsRubyHelpers::SECRET
     end
 
     it 'should not error if a secret is supplied as a string' do
-      Analytics::Client.new 'secret' => AnalyticsHelpers::SECRET
+      AnalyticsRuby::Client.new 'secret' => AnalyticsRubyHelpers::SECRET
     end
   end
 
   describe '#track' do
 
     before(:all) do
-      @client = Analytics::Client.new :secret => AnalyticsHelpers::SECRET
+      @client = AnalyticsRuby::Client.new :secret => AnalyticsRubyHelpers::SECRET
       @client.instance_variable_get(:@thread).kill
       @queue = @client.instance_variable_get :@queue
     end
@@ -46,12 +46,12 @@ describe Analytics::Client do
     end
 
     it 'should not error with the required options' do
-      @client.track AnalyticsHelpers::Queued::TRACK
+      @client.track AnalyticsRubyHelpers::Queued::TRACK
       @queue.pop
     end
 
     it 'should not error when given string keys' do
-      @client.track Util.stringify_keys(AnalyticsHelpers::Queued::TRACK)
+      @client.track Util.stringify_keys(AnalyticsRubyHelpers::Queued::TRACK)
       @queue.pop
     end
 
@@ -74,7 +74,7 @@ describe Analytics::Client do
   describe '#identify' do
 
     before(:all) do
-      @client = Analytics::Client.new :secret => AnalyticsHelpers::SECRET
+      @client = AnalyticsRuby::Client.new :secret => AnalyticsRubyHelpers::SECRET
       @client.instance_variable_get(:@thread).kill
       @queue = @client.instance_variable_get :@queue
     end
@@ -84,12 +84,12 @@ describe Analytics::Client do
     end
 
     it 'should not error with the required options' do
-      @client.identify AnalyticsHelpers::Queued::IDENTIFY
+      @client.identify AnalyticsRubyHelpers::Queued::IDENTIFY
       @queue.pop
     end
 
     it 'should not error with the required options as strings' do
-      @client.identify Util.stringify_keys(AnalyticsHelpers::Queued::IDENTIFY)
+      @client.identify Util.stringify_keys(AnalyticsRubyHelpers::Queued::IDENTIFY)
       @queue.pop
     end
 
@@ -109,7 +109,7 @@ describe Analytics::Client do
 
   describe '#alias' do
     before :all do
-      @client = Analytics::Client.new :secret => AnalyticsHelpers::SECRET
+      @client = AnalyticsRuby::Client.new :secret => AnalyticsRubyHelpers::SECRET
     end
 
     it 'should error without from' do
@@ -121,22 +121,22 @@ describe Analytics::Client do
     end
 
     it 'should not error with the required options' do
-      @client.alias AnalyticsHelpers::ALIAS
+      @client.alias AnalyticsRubyHelpers::ALIAS
     end
 
     it 'should not error with the required options as strings' do
-      @client.alias Util.stringify_keys(AnalyticsHelpers::ALIAS)
+      @client.alias Util.stringify_keys(AnalyticsRubyHelpers::ALIAS)
     end
   end
 
   describe '#flush' do
     before(:all) do
-      @client = Analytics::Client.new :secret => AnalyticsHelpers::SECRET
+      @client = AnalyticsRuby::Client.new :secret => AnalyticsRubyHelpers::SECRET
     end
 
     it 'should wait for the queue to finish on a flush' do
-      @client.identify AnalyticsHelpers::Queued::IDENTIFY
-      @client.track AnalyticsHelpers::Queued::TRACK
+      @client.identify AnalyticsRubyHelpers::Queued::IDENTIFY
+      @client.track AnalyticsRubyHelpers::Queued::TRACK
       @client.flush
       @client.queued_messages.should == 0
     end
