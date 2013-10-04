@@ -13,6 +13,7 @@ Gem::Specification.new do |spec|
   spec.authors = ['Segment.io']
   spec.email = 'friends@segment.io'
   spec.homepage = 'https://github.com/segmentio/analytics-ruby'
+  spec.license = 'MIT'
 
   spec.add_dependency 'faraday', ['>= 0.8', '< 0.10']
   spec.add_dependency 'faraday_middleware', ['>= 0.8', '< 0.10']
