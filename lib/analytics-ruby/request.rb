@@ -31,6 +31,7 @@ module AnalyticsRuby
     def post(secret, batch)
 
       status, error = nil, nil
+      remaining_retries = 3
 
       begin
         res = @conn.post do |req|
@@ -45,6 +46,7 @@ module AnalyticsRuby
       rescue Exception => err
         status = -1
         error = "Connection error: #{err}"
+        retry unless (remaining_retries -=1).zero?
       end
 
       AnalyticsRuby::Response.new status, error
