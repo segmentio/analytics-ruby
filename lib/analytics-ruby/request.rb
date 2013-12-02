@@ -17,6 +17,8 @@ module AnalyticsRuby
       options[:ssl] ||= AnalyticsRuby::Defaults::Request::SSL
       options[:headers] ||= AnalyticsRuby::Defaults::Request::HEADERS
       @path = options[:path] || AnalyticsRuby::Defaults::Request::PATH
+      @retries = options[:retries] || AnalyticsRuby::Defaults::Request::RETRIES
+      @backoff = options[:backoff] || AnalyticsRuby::Defaults::Request::BACKOFF
 
       @conn = Faraday.new options do |faraday|
         faraday.request :json
@@ -31,7 +33,8 @@ module AnalyticsRuby
     def post(secret, batch)
 
       status, error = nil, nil
-      remaining_retries = 3
+      remaining_retries = @retries
+      backoff = @backoff
 
       begin
         res = @conn.post do |req|
@@ -46,7 +49,10 @@ module AnalyticsRuby
       rescue Exception => err
         status = -1
         error = "Connection error: #{err}"
-        retry unless (remaining_retries -=1).zero?
+        unless (remaining_retries -=1).zero?
+          sleep(backoff)
+          retry
+        end
       end
 
       AnalyticsRuby::Response.new status, error

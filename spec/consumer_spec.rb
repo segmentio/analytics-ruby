@@ -14,6 +14,14 @@ describe AnalyticsRuby::Consumer do
 
   describe '#flush' do
 
+    before :all do
+      AnalyticsRuby::Defaults::Request::BACKOFF = 0.1
+    end
+
+    after :all do
+      AnalyticsRuby::Defaults::Request::BACKOFF = 30.0
+    end
+
     it 'should not error if the endpoint is unreachable' do
 
       Faraday::Connection.any_instance.stub(:post).and_raise(Exception)
