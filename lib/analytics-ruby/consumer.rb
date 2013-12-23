@@ -34,7 +34,7 @@ module AnalyticsRuby
     # public: Continuously runs the loop to check for new events
     #
     def run
-      while true
+      until Thread.current[:should_exit]
         flush
       end
     end
@@ -44,6 +44,7 @@ module AnalyticsRuby
     def flush
       # Block until we have something to send
       item = @queue.pop
+      return if item.nil?
 
       # Synchronize on additions to the current batch
       @mutex.synchronize {

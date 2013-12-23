@@ -10,6 +10,10 @@ module AnalyticsRuby
 
   class Client
 
+    # Sub-class thread so we have a named thread (useful for debugging in Thread.list).
+    class ConsumerThread < Thread
+    end
+
     # public: Creates a new client
     #
     # options - Hash
@@ -27,7 +31,16 @@ module AnalyticsRuby
       check_secret
 
       @consumer = AnalyticsRuby::Consumer.new @queue, @secret, options
-      @thread = Thread.new { @consumer.run }
+      @thread = ConsumerThread.new { @consumer.run }
+
+      at_exit do
+        # Let the consumer thread know it should exit.
+        @thread[:should_exit] = true
+
+        # Push a flag value to the consumer queue in case it's blocked waiting for a value.  This will allow it
+        # to continue its normal chain of processing, giving it a chance to exit.
+        @queue << nil
+      end
     end
 
     # public: Synchronously waits until the consumer has flushed the queue.
