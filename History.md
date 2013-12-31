@@ -1,3 +1,7 @@
+0.5.4 / 2013-12-31
+==================
+* Add `requestId` fields to all requests for tracing.
+
 0.5.3 / 2013-12-31
 ==================
 * Allow the consumer thread to shut down so it won't remain live in hot deploy scenarios. This fixes the jruby memory leak by [@nirvdrum](https://github.com/nirvdrum)
