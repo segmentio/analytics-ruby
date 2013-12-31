@@ -12,7 +12,7 @@
 
 0.5.0 / 2013-10-03
 ==================
-* Removing global Analytics alias in favor of adding it to our config. NOTE: If you are upgrading from a previous version and want to continue using the `Analytics` namespace, you'll have to add `Analytics = AnalyticsRuby` to your config. See the [setup docs for more info](https://segment.io/libraries/ruby)
+* Removing global Analytics alias in favor of adding it to our config. NOTE: If you are upgrading from a previous version and want to continue using the `Analytics` namespace, you'll have to add `Analytics = AnalyticsRuby` to your config. Otherwise you WILL NOT be sending analytics data. See the [setup docs for more info](https://segment.io/libraries/ruby)
 
 0.4.0 / 2013-08-30
 ==================
