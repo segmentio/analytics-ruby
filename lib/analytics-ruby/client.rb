@@ -138,11 +138,8 @@ module AnalyticsRuby
     #           :timestamp - Time of when the alias occured (optional)
     #           :context   - Hash of context (optional)
     def alias(options)
-
       check_secret
-
       Util.symbolize_keys! options
-
       from = options[:from].to_s
       to = options[:to].to_s
       timestamp = options[:timestamp] || Time.new
@@ -151,7 +148,6 @@ module AnalyticsRuby
       ensure_user from
       ensure_user to
       check_timestamp timestamp
-
       add_context context
 
       enqueue({
@@ -176,6 +172,9 @@ module AnalyticsRuby
     #
     # returns Boolean of whether the item was added to the queue.
     def enqueue(action)
+      # add our request id for tracing purposes
+      action[:requestId] = Util.uid
+
       queue_full = @queue.length >= @max_queue_size
       @queue << action unless queue_full
 
