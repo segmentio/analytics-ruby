@@ -1,3 +1,7 @@
+0.5.3 / 2013-12-31
+==================
+* Allow the consumer thread to shut down so it won't remain live in hot deploy scenarios. This fixes the jruby memory leak by [@nirvdrum](https://github.com/nirvdrum)
+
 0.5.2 / 2013-12-02
 ==================
 * adding `sleep` backoff between connection retries
@@ -8,8 +12,7 @@
 
 0.5.0 / 2013-10-03
 ==================
-
-* Removing global Analytics alias in favor of adding it to our config
+* Removing global Analytics alias in favor of adding it to our config. NOTE: If you are upgrading from a previous version and want to continue using the `Analytics` namespace, you'll have to add `Analytics = AnalyticsRuby` to your config. See the [setup docs for more info](https://segment.io/libraries/ruby)
 
 0.4.0 / 2013-08-30
 ==================
