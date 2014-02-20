@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   spec.homepage = 'https://github.com/segmentio/analytics-ruby'
   spec.license = 'MIT'
 
-  spec.add_dependency 'faraday', ['>= 0.8', '< 0.10']
+  spec.add_dependency 'faraday', ['>= 0.8']
   spec.add_dependency 'faraday_middleware', ['>= 0.8', '< 0.10']
   spec.add_dependency 'multi_json', ['~> 1.0']
 
