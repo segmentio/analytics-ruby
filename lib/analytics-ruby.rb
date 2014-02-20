@@ -23,6 +23,21 @@ module AnalyticsRuby
       @client.alias options
     end
 
+    def group(options)
+      return false unless @client
+      @client.group options
+    end
+
+    def page(options)
+      return false unless @client
+      @client.page options
+    end
+
+    def screen(options)
+      return false unless @client
+      @client.screen options
+    end
+
     def flush
       return false unless @client
       @client.flush

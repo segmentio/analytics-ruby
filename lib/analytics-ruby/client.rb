@@ -159,6 +159,108 @@ module AnalyticsRuby
       })
     end
 
+    # public: Associates a user identity with a group.
+    #
+    # options - Hash
+    #           :from      - String of the id to alias from
+    #           :to        - String of the id to alias to
+    #           :timestamp - Time of when the alias occured (optional)
+    #           :context   - Hash of context (optional)
+    def group(options)
+      check_secret
+      Util.symbolize_keys! options
+      group_id = options[:group_id].to_s
+      user_id = options[:user_id].to_s
+      traits = options[:traits] || {}
+      timestamp = options[:timestamp] || Time.new
+      context = options[:context] || {}
+
+      fail ArgumentError, '.traits must be a hash' unless traits.is_a? Hash
+
+      ensure_user group_id
+      ensure_user user_id
+      check_timestamp timestamp
+      add_context context
+
+      enqueue({
+        :groupId => group_id,
+        :userId => user_id,
+        :traits => traits,
+        :context => context,
+        :timestamp => timestamp.iso8601,
+        :action => 'group'
+      })
+    end
+
+    # public: Records a page view
+    #
+    # options - Hash
+    #           :user_id    - String of the id to alias from
+    #           :name       - String name of the page
+    #           :properties - Hash of page properties (optional)
+    #           :timestamp  - Time of when the pageview occured (optional)
+    #           :context    - Hash of context (optional)
+    def page(options)
+      check_secret
+      Util.symbolize_keys! options
+      user_id = options[:user_id].to_s
+      name = options[:name].to_s
+      properties = options[:properties] || {}
+      timestamp = options[:timestamp] || Time.new
+      context = options[:context] || {}
+
+      fail ArgumentError, '.name must be a string' unless !name.empty?
+      fail ArgumentError, '.properties must be a hash' unless properties.is_a? Hash
+      Util.isoify_dates! properties
+
+      ensure_user user_id
+      check_timestamp timestamp
+      add_context context
+
+      enqueue({
+        :userId => user_id,
+        :name => name,
+        :properties => properties,
+        :context => context,
+        :timestamp => timestamp.iso8601,
+        :action => 'page'
+      })
+    end
+    # public: Records a screen view (for a mobile app)
+    #
+    # options - Hash
+    #           :user_id    - String of the id to alias from
+    #           :name       - String name of the screen
+    #           :properties - Hash of screen properties (optional)
+    #           :timestamp  - Time of when the screen occured (optional)
+    #           :context    - Hash of context (optional)
+    def screen(options)
+      check_secret
+      Util.symbolize_keys! options
+      user_id = options[:user_id].to_s
+      name = options[:name].to_s
+      properties = options[:properties] || {}
+      timestamp = options[:timestamp] || Time.new
+      context = options[:context] || {}
+
+      fail ArgumentError, '.name must be a string' if name.empty?
+      fail ArgumentError, '.properties must be a hash' unless properties.is_a? Hash
+      Util.isoify_dates! properties
+
+      ensure_user user_id
+      check_timestamp timestamp
+      add_context context
+
+      enqueue({
+        :userId => user_id,
+        :name => name,
+        :properties => properties,
+        :context => context,
+        :timestamp => timestamp.iso8601,
+        :action => 'screen'
+      })
+    end
+
     # public: Returns the number of queued messages
     #
     # returns Fixnum of messages in the queue

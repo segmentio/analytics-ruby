@@ -71,6 +71,51 @@ describe AnalyticsRuby do
     end
   end
 
+  describe '#group' do
+    it 'should error without group_id' do
+      expect { AnalyticsRuby.group :user_id => 'foo' }.to raise_error(ArgumentError)
+    end
+
+    it 'should error without user_id' do
+      expect { AnalyticsRuby.group :group_id => 'foo' }.to raise_error(ArgumentError)
+    end
+
+    it 'should not error with the required options' do
+      AnalyticsRuby.group AnalyticsRubyHelpers::Queued::GROUP
+      sleep(1)
+    end
+  end
+
+  describe '#page' do
+    it 'should error without user_id' do
+      expect { AnalyticsRuby.page :name => 'foo' }.to raise_error(ArgumentError)
+    end
+
+    it 'should error without name' do
+      expect { AnalyticsRuby.page :user_id => 1 }.to raise_error(ArgumentError)
+    end
+
+    it 'should not error with the required options' do
+      AnalyticsRuby.page AnalyticsRubyHelpers::Queued::PAGE
+      sleep(1)
+    end
+  end
+
+  describe '#screen' do
+    it 'should error without user_id' do
+      expect { AnalyticsRuby.screen :name => 'foo' }.to raise_error(ArgumentError)
+    end
+
+    it 'should error without name' do
+      expect { AnalyticsRuby.screen :user_id => 1 }.to raise_error(ArgumentError)
+    end
+
+    it 'should not error with the required options' do
+      AnalyticsRuby.screen AnalyticsRubyHelpers::Queued::SCREEN
+      sleep(1)
+    end
+  end
+
   describe '#flush' do
 
     it 'should flush without error' do

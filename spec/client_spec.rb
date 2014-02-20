@@ -129,6 +129,72 @@ describe AnalyticsRuby::Client do
     end
   end
 
+  describe '#group' do
+    before :all do
+      @client = AnalyticsRuby::Client.new :secret => AnalyticsRubyHelpers::SECRET
+    end
+
+    it 'should error without group_id' do
+      expect { @client.group :user_id => 'foo' }.to raise_error(ArgumentError)
+    end
+
+    it 'should error without user_id' do
+      expect { @client.group :group_id => 'foo' }.to raise_error(ArgumentError)
+    end
+
+    it 'should not error with the required options' do
+      @client.group AnalyticsRubyHelpers::Queued::GROUP
+    end
+
+    it 'should not error with the required options as strings' do
+      @client.group Util.stringify_keys(AnalyticsRubyHelpers::Queued::GROUP)
+    end
+  end
+
+  describe '#page' do
+    before :all do
+      @client = AnalyticsRuby::Client.new :secret => AnalyticsRubyHelpers::SECRET
+    end
+
+    it 'should error without user_id' do
+      expect { @client.page :name => 'foo' }.to raise_error(ArgumentError)
+    end
+
+    it 'should error without name' do
+      expect { @client.page :user_id => 1 }.to raise_error(ArgumentError)
+    end
+
+    it 'should not error with the required options' do
+      @client.page AnalyticsRubyHelpers::Queued::PAGE
+    end
+
+    it 'should not error with the required options as strings' do
+      @client.page Util.stringify_keys(AnalyticsRubyHelpers::Queued::PAGE)
+    end
+  end
+
+  describe '#screen' do
+    before :all do
+      @client = AnalyticsRuby::Client.new :secret => AnalyticsRubyHelpers::SECRET
+    end
+
+    it 'should error without user_id' do
+      expect { @client.screen :name => 'foo' }.to raise_error(ArgumentError)
+    end
+
+    it 'should error without name' do
+      expect { A@client.screen :user_id => 1 }.to raise_error(ArgumentError)
+    end
+
+    it 'should not error with the required options' do
+      @client.screen AnalyticsRubyHelpers::Queued::SCREEN
+    end
+
+    it 'should not error with the required options as strings' do
+      @client.screen Util.stringify_keys(AnalyticsRubyHelpers::Queued::SCREEN)
+    end
+  end
+
   describe '#flush' do
     before(:all) do
       @client = AnalyticsRuby::Client.new :secret => AnalyticsRubyHelpers::SECRET
