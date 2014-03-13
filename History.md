@@ -1,3 +1,7 @@
+1.0.0 / 2014-03-12
+==================
+* removing faraday dependency
+
 0.6.0 / 2014-02-19
 ==================
 * adding .group(), .page(), and .screen() calls
