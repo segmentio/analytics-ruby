@@ -3,9 +3,10 @@ module AnalyticsRuby
   module Defaults
 
     module Request
-      BASE_URL = 'https://api.segment.io' unless defined? AnalyticsRuby::Defaults::Request::BASE_URL
+      HOST = 'api.segment.io' unless defined? AnalyticsRuby::Defaults::Request::HOST
+      PORT = 443 unless defined? AnalyticsRuby::Defaults::Request::PORT
       PATH = '/v1/import' unless defined? AnalyticsRuby::Defaults::Request::PATH
-      SSL = { :verify => false } unless defined? AnalyticsRuby::Defaults::Request::SSL
+      SSL = true unless defined? AnalyticsRuby::Defaults::Request::SSL
       HEADERS = { :accept => 'application/json' } unless defined? AnalyticsRuby::Defaults::Request::HEADERS
       RETRIES = 4 unless defined? AnalyticsRuby::Defaults::Request::RETRIES
       BACKOFF = 30.0 unless defined? AnalyticsRuby::Defaults::Request::BACKOFF

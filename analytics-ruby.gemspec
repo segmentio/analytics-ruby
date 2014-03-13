@@ -15,11 +15,7 @@ Gem::Specification.new do |spec|
   spec.homepage = 'https://github.com/segmentio/analytics-ruby'
   spec.license = 'MIT'
 
-  spec.add_dependency 'faraday', ['>= 0.8']
-  spec.add_dependency 'faraday_middleware', ['>= 0.8', '< 0.10']
-  spec.add_dependency 'multi_json', ['~> 1.0']
-
-  # Ruby 1.8 requires json for faraday_middleware
+  # Ruby 1.8 requires json
   spec.add_dependency 'json', ['~> 1.7'] if RUBY_VERSION < "1.9"
 
   spec.add_development_dependency('rake')

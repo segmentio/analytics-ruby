@@ -23,7 +23,7 @@ module AnalyticsRuby
 
       @queue = queue
       @secret = secret
-      @batch_size = options[:batch_size] || AnalyticsRuby::Defaults::Queue::BATCH_SIZE
+      @batch_size = options[:batch_size] || Defaults::Queue::BATCH_SIZE
       @on_error = options[:on_error] || Proc.new { |status, error| }
 
       @current_batch = []
@@ -54,7 +54,7 @@ module AnalyticsRuby
         end
       }
 
-      req = AnalyticsRuby::Request.new
+      req = Request.new
       res = req.post @secret, @current_batch
       @on_error.call res.status, res.error unless res.status == 200
       @mutex.synchronize {

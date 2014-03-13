@@ -24,7 +24,7 @@ describe AnalyticsRuby::Consumer do
 
     it 'should not error if the endpoint is unreachable' do
 
-      Faraday::Connection.any_instance.stub(:post).and_raise(Exception)
+      Net::HTTP.any_instance.stub(:post).and_raise(Exception)
 
       queue = Queue.new
       queue << {}
@@ -33,7 +33,7 @@ describe AnalyticsRuby::Consumer do
 
       queue.should be_empty
 
-      Faraday::Connection.any_instance.unstub(:post)
+      Net::HTTP.any_instance.unstub(:post)
     end
 
     it 'should execute the error handler if the request is invalid' do

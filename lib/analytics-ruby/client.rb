@@ -26,11 +26,11 @@ module AnalyticsRuby
 
       @queue = Queue.new
       @secret = options[:secret]
-      @max_queue_size = options[:max_queue_size] || AnalyticsRuby::Defaults::Queue::MAX_SIZE
+      @max_queue_size = options[:max_queue_size] || Defaults::Queue::MAX_SIZE
 
       check_secret
 
-      @consumer = AnalyticsRuby::Consumer.new @queue, @secret, options
+      @consumer = Consumer.new @queue, @secret, options
       @thread = ConsumerThread.new { @consumer.run }
 
       at_exit do

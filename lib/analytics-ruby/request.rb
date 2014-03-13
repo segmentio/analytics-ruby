@@ -1,9 +1,9 @@
 
 require 'analytics-ruby/defaults'
 require 'analytics-ruby/response'
-require 'analytics-ruby/json'
-require 'faraday'
-require 'faraday_middleware'
+require 'net/http'
+require 'net/https'
+require 'json'
 
 module AnalyticsRuby
 
@@ -12,19 +12,20 @@ module AnalyticsRuby
     # public: Creates a new request object to send analytics batch
     #
     def initialize(options = {})
+      options[:host] ||= Defaults::Request::HOST
+      options[:port] ||= Defaults::Request::PORT
+      options[:ssl] ||= Defaults::Request::SSL
+      options[:headers] ||= Defaults::Request::HEADERS
+      @path = options[:path] || Defaults::Request::PATH
+      @retries = options[:retries] || Defaults::Request::RETRIES
+      @backoff = options[:backoff] || Defaults::Request::BACKOFF
 
-      options[:url] ||= AnalyticsRuby::Defaults::Request::BASE_URL
-      options[:ssl] ||= AnalyticsRuby::Defaults::Request::SSL
-      options[:headers] ||= AnalyticsRuby::Defaults::Request::HEADERS
-      @path = options[:path] || AnalyticsRuby::Defaults::Request::PATH
-      @retries = options[:retries] || AnalyticsRuby::Defaults::Request::RETRIES
-      @backoff = options[:backoff] || AnalyticsRuby::Defaults::Request::BACKOFF
+      http = Net::HTTP.new(options[:host], options[:port])
+      http.use_ssl = options[:ssl]
+      http.read_timeout = 8
+      http.open_timeout = 4
 
-      @conn = Faraday.new options do |faraday|
-        faraday.request :json
-        faraday.response :json, :content_type => /\bjson$/
-        faraday.adapter Faraday.default_adapter
-      end
+      @http = http
     end
 
     # public: Posts the secret and batch of messages to the API.
@@ -35,27 +36,26 @@ module AnalyticsRuby
       status, error = nil, nil
       remaining_retries = @retries
       backoff = @backoff
-
+      headers = { 'Content-Type' => 'application/json', 'accept' => 'application/json' }
       begin
-        res = @conn.post do |req|
-          req.options[:timeout] = 8
-          req.options[:open_timeout] = 3
-          req.url(@path)
-          req.body = AnalyticsRuby::JSON::dump :secret => secret, :batch => batch
-        end
-        status = res.status
-        error  = res.body["error"]
+        payload = JSON.generate :secret => secret, :batch => batch
+        res = @http.request(Net::HTTP::Post.new(@path, headers), payload)
+        status = res.code.to_i
+        body = JSON.parse(res.body)
+        error = body["error"]
 
       rescue Exception => err
+        puts "err: #{err}"
         status = -1
         error = "Connection error: #{err}"
+        puts "retries: #{remaining_retries}"
         unless (remaining_retries -=1).zero?
           sleep(backoff)
           retry
         end
       end
 
-      AnalyticsRuby::Response.new status, error
+      Response.new status, error
     end
   end
 end
