@@ -42,6 +42,10 @@ module AnalyticsRuby
       return false unless @client
       @client.flush
     end
+
+    def initialized?
+      !!@client
+    end
   end
   extend ClassMethods
 end
