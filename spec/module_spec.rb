@@ -123,4 +123,14 @@ describe AnalyticsRuby do
       AnalyticsRuby.flush
     end
   end
+
+  describe "#initialized?" do
+
+    context "when initialized" do
+      it "should return true" do
+        AnalyticsRuby.init :secret => AnalyticsRubyHelpers::SECRET
+        expect(AnalyticsRuby.initialized?).to be_true
+      end
+    end
+  end
 end
