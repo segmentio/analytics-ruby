@@ -40,16 +40,25 @@ module Segment
         headers = { 'Content-Type' => 'application/json', 'accept' => 'application/json' }
         begin
           payload = JSON.generate :secret => secret, :batch => batch
-          res = @http.request(Net::HTTP::Post.new(@path, headers), payload)
-          status = res.code.to_i
-          body = JSON.parse(res.body)
-          error = body["error"]
+          request = Net::HTTP::Post.new(@path, headers)
+
+          if self.class.stub
+            status = 200
+            error = nil
+            logger.debug "stubbed request to #{@path} with payload #{payload}"
+          else
+            res = @http.request(request, payload)
+            status = res.code.to_i
+            body = JSON.parse(res.body)
+            error = body["error"]
+          end
 
         rescue Exception => err
           logger.error err.message
           status = -1
           error = "Connection error: #{err}"
           logger.info "retries remaining: #{remaining_retries}"
+
           unless (remaining_retries -=1).zero?
             sleep(backoff)
             retry
@@ -57,6 +66,10 @@ module Segment
         end
 
         Response.new status, error
+      end
+
+      class << self
+        attr_accessor :stub
       end
     end
   end

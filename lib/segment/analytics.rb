@@ -13,6 +13,7 @@ module Segment
 
     def setup options = {}
       @options = options
+      Request.stub = @options[:stub]
     end
     alias_method :init, :setup
 
