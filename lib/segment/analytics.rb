@@ -42,3 +42,5 @@ module Segment
   end
 end
 
+Analytics = Segment::Analytics unless defined? Analytics
+
