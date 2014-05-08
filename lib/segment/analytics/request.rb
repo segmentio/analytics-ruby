@@ -1,5 +1,6 @@
 require 'segment/analytics/defaults'
 require 'segment/analytics/response'
+require 'segment/analytics/logging'
 require 'net/http'
 require 'net/https'
 require 'json'
@@ -8,6 +9,7 @@ module Segment
   module Analytics
     class Request
       include Segment::Analytics::Defaults::Request
+      include Segment::Analytics::Logging
 
       # public: Creates a new request object to send analytics batch
       #
@@ -44,10 +46,10 @@ module Segment
           error = body["error"]
 
         rescue Exception => err
-          puts "err: #{err}"
+          logger.error err.message
           status = -1
           error = "Connection error: #{err}"
-          puts "retries: #{remaining_retries}"
+          logger.info "retries remaining: #{remaining_retries}"
           unless (remaining_retries -=1).zero?
             sleep(backoff)
             retry
