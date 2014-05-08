@@ -5,6 +5,7 @@ require 'segment/analytics/client'
 require 'segment/analytics/consumer'
 require 'segment/analytics/request'
 require 'segment/analytics/response'
+require 'segment/analytics/logging'
 
 module Segment
   module Analytics
@@ -28,11 +29,16 @@ module Segment
       if Segment::Analytics::Client.method_defined? message
         if setup?
           client.send message, *args, &block
+        else
+          logger.warn "messaged ##{message} before #setup"
+          nil
         end
       else
         super 
       end
     end
+
+    include Logging
   end
 end
 
