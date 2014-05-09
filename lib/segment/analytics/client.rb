@@ -125,7 +125,7 @@ module Segment
       # public: Aliases a user from one id to another
       #
       # options - Hash
-      #           :from      - String of the id to alias from
+      #           :previousId      - String of the id to alias from
       #           :to        - String of the id to alias to
       #           :timestamp - Time of when the alias occured (optional)
       #           :context   - Hash of context (optional)
@@ -133,7 +133,7 @@ module Segment
         check_write_key
 
         symbolize_keys! options
-        from = options[:from].to_s
+        from = options[:previousId].to_s
         to = options[:to].to_s
         timestamp = options[:timestamp] || Time.new
         context = options[:context] || {}
@@ -144,7 +144,7 @@ module Segment
         add_context context
 
         enqueue({
-          :from => from,
+          :previousId => from,
           :to => to,
           :context => context,
           :timestamp => datetime_in_iso8601(timestamp),
@@ -155,7 +155,7 @@ module Segment
       # public: Associates a user identity with a group.
       #
       # options - Hash
-      #           :from      - String of the id to alias from
+      #           :previousId      - String of the id to alias from
       #           :to        - String of the id to alias to
       #           :timestamp - Time of when the alias occured (optional)
       #           :context   - Hash of context (optional)

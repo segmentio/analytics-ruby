@@ -23,7 +23,7 @@ module Segment
     }
 
     ALIAS = {
-      :from => 1234,
+      :previousId => 1234,
       :to => 'abcd'
     }
 
