@@ -39,13 +39,14 @@ module Segment
         backoff = @backoff
         headers = { 'Content-Type' => 'application/json', 'accept' => 'application/json' }
         begin
-          payload = JSON.generate :writeKey => write_key, :batch => batch
+          payload = JSON.generate :batch => batch
           request = Net::HTTP::Post.new(@path, headers)
+          request.basic_auth write_key
 
           if self.class.stub
             status = 200
             error = nil
-            logger.debug "stubbed request to #{@path} with payload #{payload}"
+            logger.debug "stubbed request to #{@path}: write key = #{write_key}, payload = #{payload}"
           else
             res = @http.request(request, payload)
             status = res.code.to_i
