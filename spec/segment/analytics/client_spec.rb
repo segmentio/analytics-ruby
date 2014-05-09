@@ -4,22 +4,22 @@ module Segment
   module Analytics
     describe Client do
       describe '#init' do
-        it 'should error if no secret is supplied' do
+        it 'should error if no write_key is supplied' do
           expect { Client.new }.to raise_error(RuntimeError)
         end
 
-        it 'should not error if a secret is supplied' do
-          Client.new :secret => SECRET
+        it 'should not error if a write_key is supplied' do
+          Client.new :write_key => WRITE_KEY
         end
 
-        it 'should not error if a secret is supplied as a string' do
-          Client.new 'secret' => SECRET
+        it 'should not error if a write_key is supplied as a string' do
+          Client.new 'write_key' => WRITE_KEY
         end
       end
 
       describe '#track' do
         before(:all) do
-          @client = Client.new :secret => SECRET
+          @client = Client.new :write_key => WRITE_KEY
           @client.instance_variable_get(:@thread).kill
           @queue = @client.instance_variable_get :@queue
         end
@@ -71,7 +71,7 @@ module Segment
       describe '#identify' do
 
         before(:all) do
-          @client = Client.new :secret => SECRET
+          @client = Client.new :write_key => WRITE_KEY
           @client.instance_variable_get(:@thread).kill
           @queue = @client.instance_variable_get :@queue
         end
@@ -106,7 +106,7 @@ module Segment
 
       describe '#alias' do
         before :all do
-          @client = Client.new :secret => SECRET
+          @client = Client.new :write_key => WRITE_KEY
         end
 
         it 'should error without from' do
@@ -128,7 +128,7 @@ module Segment
 
       describe '#group' do
         before :all do
-          @client = Client.new :secret => SECRET
+          @client = Client.new :write_key => WRITE_KEY
         end
 
         it 'should error without group_id' do
@@ -150,7 +150,7 @@ module Segment
 
       describe '#page' do
         before :all do
-          @client = Client.new :secret => SECRET
+          @client = Client.new :write_key => WRITE_KEY
         end
 
         it 'should error without user_id' do
@@ -172,7 +172,7 @@ module Segment
 
       describe '#screen' do
         before :all do
-          @client = Client.new :secret => SECRET
+          @client = Client.new :write_key => WRITE_KEY
         end
 
         it 'should error without user_id' do
@@ -194,7 +194,7 @@ module Segment
 
       describe '#flush' do
         before(:all) do
-          @client = Client.new :secret => SECRET
+          @client = Client.new :write_key => WRITE_KEY
         end
 
         it 'should wait for the queue to finish on a flush' do

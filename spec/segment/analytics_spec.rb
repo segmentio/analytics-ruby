@@ -21,9 +21,8 @@ module Segment
     end
 
     describe '#init' do
-
       it 'should successfully init' do
-        Segment::Analytics.init :secret => SECRET
+        Segment::Analytics.init :write_key => WRITE_KEY
       end
     end
 
@@ -125,7 +124,7 @@ module Segment
     describe "#initialized?" do
       context "when initialized" do
         it "should return true" do
-          Segment::Analytics.init :secret => SECRET
+          Segment::Analytics.init :write_key => WRITE_KEY
           expect(Segment::Analytics.initialized?).to be_true
         end
       end

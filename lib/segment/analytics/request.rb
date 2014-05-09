@@ -30,16 +30,16 @@ module Segment
         @http = http
       end
 
-      # public: Posts the secret and batch of messages to the API.
+      # public: Posts the write key and batch of messages to the API.
       #
       # returns - Response of the status and error if it exists
-      def post(secret, batch)
+      def post(write_key, batch)
         status, error = nil, nil
         remaining_retries = @retries
         backoff = @backoff
         headers = { 'Content-Type' => 'application/json', 'accept' => 'application/json' }
         begin
-          payload = JSON.generate :secret => secret, :batch => batch
+          payload = JSON.generate :writeKey => write_key, :batch => batch
           request = Net::HTTP::Post.new(@path, headers)
 
           if self.class.stub

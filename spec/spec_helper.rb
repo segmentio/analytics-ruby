@@ -2,7 +2,7 @@ require 'segment/analytics'
 
 module Segment
   module Analytics
-    SECRET = 'testsecret'
+    WRITE_KEY = 'testsecret'
 
     TRACK = {
       :event => 'Ruby Library test event',

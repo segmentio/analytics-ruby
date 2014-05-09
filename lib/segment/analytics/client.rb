@@ -12,19 +12,19 @@ module Segment
       # public: Creates a new client
       #
       # options - Hash
-      #           :secret         - String of your project's secret
+      #           :write_key         - String of your project's write_key
       #           :max_queue_size - Fixnum of the max calls to remain queued (optional)
       #           :on_error       - Proc which handles error calls from the API
       def initialize options = {}
         symbolize_keys! options
 
         @queue = Queue.new
-        @secret = options[:secret]
+        @write_key = options[:write_key]
         @max_queue_size = options[:max_queue_size] || Defaults::Queue::MAX_SIZE
 
-        check_secret
+        check_write_key
 
-        @consumer = Consumer.new @queue, @secret, options
+        @consumer = Consumer.new @queue, @write_key, options
         @thread = ConsumerThread.new { @consumer.run }
 
         at_exit do
@@ -56,8 +56,7 @@ module Segment
       #           :timestamp  - Time of when the event occurred. (optional)
       #           :context    - Hash of context. (optional)
       def track options
-
-        check_secret
+        check_write_key
 
         symbolize_keys! options
 
@@ -97,8 +96,7 @@ module Segment
       #           :timestamp - Time of when the event occurred. (optional)
       #           :context   - Hash of context. (optional)
       def identify options
-
-        check_secret
+        check_write_key
 
         symbolize_keys! options
 
@@ -132,7 +130,8 @@ module Segment
       #           :timestamp - Time of when the alias occured (optional)
       #           :context   - Hash of context (optional)
       def alias(options)
-        check_secret
+        check_write_key
+
         symbolize_keys! options
         from = options[:from].to_s
         to = options[:to].to_s
@@ -161,7 +160,8 @@ module Segment
       #           :timestamp - Time of when the alias occured (optional)
       #           :context   - Hash of context (optional)
       def group(options)
-        check_secret
+        check_write_key
+
         symbolize_keys! options
         group_id = options[:group_id].to_s
         user_id = options[:user_id].to_s
@@ -195,7 +195,8 @@ module Segment
       #           :timestamp  - Time of when the pageview occured (optional)
       #           :context    - Hash of context (optional)
       def page(options)
-        check_secret
+        check_write_key
+
         symbolize_keys! options
         user_id = options[:user_id].to_s
         name = options[:name].to_s
@@ -229,7 +230,8 @@ module Segment
       #           :timestamp  - Time of when the screen occured (optional)
       #           :context    - Hash of context (optional)
       def screen(options)
-        check_secret
+        check_write_key
+
         symbolize_keys! options
         user_id = options[:user_id].to_s
         name = options[:name].to_s
@@ -292,9 +294,9 @@ module Segment
         context[:library] = 'analytics-ruby'
       end
 
-      # private: Checks that the secret is properly initialized
-      def check_secret
-        fail 'Secret must be initialized' if @secret.nil?
+      # private: Checks that the write_key is properly initialized
+      def check_write_key
+        fail 'Write key must be initialized' if @write_key.nil?
       end
 
       # private: Checks the timstamp option to make sure it is a Time.

@@ -15,15 +15,15 @@ module Segment
       # and makes requests to the segment.io api
       #
       # queue   - Queue synchronized between client and consumer
-      # secret  - String of the project's secret
+      # write_key  - String of the project's Write key
       # options - Hash of consumer options
       #           batch_size - Fixnum of how many items to send in a batch
       #           on_error   - Proc of what to do on an error
       #
-      def initialize(queue, secret, options = {})
+      def initialize(queue, write_key, options = {})
         symbolize_keys! options
         @queue = queue
-        @secret = secret
+        @write_key = write_key
         @batch_size = options[:batch_size] || Queue::BATCH_SIZE
         @on_error = options[:on_error] || Proc.new { |status, error| }
         @current_batch = []
@@ -54,7 +54,7 @@ module Segment
         }
 
         req = Request.new
-        res = req.post @secret, @current_batch
+        res = req.post @write_key, @current_batch
         @on_error.call res.status, res.error unless res.status == 200
         @mutex.synchronize {
           @current_batch = []
