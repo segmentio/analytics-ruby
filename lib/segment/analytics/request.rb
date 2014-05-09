@@ -41,7 +41,7 @@ module Segment
         begin
           payload = JSON.generate :batch => batch
           request = Net::HTTP::Post.new(@path, headers)
-          request.basic_auth write_key
+          request.basic_auth write_key, nil
 
           if self.class.stub
             status = 200
