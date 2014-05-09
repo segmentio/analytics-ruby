@@ -1,4 +1,5 @@
 require 'segment/analytics/defaults'
+require 'segment/analytics/utils'
 require 'segment/analytics/response'
 require 'segment/analytics/logging'
 require 'net/http'
@@ -9,6 +10,7 @@ module Segment
   module Analytics
     class Request
       include Segment::Analytics::Defaults::Request
+      include Segment::Analytics::Utils
       include Segment::Analytics::Logging
 
       # public: Creates a new request object to send analytics batch
@@ -39,7 +41,7 @@ module Segment
         backoff = @backoff
         headers = { 'Content-Type' => 'application/json', 'accept' => 'application/json' }
         begin
-          payload = JSON.generate :batch => batch
+          payload = JSON.generate :sentAt => datetime_in_iso8601(Time.new), :batch => batch
           request = Net::HTTP::Post.new(@path, headers)
           request.basic_auth write_key, nil
 
