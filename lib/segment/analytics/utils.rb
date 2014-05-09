@@ -26,7 +26,13 @@ module Segment
       #
       def isoify_dates(hash)
         hash.inject({}) { |memo, (k, v)|
-          memo[k] = v.respond_to?(:iso8601) ? v.iso8601 : v
+          memo[k] = if v.is_a? Date
+                      date_in_iso8601 v
+                    elsif v.is_a? Time
+                      time_in_iso8601 v
+                    else
+                      v
+                    end
           memo
         }
       end
@@ -41,6 +47,18 @@ module Segment
       #
       def uid
         (0..16).to_a.map{|x| rand(16).to_s(16)}.join
+      end
+
+      def time_in_iso8601 time, fraction_digits = 0
+        fraction = if fraction_digits > 0
+                     (".%06i" % time.usec)[0, fraction_digits + 1]
+                   end
+
+        "#{time.strftime("%Y-%m-%dT%H:%M:%S")}#{fraction}#{formatted_offset(true, 'Z')}"
+      end
+
+      def date_in_iso8601 date
+        date.strftime("%F")
       end
     end
   end
