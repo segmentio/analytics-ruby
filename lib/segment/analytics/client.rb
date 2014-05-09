@@ -84,7 +84,7 @@ module Segment
           :context =>  context,
           :properties => properties,
           :timestamp => datetime_in_iso8601(timestamp),
-          :action => 'track'
+          :type => 'track'
         })
       end
 
@@ -118,7 +118,7 @@ module Segment
           :context => context,
           :traits => traits,
           :timestamp => datetime_in_iso8601(timestamp),
-          :action => 'identify'
+          :type => 'identify'
         })
       end
 
@@ -148,7 +148,7 @@ module Segment
           :to => to,
           :context => context,
           :timestamp => datetime_in_iso8601(timestamp),
-          :action => 'alias'
+          :type => 'alias'
         })
       end
 
@@ -182,7 +182,7 @@ module Segment
           :traits => traits,
           :context => context,
           :timestamp => datetime_in_iso8601(timestamp),
-          :action => 'group'
+          :type => 'group'
         })
       end
 
@@ -218,7 +218,7 @@ module Segment
           :properties => properties,
           :context => context,
           :timestamp => datetime_in_iso8601(timestamp),
-          :action => 'page'
+          :type => 'page'
         })
       end
       # public: Records a screen view (for a mobile app)
@@ -253,7 +253,7 @@ module Segment
           :properties => properties,
           :context => context,
           :timestamp => timestamp.iso8601,
-          :action => 'screen'
+          :type => 'screen'
         })
       end
 
@@ -313,7 +313,7 @@ module Segment
           :properties => properties,
           :context => context,
           :timestamp => datetime_in_iso8601(timestamp),
-          :action => 'screen'
+          :type => 'screen'
         }
       end
 

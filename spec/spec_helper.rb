@@ -53,18 +53,18 @@ module Segment
     module Requested
       TRACK = TRACK.merge({
         :userId => USER_ID,
-        :action => 'track'
+        :type => 'track'
       })
 
       IDENTIFY = IDENTIFY.merge({
         :userId => USER_ID,
-        :action => 'identify'
+        :type => 'identify'
       })
 
       GROUP = GROUP.merge({
         :groupId => GROUP_ID,
         :userId => USER_ID,
-        :action => 'group'
+        :type => 'group'
       })
 
       PAGE = PAGE.merge :userId => USER_ID
