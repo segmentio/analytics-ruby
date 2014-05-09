@@ -54,10 +54,11 @@ module Segment
             error = body["error"]
           end
 
-        rescue Exception => err
-          logger.error err.message
+        rescue Exception => e
+          logger.error e.message
+          e.backtrace.each { |line| logger.error line }
           status = -1
-          error = "Connection error: #{err}"
+          error = "Connection error: #{e}"
           logger.info "retries remaining: #{remaining_retries}"
 
           unless (remaining_retries -=1).zero?
