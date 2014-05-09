@@ -126,7 +126,7 @@ module Segment
       #
       # options - Hash
       #           :previousId      - String of the id to alias from
-      #           :to        - String of the id to alias to
+      #           :userId        - String of the id to alias to
       #           :timestamp - Time of when the alias occured (optional)
       #           :context   - Hash of context (optional)
       def alias(options)
@@ -134,7 +134,7 @@ module Segment
 
         symbolize_keys! options
         from = options[:previousId].to_s
-        to = options[:to].to_s
+        to = options[:userId].to_s
         timestamp = options[:timestamp] || Time.new
         context = options[:context] || {}
 
@@ -145,7 +145,7 @@ module Segment
 
         enqueue({
           :previousId => from,
-          :to => to,
+          :userId => to,
           :context => context,
           :timestamp => datetime_in_iso8601(timestamp),
           :type => 'alias'
@@ -156,7 +156,7 @@ module Segment
       #
       # options - Hash
       #           :previousId      - String of the id to alias from
-      #           :to        - String of the id to alias to
+      #           :userId        - String of the id to alias to
       #           :timestamp - Time of when the alias occured (optional)
       #           :context   - Hash of context (optional)
       def group(options)

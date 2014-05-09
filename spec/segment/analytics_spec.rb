@@ -22,7 +22,7 @@ module Segment
 
     describe '#init' do
       it 'should successfully init' do
-        Segment::Analytics.init :write_key => WRITE_KEY
+        Segment::Analytics.init :write_key => WRITE_KEY, :stub => true
       end
     end
 
@@ -56,7 +56,7 @@ module Segment
 
     describe '#alias' do
       it 'should error without from' do
-        expect { Segment::Analytics.alias :to => 1234 }.to raise_error(ArgumentError)
+        expect { Segment::Analytics.alias :userId => 1234 }.to raise_error(ArgumentError)
       end
 
       it 'should error without to' do
