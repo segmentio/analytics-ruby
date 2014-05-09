@@ -83,7 +83,7 @@ module Segment
           :userId => user_id,
           :context =>  context,
           :properties => properties,
-          :timestamp => timestamp.iso8601,
+          :timestamp => datetime_in_iso8601(timestamp),
           :action => 'track'
         })
       end
@@ -117,7 +117,7 @@ module Segment
           :userId => user_id,
           :context => context,
           :traits => traits,
-          :timestamp => timestamp.iso8601,
+          :timestamp => datetime_in_iso8601(timestamp),
           :action => 'identify'
         })
       end
@@ -147,7 +147,7 @@ module Segment
           :from => from,
           :to => to,
           :context => context,
-          :timestamp => timestamp.iso8601,
+          :timestamp => datetime_in_iso8601(timestamp),
           :action => 'alias'
         })
       end
@@ -181,7 +181,7 @@ module Segment
           :userId => user_id,
           :traits => traits,
           :context => context,
-          :timestamp => timestamp.iso8601,
+          :timestamp => datetime_in_iso8601(timestamp),
           :action => 'group'
         })
       end
@@ -217,7 +217,7 @@ module Segment
           :name => name,
           :properties => properties,
           :context => context,
-          :timestamp => timestamp.iso8601,
+          :timestamp => datetime_in_iso8601(timestamp),
           :action => 'page'
         })
       end
@@ -302,6 +302,19 @@ module Segment
       # private: Checks the timstamp option to make sure it is a Time.
       def check_timestamp(timestamp)
         fail ArgumentError, 'Timestamp must be a Time' unless timestamp.is_a? Time
+      end
+
+      def event attrs
+        symbolize_keys! attrs
+
+        {
+          :userId => user_id,
+          :name => name,
+          :properties => properties,
+          :context => context,
+          :timestamp => datetime_in_iso8601(timestamp),
+          :action => 'screen'
+        }
       end
 
       # Sub-class thread so we have a named thread (useful for debugging in Thread.list).

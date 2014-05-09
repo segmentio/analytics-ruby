@@ -26,13 +26,7 @@ module Segment
       #
       def isoify_dates(hash)
         hash.inject({}) { |memo, (k, v)|
-          memo[k] = if v.is_a? Date
-                      date_in_iso8601 v
-                    elsif v.is_a? Time
-                      time_in_iso8601 v
-                    else
-                      v
-                    end
+          memo[k] = datetime_in_iso8601(v)
           memo
         }
       end
@@ -49,17 +43,38 @@ module Segment
         (0..16).to_a.map{|x| rand(16).to_s(16)}.join
       end
 
+      def datetime_in_iso8601 datetime
+        if datetime.is_a? Date
+          date_in_iso8601 datetime
+        elsif datetime.is_a? Time
+          time_in_iso8601 datetime
+        else
+          datetime
+        end
+      end
+
       def time_in_iso8601 time, fraction_digits = 0
         fraction = if fraction_digits > 0
                      (".%06i" % time.usec)[0, fraction_digits + 1]
                    end
 
-        "#{time.strftime("%Y-%m-%dT%H:%M:%S")}#{fraction}#{formatted_offset(true, 'Z')}"
+        "#{time.strftime("%Y-%m-%dT%H:%M:%S")}#{fraction}#{formatted_offset(time, true, 'Z')}"
       end
 
       def date_in_iso8601 date
         date.strftime("%F")
       end
+
+      def formatted_offset time, colon = true, alternate_utc_string = nil
+        time.utc? && alternate_utc_string || seconds_to_utc_offset(time.utc_offset, colon)
+      end
+
+      def seconds_to_utc_offset(seconds, colon = true)
+        (colon ? UTC_OFFSET_WITH_COLON : UTC_OFFSET_WITHOUT_COLON) % [(seconds < 0 ? '-' : '+'), seconds.abs, (seconds.abs % 3600)]
+      end
+
+      UTC_OFFSET_WITH_COLON = '%s%02d:%02d'
+      UTC_OFFSET_WITHOUT_COLON = UTC_OFFSET_WITH_COLON.sub(':', '')
     end
   end
 end
