@@ -271,7 +271,7 @@ module Segment
       # returns Boolean of whether the item was added to the queue.
       def enqueue(action)
         # add our request id for tracing purposes
-        action[:requestId] = uid
+        action[:messageId] = uid
 
         queue_full = @queue.length >= @max_queue_size
         @queue << action unless queue_full
