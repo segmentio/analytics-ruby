@@ -1,7 +1,7 @@
 require 'segment/analytics'
 
 module Segment
-  module Analytics
+  class Analytics
     WRITE_KEY = 'testsecret'
 
     TRACK = {

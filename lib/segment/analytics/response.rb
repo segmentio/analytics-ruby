@@ -1,5 +1,5 @@
 module Segment
-  module Analytics
+  class Analytics
     class Response
       attr_reader :status, :error
 

@@ -7,7 +7,7 @@ require 'net/https'
 require 'json'
 
 module Segment
-  module Analytics
+  class Analytics
     class Request
       include Segment::Analytics::Defaults::Request
       include Segment::Analytics::Utils

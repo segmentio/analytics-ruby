@@ -1,5 +1,5 @@
 module Segment
-  module Analytics
+  class Analytics
     module Utils
       extend self
 

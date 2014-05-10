@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module Segment
-  module Analytics
+  class Analytics
     describe Consumer do
       describe "#init" do
         it 'accepts string keys' do

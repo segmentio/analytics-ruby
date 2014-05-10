@@ -8,32 +8,15 @@ require 'segment/analytics/response'
 require 'segment/analytics/logging'
 
 module Segment
-  module Analytics
-    extend self
-
-    def setup options = {}
-      @options = options
-      Request.stub = @options[:stub]
-    end
-    alias_method :init, :setup
-
-    def setup?
-      !!@options
-    end
-    alias_method :"initialized?", :"setup?"
-
-    def client
-      @client ||= Segment::Analytics::Client.new @options
+  class Analytics
+    def initialize options = {}
+      Request.stub = options[:stub]
+      @client = Segment::Analytics::Client.new options
     end
 
     def method_missing message, *args, &block
-      if Segment::Analytics::Client.method_defined? message
-        if setup?
-          client.send message, *args, &block
-        else
-          logger.warn "messaged ##{message} before #setup"
-          nil
-        end
+      if @client.respond_to? message
+        @client.send message, *args, &block
       else
         super 
       end

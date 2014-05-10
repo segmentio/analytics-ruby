@@ -1,5 +1,5 @@
 module Segment
-  module Analytics
+  class Analytics
     module Defaults
       module Request
         HOST = 'api.segment.io'

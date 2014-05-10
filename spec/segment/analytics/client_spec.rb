@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module Segment
-  module Analytics
+  class Analytics
     describe Client do
       describe '#init' do
         it 'should error if no write_key is supplied' do

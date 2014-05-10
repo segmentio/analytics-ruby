@@ -5,7 +5,7 @@ require 'segment/analytics/consumer'
 require 'segment/analytics/defaults'
 
 module Segment
-  module Analytics
+  class Analytics
     class Client
       include Segment::Analytics::Utils
 

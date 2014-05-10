@@ -1,7 +1,7 @@
 require 'logger'
 
 module Segment
-  module Analytics
+  class Analytics
     module Logging
       class << self
         def logger
