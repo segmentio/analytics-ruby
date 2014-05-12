@@ -18,7 +18,7 @@ module Segment
       if @client.respond_to? message
         @client.send message, *args, &block
       else
-        super 
+        super
       end
     end
 
@@ -29,6 +29,3 @@ module Segment
     include Logging
   end
 end
-
-Analytics = Segment::Analytics unless defined? Analytics
-
