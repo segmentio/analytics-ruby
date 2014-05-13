@@ -56,14 +56,13 @@ module Segment
       #           :context    - Hash of context. (optional)
       def track options
         symbolize_keys! options
+        validate_options! options
 
         event = options[:event]
-        user_id = options[:user_id].to_s
         properties = options[:properties] || {}
         timestamp = options[:timestamp] || Time.new
         context = options[:context] || {}
 
-        ensure_user user_id
         check_timestamp! timestamp
 
         if event.nil? || event.empty?
@@ -77,7 +76,8 @@ module Segment
 
         enqueue({
           :event => event,
-          :userId => user_id,
+          :userId => options[:user_id].to_s,
+          :anonymousId => options[:anonymous_id].to_s,
           :context =>  context,
           :properties => properties,
           :timestamp => datetime_in_iso8601(timestamp),
@@ -94,13 +94,12 @@ module Segment
       #           :context   - Hash of context. (optional)
       def identify options
         symbolize_keys! options
+        validate_options! options
 
-        user_id = options[:user_id].to_s
         traits = options[:traits] || {}
         timestamp = options[:timestamp] || Time.new
         context = options[:context] || {}
 
-        ensure_user user_id
         check_timestamp! timestamp
 
         fail ArgumentError, 'Must supply traits as a hash' unless traits.is_a? Hash
@@ -109,7 +108,8 @@ module Segment
         add_context context
 
         enqueue({
-          :userId => user_id,
+          :userId => options[:user_id].to_s,
+          :anonymousId => options[:anonymous_id].to_s,
           :context => context,
           :traits => traits,
           :timestamp => datetime_in_iso8601(timestamp),
@@ -126,13 +126,14 @@ module Segment
       #           :context   - Hash of context (optional)
       def alias(options)
         symbolize_keys! options
+
         from = options[:previousId].to_s
         to = options[:userId].to_s
         timestamp = options[:timestamp] || Time.new
         context = options[:context] || {}
 
-        ensure_user from
-        ensure_user to
+        check_user! from
+        check_user! to
         check_timestamp! timestamp
         add_context context
 
@@ -154,6 +155,8 @@ module Segment
       #           :context   - Hash of context (optional)
       def group(options)
         symbolize_keys! options
+        validate_options! options
+
         group_id = options[:group_id].to_s
         user_id = options[:user_id].to_s
         traits = options[:traits] || {}
@@ -162,8 +165,7 @@ module Segment
 
         fail ArgumentError, '.traits must be a hash' unless traits.is_a? Hash
 
-        ensure_user group_id
-        ensure_user user_id
+        check_user! group_id
         check_timestamp! timestamp
         add_context context
 
@@ -187,7 +189,8 @@ module Segment
       #           :context    - Hash of context (optional)
       def page(options)
         symbolize_keys! options
-        user_id = options[:user_id].to_s
+        validate_options! options
+
         name = options[:name].to_s
         properties = options[:properties] || {}
         timestamp = options[:timestamp] || Time.new
@@ -197,12 +200,12 @@ module Segment
         fail ArgumentError, '.properties must be a hash' unless properties.is_a? Hash
         isoify_dates! properties
 
-        ensure_user user_id
         check_timestamp! timestamp
         add_context context
 
         enqueue({
-          :userId => user_id,
+          :userId => options[:user_id].to_s,
+          :anonymousId => options[:anonymous_id].to_s,
           :name => name,
           :properties => properties,
           :context => context,
@@ -220,7 +223,8 @@ module Segment
       #           :context    - Hash of context (optional)
       def screen(options)
         symbolize_keys! options
-        user_id = options[:user_id].to_s
+        validate_options! options
+
         name = options[:name].to_s
         properties = options[:properties] || {}
         timestamp = options[:timestamp] || Time.new
@@ -230,12 +234,12 @@ module Segment
         fail ArgumentError, '.properties must be a hash' unless properties.is_a? Hash
         isoify_dates! properties
 
-        ensure_user user_id
         check_timestamp! timestamp
         add_context context
 
         enqueue({
-          :userId => user_id,
+          :userId => options[:user_id].to_s,
+          :anonymousId => options[:anonymous_id].to_s,
           :name => name,
           :properties => properties,
           :context => context,
@@ -270,7 +274,7 @@ module Segment
       #
       # user_id    - String of the user id
       #
-      def ensure_user(user_id)
+      def check_user!(user_id)
         fail ArgumentError, 'Must supply a non-empty user_id' if user_id.empty?
       end
 
@@ -302,6 +306,10 @@ module Segment
           :timestamp => datetime_in_iso8601(timestamp),
           :type => 'screen'
         }
+      end
+
+      def validate_options! options
+        fail ArgumentError, 'Must supply either user_id or anonymous_id' unless options[:user_id] || options[:anonymous_id]
       end
 
       # Sub-class thread so we have a named thread (useful for debugging in Thread.list).

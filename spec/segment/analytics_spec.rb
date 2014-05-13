@@ -52,7 +52,7 @@ module Segment
           expect { analytics.group :user_id => 'foo' }.to raise_error(ArgumentError)
         end
 
-        it 'should error without user_id' do
+        it 'should error without user_id or anonymous_id' do
           expect { analytics.group :group_id => 'foo' }.to raise_error(ArgumentError)
         end
 
@@ -63,7 +63,7 @@ module Segment
       end
 
       describe '#page' do
-        it 'should error without user_id' do
+        it 'should error without user_id or anonymous_id' do
           expect { analytics.page :name => 'foo' }.to raise_error(ArgumentError)
         end
 
@@ -78,7 +78,7 @@ module Segment
       end
 
       describe '#screen' do
-        it 'should error without user_id' do
+        it 'should error without user_id or anonymous_id' do
           expect { analytics.screen :name => 'foo' }.to raise_error(ArgumentError)
         end
 
