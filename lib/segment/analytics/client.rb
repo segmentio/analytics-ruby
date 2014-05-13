@@ -56,7 +56,7 @@ module Segment
       #           :context    - Hash of context. (optional)
       def track options
         symbolize_keys! options
-        validate_options! options
+        check_user_id! options
 
         event = options[:event]
         properties = options[:properties] || {}
@@ -94,7 +94,7 @@ module Segment
       #           :context   - Hash of context. (optional)
       def identify options
         symbolize_keys! options
-        validate_options! options
+        check_user_id! options
 
         traits = options[:traits] || {}
         timestamp = options[:timestamp] || Time.new
@@ -155,7 +155,7 @@ module Segment
       #           :context   - Hash of context (optional)
       def group(options)
         symbolize_keys! options
-        validate_options! options
+        check_user_id! options
 
         group_id = options[:group_id].to_s
         user_id = options[:user_id].to_s
@@ -189,7 +189,7 @@ module Segment
       #           :context    - Hash of context (optional)
       def page(options)
         symbolize_keys! options
-        validate_options! options
+        check_user_id! options
 
         name = options[:name].to_s
         properties = options[:properties] || {}
@@ -223,7 +223,7 @@ module Segment
       #           :context    - Hash of context (optional)
       def screen(options)
         symbolize_keys! options
-        validate_options! options
+        check_user_id! options
 
         name = options[:name].to_s
         properties = options[:properties] || {}
@@ -308,7 +308,7 @@ module Segment
         }
       end
 
-      def validate_options! options
+      def check_user_id! options
         fail ArgumentError, 'Must supply either user_id or anonymous_id' unless options[:user_id] || options[:anonymous_id]
       end
 
