@@ -20,7 +20,6 @@ module Segment
       describe '#track' do
         before(:all) do
           @client = Client.new :write_key => WRITE_KEY
-          @client.instance_variable_get(:@thread).kill
           @queue = @client.instance_variable_get :@queue
         end
 
@@ -72,7 +71,6 @@ module Segment
 
         before(:all) do
           @client = Client.new :write_key => WRITE_KEY
-          @client.instance_variable_get(:@thread).kill
           @queue = @client.instance_variable_get :@queue
         end
 

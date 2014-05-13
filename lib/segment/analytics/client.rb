@@ -1,7 +1,7 @@
 require 'thread'
 require 'time'
 require 'segment/analytics/utils'
-require 'segment/analytics/consumer'
+require 'segment/analytics/worker'
 require 'segment/analytics/defaults'
 
 module Segment
@@ -21,27 +21,19 @@ module Segment
         @queue = Queue.new
         @write_key = options[:write_key]
         @max_queue_size = options[:max_queue_size] || Defaults::Queue::MAX_SIZE
-        @consumer = Consumer.new @queue, @write_key, options
-        @thread = ConsumerThread.new { @consumer.run }
+        @options = options
+        @worker_mutex = Mutex.new
 
         check_write_key!
-
-        at_exit do
-          # Let the consumer thread know it should exit.
-          @thread[:should_exit] = true
-
-          # Push a flag value to the consumer queue in case it's blocked waiting for a value.  This will allow it
-          # to continue its normal chain of processing, giving it a chance to exit.
-          @queue << nil
-        end
       end
 
-      # public: Synchronously waits until the consumer has flushed the queue.
+      # public: Synchronously waits until the worker has flushed the queue.
       #         Use only for scripts which are not long-running, and will
       #         specifically exit
       #
       def flush
-        while !@queue.empty? || @consumer.is_requesting?
+        while !@queue.empty? || @worker.is_requesting?
+          ensure_worker_running
           sleep(0.1)
         end
       end
@@ -262,6 +254,7 @@ module Segment
       # returns Boolean of whether the item was added to the queue.
       def enqueue(action)
         # add our request id for tracing purposes
+        ensure_worker_running
         action[:messageId] = uid
 
         queue_full = @queue.length >= @max_queue_size
@@ -313,8 +306,23 @@ module Segment
         fail ArgumentError, 'Must supply either user_id or anonymous_id' unless options[:user_id] || options[:anonymous_id]
       end
 
-      # Sub-class thread so we have a named thread (useful for debugging in Thread.list).
-      class ConsumerThread < Thread
+      def ensure_worker_running
+        return if worker_running?
+        @worker_mutex.synchronize do
+          return if worker_running?
+          start_worker
+        end
+      end
+
+      def worker_running?
+        @worker_thread && @worker_thread.alive?
+      end
+
+      def start_worker
+        @worker_thread = Thread.new do
+          @worker = Worker.new @queue, @write_key, @options
+          @worker.run
+        end
       end
     end
   end

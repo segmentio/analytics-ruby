@@ -49,7 +49,7 @@ module Segment
       SCREEN = SCREEN.merge :user_id => USER_ID
     end
 
-    # Hashes which are sent from the consumer, camel_cased
+    # Hashes which are sent from the worker, camel_cased
     module Requested
       TRACK = TRACK.merge({
         :userId => USER_ID,
