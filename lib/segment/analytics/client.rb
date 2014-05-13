@@ -120,20 +120,20 @@ module Segment
       # public: Aliases a user from one id to another
       #
       # options - Hash
-      #           :previousId      - String of the id to alias from
-      #           :userId        - String of the id to alias to
+      #           :previous_id      - String of the id to alias from
+      #           :user_id        - String of the id to alias to
       #           :timestamp - Time of when the alias occured (optional)
       #           :context   - Hash of context (optional)
       def alias(options)
         symbolize_keys! options
 
-        from = options[:previousId].to_s
-        to = options[:userId].to_s
+        from = options[:previous_id].to_s
+        to = options[:user_id].to_s
         timestamp = options[:timestamp] || Time.new
         context = options[:context] || {}
 
-        check_user! from
-        check_user! to
+        check_non_empty_string! from, 'previous_id'
+        check_non_empty_string! to, 'user_id'
         check_timestamp! timestamp
         add_context context
 
@@ -149,8 +149,8 @@ module Segment
       # public: Associates a user identity with a group.
       #
       # options - Hash
-      #           :previousId      - String of the id to alias from
-      #           :userId        - String of the id to alias to
+      #           :previous_id      - String of the id to alias from
+      #           :user_id        - String of the id to alias to
       #           :timestamp - Time of when the alias occured (optional)
       #           :context   - Hash of context (optional)
       def group(options)
@@ -165,7 +165,7 @@ module Segment
 
         fail ArgumentError, '.traits must be a hash' unless traits.is_a? Hash
 
-        check_user! group_id
+        check_non_empty_string! group_id, 'group_id'
         check_timestamp! timestamp
         add_context context
 
@@ -270,12 +270,13 @@ module Segment
         !queue_full
       end
 
-      # private: Ensures that a user id was passed in.
+      # private: Ensures that a string is non-empty
       #
-      # user_id    - String of the user id
+      # str    - String that must be non-empty
+      # name   - Name of the validated value
       #
-      def check_user!(user_id)
-        fail ArgumentError, 'Must supply a non-empty user_id' if user_id.empty?
+      def check_non_empty_string!(str, name)
+        fail ArgumentError, "Must supply a non-empty #{name}" if str.empty?
       end
 
       # private: Adds contextual information to the call

@@ -23,8 +23,8 @@ module Segment
     }
 
     ALIAS = {
-      :previousId => 1234,
-      :userId => 'abcd'
+      :previous_id => 1234,
+      :user_id => 'abcd'
     }
 
     GROUP = {}

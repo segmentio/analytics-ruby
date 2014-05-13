@@ -110,11 +110,11 @@ module Segment
         end
 
         it 'should error without from' do
-          expect { @client.alias :userId => 1234 }.to raise_error(ArgumentError)
+          expect { @client.alias :user_id => 1234 }.to raise_error(ArgumentError)
         end
 
         it 'should error without to' do
-          expect { @client.alias :previousId => 1234 }.to raise_error(ArgumentError)
+          expect { @client.alias :previous_id => 1234 }.to raise_error(ArgumentError)
         end
 
         it 'should not error with the required options' do
