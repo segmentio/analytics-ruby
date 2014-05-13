@@ -21,11 +21,10 @@ module Segment
         @queue = Queue.new
         @write_key = options[:write_key]
         @max_queue_size = options[:max_queue_size] || Defaults::Queue::MAX_SIZE
-
-        check_write_key
-
         @consumer = Consumer.new @queue, @write_key, options
         @thread = ConsumerThread.new { @consumer.run }
+
+        check_write_key!
 
         at_exit do
           # Let the consumer thread know it should exit.
@@ -56,8 +55,6 @@ module Segment
       #           :timestamp  - Time of when the event occurred. (optional)
       #           :context    - Hash of context. (optional)
       def track options
-        check_write_key
-
         symbolize_keys! options
 
         event = options[:event]
@@ -67,7 +64,7 @@ module Segment
         context = options[:context] || {}
 
         ensure_user user_id
-        check_timestamp timestamp
+        check_timestamp! timestamp
 
         if event.nil? || event.empty?
           fail ArgumentError, 'Must supply event as a non-empty string'
@@ -96,8 +93,6 @@ module Segment
       #           :timestamp - Time of when the event occurred. (optional)
       #           :context   - Hash of context. (optional)
       def identify options
-        check_write_key
-
         symbolize_keys! options
 
         user_id = options[:user_id].to_s
@@ -106,7 +101,7 @@ module Segment
         context = options[:context] || {}
 
         ensure_user user_id
-        check_timestamp timestamp
+        check_timestamp! timestamp
 
         fail ArgumentError, 'Must supply traits as a hash' unless traits.is_a? Hash
         isoify_dates! traits
@@ -130,8 +125,6 @@ module Segment
       #           :timestamp - Time of when the alias occured (optional)
       #           :context   - Hash of context (optional)
       def alias(options)
-        check_write_key
-
         symbolize_keys! options
         from = options[:previousId].to_s
         to = options[:userId].to_s
@@ -140,7 +133,7 @@ module Segment
 
         ensure_user from
         ensure_user to
-        check_timestamp timestamp
+        check_timestamp! timestamp
         add_context context
 
         enqueue({
@@ -160,8 +153,6 @@ module Segment
       #           :timestamp - Time of when the alias occured (optional)
       #           :context   - Hash of context (optional)
       def group(options)
-        check_write_key
-
         symbolize_keys! options
         group_id = options[:group_id].to_s
         user_id = options[:user_id].to_s
@@ -173,7 +164,7 @@ module Segment
 
         ensure_user group_id
         ensure_user user_id
-        check_timestamp timestamp
+        check_timestamp! timestamp
         add_context context
 
         enqueue({
@@ -195,8 +186,6 @@ module Segment
       #           :timestamp  - Time of when the pageview occured (optional)
       #           :context    - Hash of context (optional)
       def page(options)
-        check_write_key
-
         symbolize_keys! options
         user_id = options[:user_id].to_s
         name = options[:name].to_s
@@ -209,7 +198,7 @@ module Segment
         isoify_dates! properties
 
         ensure_user user_id
-        check_timestamp timestamp
+        check_timestamp! timestamp
         add_context context
 
         enqueue({
@@ -230,8 +219,6 @@ module Segment
       #           :timestamp  - Time of when the screen occured (optional)
       #           :context    - Hash of context (optional)
       def screen(options)
-        check_write_key
-
         symbolize_keys! options
         user_id = options[:user_id].to_s
         name = options[:name].to_s
@@ -244,7 +231,7 @@ module Segment
         isoify_dates! properties
 
         ensure_user user_id
-        check_timestamp timestamp
+        check_timestamp! timestamp
         add_context context
 
         enqueue({
@@ -295,12 +282,12 @@ module Segment
       end
 
       # private: Checks that the write_key is properly initialized
-      def check_write_key
-        fail 'Write key must be initialized' if @write_key.nil?
+      def check_write_key!
+        fail ArgumentError, 'Write key must be initialized' if @write_key.nil?
       end
 
       # private: Checks the timstamp option to make sure it is a Time.
-      def check_timestamp(timestamp)
+      def check_timestamp!(timestamp)
         fail ArgumentError, 'Timestamp must be a Time' unless timestamp.is_a? Time
       end
 

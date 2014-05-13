@@ -3,9 +3,9 @@ require 'spec_helper'
 module Segment
   class Analytics
     describe Client do
-      describe '#init' do
+      describe '#initialize' do
         it 'should error if no write_key is supplied' do
-          expect { Client.new }.to raise_error(RuntimeError)
+          expect { Client.new }.to raise_error(ArgumentError)
         end
 
         it 'should not error if a write_key is supplied' do
