@@ -1,72 +1,74 @@
+require 'segment/analytics'
 
-module AnalyticsRubyHelpers
+module Segment
+  class Analytics
+    WRITE_KEY = 'testsecret'
 
-  SECRET = 'testsecret'
-
-  TRACK = {
-    :event => 'Ruby Library test event',
-    :properties => {
-      :type => 'Chocolate',
-      :is_a_lie => true,
-      :layers => 20,
-      :created =>  Time.new
+    TRACK = {
+      :event => 'Ruby Library test event',
+      :properties => {
+        :type => 'Chocolate',
+        :is_a_lie => true,
+        :layers => 20,
+        :created =>  Time.new
+      }
     }
-  }
 
-  IDENTIFY =  {
-    :traits => {
-      :likes_animals => true,
-      :instrument => 'Guitar',
-      :age => 25
+    IDENTIFY =  {
+      :traits => {
+        :likes_animals => true,
+        :instrument => 'Guitar',
+        :age => 25
+      }
     }
-  }
 
-  ALIAS = {
-    :from => 1234,
-    :to => 'abcd'
-  }
+    ALIAS = {
+      :previousId => 1234,
+      :userId => 'abcd'
+    }
 
-  GROUP = {}
+    GROUP = {}
 
-  PAGE = {
-    :name => 'home'
-  }
+    PAGE = {
+      :name => 'home'
+    }
 
-  SCREEN = {
-    :name => 'main'
-  }
+    SCREEN = {
+      :name => 'main'
+    }
 
-  USER_ID = 1234
-  GROUP_ID = 1234
+    USER_ID = 1234
+    GROUP_ID = 1234
 
-  # Hashes sent to the client, snake_case
-  module Queued
-    TRACK = TRACK.merge :user_id => USER_ID
-    IDENTIFY = IDENTIFY.merge :user_id => USER_ID
-    GROUP = GROUP.merge :group_id => GROUP_ID, :user_id => USER_ID
-    PAGE = PAGE.merge :user_id => USER_ID
-    SCREEN = SCREEN.merge :user_id => USER_ID
-  end
+    # Hashes sent to the client, snake_case
+    module Queued
+      TRACK = TRACK.merge :user_id => USER_ID
+      IDENTIFY = IDENTIFY.merge :user_id => USER_ID
+      GROUP = GROUP.merge :group_id => GROUP_ID, :user_id => USER_ID
+      PAGE = PAGE.merge :user_id => USER_ID
+      SCREEN = SCREEN.merge :user_id => USER_ID
+    end
 
-  # Hashes which are sent from the consumer, camel_cased
-  module Requested
-    TRACK = TRACK.merge({
-      :userId => USER_ID,
-      :action => 'track'
-    })
+    # Hashes which are sent from the consumer, camel_cased
+    module Requested
+      TRACK = TRACK.merge({
+        :userId => USER_ID,
+        :type => 'track'
+      })
 
-    IDENTIFY = IDENTIFY.merge({
-      :userId => USER_ID,
-      :action => 'identify'
-    })
+      IDENTIFY = IDENTIFY.merge({
+        :userId => USER_ID,
+        :type => 'identify'
+      })
 
-    GROUP = GROUP.merge({
-      :groupId => GROUP_ID,
-      :userId => USER_ID,
-      :action => 'group'
-    })
+      GROUP = GROUP.merge({
+        :groupId => GROUP_ID,
+        :userId => USER_ID,
+        :type => 'group'
+      })
 
-    PAGE = PAGE.merge :userId => USER_ID
-    SCREEN = SCREEN.merge :userId => USER_ID
+      PAGE = PAGE.merge :userId => USER_ID
+      SCREEN = SCREEN.merge :userId => USER_ID
+    end
   end
 end
