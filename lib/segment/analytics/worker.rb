@@ -33,7 +33,7 @@ module Segment
       # public: Continuously runs the loop to check for new events
       #
       def run
-        loop do
+        until Thread.current[:should_exit]
           return if @queue.empty?
 
           @lock.synchronize do

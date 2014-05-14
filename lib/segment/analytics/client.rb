@@ -25,6 +25,8 @@ module Segment
         @worker_mutex = Mutex.new
 
         check_write_key!
+
+        at_exit { @worker_thread && @worker_thread[:should_exit] = true }
       end
 
       # public: Synchronously waits until the worker has flushed the queue.
