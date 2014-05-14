@@ -1,4 +1,7 @@
 require 'segment/analytics'
+require 'wrong'
+
+include Wrong
 
 module Segment
   class Analytics
