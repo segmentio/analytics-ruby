@@ -1,4 +1,3 @@
-require 'monitor'
 require 'segment/analytics/defaults'
 require 'segment/analytics/utils'
 require 'segment/analytics/defaults'
@@ -27,8 +26,8 @@ module Segment
         @write_key = write_key
         @batch_size = options[:batch_size] || Queue::BATCH_SIZE
         @on_error = options[:on_error] || Proc.new { |status, error| }
-        @current_batch = []
-        @current_batch.extend MonitorMixin
+        @batch = []
+        @lock = Mutex.new
       end
 
       # public: Continuously runs the loop to check for new events
@@ -37,23 +36,23 @@ module Segment
         loop do
           return if @queue.empty?
 
-          @current_batch.synchronize do
-            until @current_batch.length >= @batch_size || @queue.empty?
-              @current_batch << @queue.pop
+          @lock.synchronize do
+            until @batch.length >= @batch_size || @queue.empty?
+              @batch << @queue.pop
             end
           end
 
-          res = Request.new.post @write_key, @current_batch
+          res = Request.new.post @write_key, @batch
           @on_error.call res.status, res.error unless res.status == 200
 
-          @current_batch.synchronize { @current_batch.clear }
+          @lock.synchronize { @batch.clear }
         end
       end
 
       # public: Check whether we have outstanding requests.
       #
       def is_requesting?
-        @current_batch.synchronize { !@current_batch.empty? }
+        @lock.synchronize { !@batch.empty? }
       end
     end
   end

@@ -70,7 +70,6 @@ module Segment
       end
 
       describe '#is_requesting?' do
-
         it 'should not return true if there isn\'t a current batch' do
 
           queue = Queue.new

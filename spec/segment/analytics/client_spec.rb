@@ -68,7 +68,6 @@ module Segment
 
 
       describe '#identify' do
-
         before(:all) do
           @client = Client.new :write_key => WRITE_KEY
           @queue = @client.instance_variable_get :@queue
@@ -208,12 +207,11 @@ module Segment
           Process.fork do
             @client.track Queued::TRACK
             @client.flush
+            @client.queued_messages.should == 0
           end
 
           Process.wait
-
-          @client.queued_messages.should == 0
-        end
+        end unless defined? JRUBY_VERSION
       end
     end
   end
