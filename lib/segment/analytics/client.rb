@@ -70,8 +70,8 @@ module Segment
 
         enqueue({
           :event => event,
-          :userId => options[:user_id].to_s,
-          :anonymousId => options[:anonymous_id].to_s,
+          :userId => options[:user_id],
+          :anonymousId => options[:anonymous_id],
           :context =>  context,
           :properties => properties,
           :timestamp => datetime_in_iso8601(timestamp),
@@ -102,8 +102,8 @@ module Segment
         add_context context
 
         enqueue({
-          :userId => options[:user_id].to_s,
-          :anonymousId => options[:anonymous_id].to_s,
+          :userId => options[:user_id],
+          :anonymousId => options[:anonymous_id],
           :context => context,
           :traits => traits,
           :timestamp => datetime_in_iso8601(timestamp),
@@ -121,13 +121,13 @@ module Segment
       def alias(options)
         symbolize_keys! options
 
-        from = options[:previous_id].to_s
-        to = options[:user_id].to_s
+        from = options[:previous_id]
+        to = options[:user_id]
         timestamp = options[:timestamp] || Time.new
         context = options[:context] || {}
 
-        check_non_empty_string! from, 'previous_id'
-        check_non_empty_string! to, 'user_id'
+        check_presence! from, 'previous_id'
+        check_presence! to, 'user_id'
         check_timestamp! timestamp
         add_context context
 
@@ -151,15 +151,15 @@ module Segment
         symbolize_keys! options
         check_user_id! options
 
-        group_id = options[:group_id].to_s
-        user_id = options[:user_id].to_s
+        group_id = options[:group_id]
+        user_id = options[:user_id]
         traits = options[:traits] || {}
         timestamp = options[:timestamp] || Time.new
         context = options[:context] || {}
 
         fail ArgumentError, '.traits must be a hash' unless traits.is_a? Hash
 
-        check_non_empty_string! group_id, 'group_id'
+        check_presence! group_id, 'group_id'
         check_timestamp! timestamp
         add_context context
 
@@ -198,8 +198,8 @@ module Segment
         add_context context
 
         enqueue({
-          :userId => options[:user_id].to_s,
-          :anonymousId => options[:anonymous_id].to_s,
+          :userId => options[:user_id],
+          :anonymousId => options[:anonymous_id],
           :name => name,
           :properties => properties,
           :context => context,
@@ -232,8 +232,8 @@ module Segment
         add_context context
 
         enqueue({
-          :userId => options[:user_id].to_s,
-          :anonymousId => options[:anonymous_id].to_s,
+          :userId => options[:user_id],
+          :anonymousId => options[:anonymous_id],
           :name => name,
           :properties => properties,
           :context => context,
@@ -266,11 +266,13 @@ module Segment
 
       # private: Ensures that a string is non-empty
       #
-      # str    - String that must be non-empty
+      # obj    - String|Number that must be non-blank
       # name   - Name of the validated value
       #
-      def check_non_empty_string!(str, name)
-        fail ArgumentError, "Must supply a non-empty #{name}" if str.empty?
+      def check_presence!(obj, name)
+        if obj.nil? || (obj.is_a?(String) && obj.empty?)
+          fail ArgumentError, "#{name} must be given"
+        end
       end
 
       # private: Adds contextual information to the call
