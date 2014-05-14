@@ -2,12 +2,12 @@ require 'spec_helper'
 
 module Segment
   class Analytics
-    describe Consumer do
+    describe Worker do
       describe "#init" do
         it 'accepts string keys' do
           queue = Queue.new
-          consumer = Segment::Analytics::Consumer.new(queue, 'secret', 'batch_size' => 100)
-          consumer.instance_variable_get(:@batch_size).should == 100
+          worker = Segment::Analytics::Worker.new(queue, 'secret', 'batch_size' => 100)
+          worker.instance_variable_get(:@batch_size).should == 100
         end
       end
 
@@ -25,8 +25,8 @@ module Segment
 
           queue = Queue.new
           queue << {}
-          consumer = Segment::Analytics::Consumer.new(queue, 'secret')
-          consumer.flush
+          worker = Segment::Analytics::Worker.new(queue, 'secret')
+          worker.run
 
           queue.should be_empty
 
@@ -44,8 +44,8 @@ module Segment
 
           queue = Queue.new
           queue << {}
-          consumer = Segment::Analytics::Consumer.new queue, 'secret', :on_error => on_error
-          consumer.flush
+          worker = Segment::Analytics::Worker.new queue, 'secret', :on_error => on_error
+          worker.run
 
           Segment::Analytics::Request::any_instance.unstub(:post)
 
@@ -62,37 +62,33 @@ module Segment
 
           queue = Queue.new
           queue << Requested::TRACK
-          consumer = Segment::Analytics::Consumer.new queue, 'testsecret', :on_error => on_error
-          consumer.flush
+          worker = Segment::Analytics::Worker.new queue, 'testsecret', :on_error => on_error
+          worker.run
 
           queue.should be_empty
         end
       end
 
       describe '#is_requesting?' do
-
         it 'should not return true if there isn\'t a current batch' do
 
           queue = Queue.new
-          consumer = Segment::Analytics::Consumer.new(queue, 'testsecret')
+          worker = Segment::Analytics::Worker.new(queue, 'testsecret')
 
-          consumer.is_requesting?.should == false
+          worker.is_requesting?.should == false
         end
 
         it 'should return true if there is a current batch' do
-
           queue = Queue.new
           queue << Requested::TRACK
-          consumer = Segment::Analytics::Consumer.new(queue, 'testsecret')
+          worker = Segment::Analytics::Worker.new(queue, 'testsecret')
 
-          Thread.new {
-            consumer.flush
-            consumer.is_requesting?.should == false
-          }
+          Thread.new do
+            worker.run
+            worker.is_requesting?.should == false
+          end
 
-          # sleep barely long enough to let thread flush the queue.
-          sleep(0.001)
-          consumer.is_requesting?.should == true
+          eventually { worker.is_requesting?.should be_true }
         end
       end
     end

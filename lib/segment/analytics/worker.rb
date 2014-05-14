@@ -5,18 +5,18 @@ require 'segment/analytics/request'
 
 module Segment
   class Analytics
-    class Consumer
+    class Worker
       include Segment::Analytics::Utils
       include Segment::Analytics::Defaults
 
-      # public: Creates a new consumer
+      # public: Creates a new worker
       #
-      # The consumer continuously takes messages off the queue
+      # The worker continuously takes messages off the queue
       # and makes requests to the segment.io api
       #
-      # queue   - Queue synchronized between client and consumer
+      # queue   - Queue synchronized between client and worker
       # write_key  - String of the project's Write key
-      # options - Hash of consumer options
+      # options - Hash of worker options
       #           batch_size - Fixnum of how many items to send in a batch
       #           on_error   - Proc of what to do on an error
       #
@@ -26,49 +26,33 @@ module Segment
         @write_key = write_key
         @batch_size = options[:batch_size] || Queue::BATCH_SIZE
         @on_error = options[:on_error] || Proc.new { |status, error| }
-        @current_batch = []
-        @mutex = Mutex.new
+        @batch = []
+        @lock = Mutex.new
       end
 
       # public: Continuously runs the loop to check for new events
       #
       def run
         until Thread.current[:should_exit]
-          flush
-        end
-      end
+          return if @queue.empty?
 
-      # public: Flush some events from our queue
-      #
-      def flush
-        # Block until we have something to send
-        item = @queue.pop
-        return if item.nil?
-
-        # Synchronize on additions to the current batch
-        @mutex.synchronize {
-          @current_batch << item
-          until @current_batch.length >= @batch_size || @queue.empty?
-            @current_batch << @queue.pop
+          @lock.synchronize do
+            until @batch.length >= @batch_size || @queue.empty?
+              @batch << @queue.pop
+            end
           end
-        }
 
-        req = Request.new
-        res = req.post @write_key, @current_batch
-        @on_error.call res.status, res.error unless res.status == 200
-        @mutex.synchronize {
-          @current_batch = []
-        }
+          res = Request.new.post @write_key, @batch
+          @on_error.call res.status, res.error unless res.status == 200
+
+          @lock.synchronize { @batch.clear }
+        end
       end
 
       # public: Check whether we have outstanding requests.
       #
       def is_requesting?
-        requesting = nil
-        @mutex.synchronize {
-          requesting = !@current_batch.empty?
-        }
-        requesting
+        @lock.synchronize { !@batch.empty? }
       end
     end
   end

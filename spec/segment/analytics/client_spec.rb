@@ -20,7 +20,6 @@ module Segment
       describe '#track' do
         before(:all) do
           @client = Client.new :write_key => WRITE_KEY
-          @client.instance_variable_get(:@thread).kill
           @queue = @client.instance_variable_get :@queue
         end
 
@@ -69,10 +68,8 @@ module Segment
 
 
       describe '#identify' do
-
         before(:all) do
           @client = Client.new :write_key => WRITE_KEY
-          @client.instance_variable_get(:@thread).kill
           @queue = @client.instance_variable_get :@queue
         end
 
@@ -203,6 +200,18 @@ module Segment
           @client.flush
           @client.queued_messages.should == 0
         end
+
+        it 'should complete when the process forks' do
+          @client.identify Queued::IDENTIFY
+
+          Process.fork do
+            @client.track Queued::TRACK
+            @client.flush
+            @client.queued_messages.should == 0
+          end
+
+          Process.wait
+        end unless defined? JRUBY_VERSION
       end
     end
   end

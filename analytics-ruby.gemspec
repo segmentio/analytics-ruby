@@ -16,5 +16,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'json', ['~> 1.7'] if RUBY_VERSION < "1.9"
 
   spec.add_development_dependency('rake')
+  spec.add_development_dependency('wrong')
   spec.add_development_dependency('rspec')
 end
