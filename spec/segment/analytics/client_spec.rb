@@ -55,7 +55,7 @@ module Segment
           check_property = proc { |msg, k, v| msg[k] && msg[k].should == v } 
           [:track, :screen, :page, :group, :identify, :alias].each do |s|
             @client.send s, :user_id => 1, :group_id => 2, :previous_id => 3, :anonymous_id => 4, :event => "coco barked", :name => "coco"
-            message = @queue.pop
+            message = @queue.pop(true)
             check_property.call(message, :userId, 1)
             check_property.call(message, :groupId, 2)
             check_property.call(message, :previousId, 3)
