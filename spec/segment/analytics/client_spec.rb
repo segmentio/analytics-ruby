@@ -201,6 +201,19 @@ module Segment
           @client.flush
           @client.queued_messages.should == 0
         end
+
+        it 'should complete when the process forks' do
+          @client.identify Queued::IDENTIFY
+
+          Process.fork do
+            @client.track Queued::TRACK
+            @client.flush
+          end
+
+          Process.wait
+
+          @client.queued_messages.should == 0
+        end
       end
     end
   end

@@ -254,12 +254,11 @@ module Segment
       # returns Boolean of whether the item was added to the queue.
       def enqueue(action)
         # add our request id for tracing purposes
-        ensure_worker_running
         action[:messageId] = uid
-
-        queue_full = @queue.length >= @max_queue_size
-        @queue << action unless queue_full
-
+        unless queue_full = @queue.length >= @max_queue_size
+          ensure_worker_running
+          @queue << action
+        end
         !queue_full
       end
 
@@ -310,19 +309,15 @@ module Segment
         return if worker_running?
         @worker_mutex.synchronize do
           return if worker_running?
-          start_worker
+          @worker_thread = Thread.new do
+            @worker = Worker.new @queue, @write_key, @options
+            @worker.run
+          end
         end
       end
 
       def worker_running?
         @worker_thread && @worker_thread.alive?
-      end
-
-      def start_worker
-        @worker_thread = Thread.new do
-          @worker = Worker.new @queue, @write_key, @options
-          @worker.run
-        end
       end
     end
   end

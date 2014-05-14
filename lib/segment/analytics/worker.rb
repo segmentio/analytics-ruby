@@ -35,25 +35,19 @@ module Segment
       #
       def run
         loop do
-          flush
-        end
-      end
+          return if @queue.empty?
 
-      # public: Flush some events from our queue
-      #
-      def flush
-        return if @queue.empty?
-
-        @current_batch.synchronize do
-          until @current_batch.length >= @batch_size || @queue.empty?
-            @current_batch << @queue.pop
+          @current_batch.synchronize do
+            until @current_batch.length >= @batch_size || @queue.empty?
+              @current_batch << @queue.pop
+            end
           end
+
+          res = Request.new.post @write_key, @current_batch
+          @on_error.call res.status, res.error unless res.status == 200
+
+          @current_batch.synchronize { @current_batch.clear }
         end
-
-        res = Request.new.post @write_key, @current_batch
-        @on_error.call res.status, res.error unless res.status == 200
-
-        @current_batch.synchronize { @current_batch.clear }
       end
 
       # public: Check whether we have outstanding requests.

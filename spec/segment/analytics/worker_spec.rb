@@ -26,7 +26,7 @@ module Segment
           queue = Queue.new
           queue << {}
           worker = Segment::Analytics::Worker.new(queue, 'secret')
-          worker.flush
+          worker.run
 
           queue.should be_empty
 
@@ -45,7 +45,7 @@ module Segment
           queue = Queue.new
           queue << {}
           worker = Segment::Analytics::Worker.new queue, 'secret', :on_error => on_error
-          worker.flush
+          worker.run
 
           Segment::Analytics::Request::any_instance.unstub(:post)
 
@@ -63,7 +63,7 @@ module Segment
           queue = Queue.new
           queue << Requested::TRACK
           worker = Segment::Analytics::Worker.new queue, 'testsecret', :on_error => on_error
-          worker.flush
+          worker.run
 
           queue.should be_empty
         end
@@ -86,7 +86,7 @@ module Segment
           worker = Segment::Analytics::Worker.new(queue, 'testsecret')
 
           Thread.new {
-            worker.flush
+            worker.run
             worker.is_requesting?.should == false
           }
 
