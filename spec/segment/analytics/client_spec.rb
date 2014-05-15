@@ -51,18 +51,6 @@ module Segment
           @queue.pop
         end
 
-        it 'should not convert ids given as fixnums to strings' do
-          check_property = proc { |msg, k, v| msg[k] && msg[k].should == v } 
-          [:track, :screen, :page, :group, :identify, :alias].each do |s|
-            @client.send s, :user_id => 1, :group_id => 2, :previous_id => 3, :anonymous_id => 4, :event => "coco barked", :name => "coco"
-            message = @queue.pop(true)
-            check_property.call(message, :userId, 1)
-            check_property.call(message, :groupId, 2)
-            check_property.call(message, :previousId, 3)
-            check_property.call(message, :anonymousId, 4)
-          end
-        end
-
         it 'should convert Time properties into iso8601 format' do
           @client.track({
             :user_id => 'user',
@@ -224,6 +212,36 @@ module Segment
 
           Process.wait
         end unless defined? JRUBY_VERSION
+      end
+
+      context 'common' do
+        check_property = proc { |msg, k, v| msg[k] && msg[k].should == v } 
+
+        before(:all) do
+          @client = Client.new :write_key => WRITE_KEY
+          @queue = @client.instance_variable_get :@queue
+        end
+
+
+        it 'should not convert ids given as fixnums to strings' do
+          [:track, :screen, :page, :group, :identify, :alias].each do |s|
+            @client.send s, :user_id => 1, :group_id => 2, :previous_id => 3, :anonymous_id => 4, :event => "coco barked", :name => "coco"
+            message = @queue.pop(true)
+            check_property.call(message, :userId, 1)
+            check_property.call(message, :groupId, 2)
+            check_property.call(message, :previousId, 3)
+            check_property.call(message, :anonymousId, 4)
+          end
+        end
+
+        it 'should send integrations' do
+          [:track, :screen, :page, :group, :identify, :alias].each do |s|
+            @client.send s, :integrations => { All: true, Salesforce: false }, :user_id => 1, :group_id => 2, :previous_id => 3, :anonymous_id => 4, :event => "coco barked", :name => "coco"
+            message = @queue.pop(true)
+            message[:integrations][:All].should be_true
+            message[:integrations][:Salesforce].should be_false
+          end
+        end
       end
     end
   end

@@ -73,6 +73,7 @@ module Segment
           :userId => options[:user_id],
           :anonymousId => options[:anonymous_id],
           :context =>  context,
+          :integrations => options[:integrations],
           :properties => properties,
           :timestamp => datetime_in_iso8601(timestamp),
           :type => 'track'
@@ -104,6 +105,7 @@ module Segment
         enqueue({
           :userId => options[:user_id],
           :anonymousId => options[:anonymous_id],
+          :integrations => options[:integrations],
           :context => context,
           :traits => traits,
           :timestamp => datetime_in_iso8601(timestamp),
@@ -134,6 +136,7 @@ module Segment
         enqueue({
           :previousId => from,
           :userId => to,
+          :integrations => options[:integrations],
           :context => context,
           :timestamp => datetime_in_iso8601(timestamp),
           :type => 'alias'
@@ -167,6 +170,7 @@ module Segment
           :groupId => group_id,
           :userId => user_id,
           :traits => traits,
+          :integrations => options[:integrations],
           :context => context,
           :timestamp => datetime_in_iso8601(timestamp),
           :type => 'group'
@@ -202,6 +206,7 @@ module Segment
           :anonymousId => options[:anonymous_id],
           :name => name,
           :properties => properties,
+          :integrations => options[:integrations],
           :context => context,
           :timestamp => datetime_in_iso8601(timestamp),
           :type => 'page'
@@ -236,6 +241,7 @@ module Segment
           :anonymousId => options[:anonymous_id],
           :name => name,
           :properties => properties,
+          :integrations => options[:integrations],
           :context => context,
           :timestamp => timestamp.iso8601,
           :type => 'screen'
