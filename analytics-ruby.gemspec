@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   # Ruby 1.8 requires json
   spec.add_dependency 'json', ['~> 1.7'] if RUBY_VERSION < "1.9"
 
-  spec.add_development_dependency('rake')
-  spec.add_development_dependency('wrong')
-  spec.add_development_dependency('rspec')
+  spec.add_development_dependency 'rake', '~> 10.3'
+  spec.add_development_dependency 'wrong', '~> 0.0'
+  spec.add_development_dependency 'rspec', '~> 2.0'
 end
