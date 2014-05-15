@@ -236,7 +236,7 @@ module Segment
 
         it 'should send integrations' do
           [:track, :screen, :page, :group, :identify, :alias].each do |s|
-            @client.send s, :integrations => { All: true, Salesforce: false }, :user_id => 1, :group_id => 2, :previous_id => 3, :anonymous_id => 4, :event => "coco barked", :name => "coco"
+            @client.send s, :integrations => { :All => true, :Salesforce => false }, :user_id => 1, :group_id => 2, :previous_id => 3, :anonymous_id => 4, :event => "coco barked", :name => "coco"
             message = @queue.pop(true)
             message[:integrations][:All].should be_true
             message[:integrations][:Salesforce].should be_false
