@@ -23,7 +23,7 @@ module Segment
     end
 
     def respond_to? method_name, include_private = false
-      @client.respond_to?(method_missing) || super
+      @client.respond_to?(method_name) || super
     end
 
     include Logging
