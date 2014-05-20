@@ -4,6 +4,7 @@
 * add: can create multiple instances with creator method (rather than
     having a singleton)
 * add: logging with Logger instance or Rails.logger if available
+* add: able to stub requests so they just log and don't hit the server
 * fix: worker continues running across forked processes
 * fix: removed usage of ActiveSupport methods since its not a dependency
 * fix: sending data that matches segment's new api spec
