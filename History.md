@@ -1,3 +1,14 @@
+2.0.1 / 2014-05-15 
+==================
+* add: namespace under Segment::Analytics
+* add: can create multiple instances with creator method (rather than
+    having a singleton)
+* add: logging with Logger instance or Rails.logger if available
+* fix: worker continues running across forked processes
+* fix: removed usage of ActiveSupport methods since its not a dependency
+* fix: sending data that matches segment's new api spec
+
+(there is no v2.0.0)
 
 1.1.0 / 2014-04-17
 ==================
