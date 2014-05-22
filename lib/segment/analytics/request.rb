@@ -74,6 +74,10 @@ module Segment
 
       class << self
         attr_accessor :stub
+
+        def stub
+          @stub || ENV['STUB']
+        end
       end
     end
   end
