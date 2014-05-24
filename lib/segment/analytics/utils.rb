@@ -75,7 +75,7 @@ module Segment
       end
 
       def seconds_to_utc_offset(seconds, colon = true)
-        (colon ? UTC_OFFSET_WITH_COLON : UTC_OFFSET_WITHOUT_COLON) % [(seconds < 0 ? '-' : '+'), seconds.abs, (seconds.abs % 3600)]
+        (colon ? UTC_OFFSET_WITH_COLON : UTC_OFFSET_WITHOUT_COLON) % [(seconds < 0 ? '-' : '+'), (seconds.abs / 3600), ((seconds.abs % 3600) / 60)]
       end
 
       UTC_OFFSET_WITH_COLON = '%s%02d:%02d'

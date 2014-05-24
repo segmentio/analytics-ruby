@@ -41,6 +41,20 @@ module Segment
           }.to raise_error(ArgumentError)
         end
 
+        it 'should use the timestamp given' do
+          time = Time.new(1990, 7, 16, 13, 30, 0, "+05:00")
+
+          @client.track({
+            event: 'testing the timestamp',
+            user_id: 'joe',
+            timestamp: time
+          })
+
+          msg = @queue.pop
+
+          Time.parse(msg[:timestamp]).should == time
+        end
+
         it 'should not error with the required options' do
           @client.track Queued::TRACK
           @queue.pop
@@ -215,7 +229,7 @@ module Segment
       end
 
       context 'common' do
-        check_property = proc { |msg, k, v| msg[k] && msg[k].should == v } 
+        check_property = proc { |msg, k, v| msg[k] && msg[k].should == v }
 
         before(:all) do
           @client = Client.new :write_key => WRITE_KEY
