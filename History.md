@@ -1,4 +1,10 @@
-2.0.1 / 2014-05-15 
+2.0.2 / 2014-05-30
+==================
+* fix: formatting ios dates
+* fix: respond_to? implementation
+* add: able to stub requests by setting STUB env var
+
+2.0.1 / 2014-05-15
 ==================
 * add: namespace under Segment::Analytics
 * add: can create multiple instances with creator method (rather than
