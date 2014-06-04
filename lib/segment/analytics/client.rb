@@ -23,6 +23,7 @@ module Segment
         @max_queue_size = options[:max_queue_size] || Defaults::Queue::MAX_SIZE
         @options = options
         @worker_mutex = Mutex.new
+        @worker = Worker.new @queue, @write_key, @options
 
         check_write_key!
 
@@ -320,7 +321,6 @@ module Segment
         @worker_mutex.synchronize do
           return if worker_running?
           @worker_thread = Thread.new do
-            @worker = Worker.new @queue, @write_key, @options
             @worker.run
           end
         end
