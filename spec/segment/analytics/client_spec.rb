@@ -42,7 +42,7 @@ module Segment
         end
 
         it 'should use the timestamp given' do
-          time = Time.new(1990, 7, 16, 13, 30, 0, "+05:00")
+          time = Time.parse("1990-07-16 13:30:00 UTC")
 
           @client.track({
             :event => 'testing the timestamp',
