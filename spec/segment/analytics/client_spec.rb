@@ -45,9 +45,9 @@ module Segment
           time = Time.new(1990, 7, 16, 13, 30, 0, "+05:00")
 
           @client.track({
-            event: 'testing the timestamp',
-            user_id: 'joe',
-            timestamp: time
+            :event => 'testing the timestamp',
+            :user_id => 'joe',
+            :timestamp => time
           })
 
           msg = @queue.pop
