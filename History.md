@@ -1,3 +1,7 @@
+2.0.3 / 2014-06-04
+==================
+* fix: undefined method `is_requesting?' for nil:NilClass when calling flush (#51)
+
 2.0.2 / 2014-05-30
 ==================
 * fix: formatting ios dates
