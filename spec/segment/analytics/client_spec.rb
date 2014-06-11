@@ -140,6 +140,7 @@ module Segment
       describe '#group' do
         before :all do
           @client = Client.new :write_key => WRITE_KEY
+          @queue = @client.instance_variable_get :@queue
         end
 
         it 'should error without group_id' do
@@ -156,6 +157,20 @@ module Segment
 
         it 'should not error with the required options as strings' do
           @client.group Utils.stringify_keys(Queued::GROUP)
+        end
+
+        it 'should convert Time traits into iso8601 format' do
+          @client.group({
+            :user_id => 'user',
+            :group_id => 'group',
+            :traits => {
+              :time => Time.utc(2013),
+              :nottime => 'x'
+            }
+          })
+          message = @queue.pop
+          message[:traits][:time].should == '2013-01-01T00:00:00Z'
+          message[:traits][:nottime].should == 'x'
         end
       end
 

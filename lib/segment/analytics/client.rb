@@ -162,6 +162,7 @@ module Segment
         context = options[:context] || {}
 
         fail ArgumentError, '.traits must be a hash' unless traits.is_a? Hash
+        isoify_dates! traits
 
         check_presence! group_id, 'group_id'
         check_timestamp! timestamp
