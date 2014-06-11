@@ -1,3 +1,7 @@
+2.0.4 / 2014-06-11
+==================
+* fix: isofying trait dates in #group
+
 2.0.3 / 2014-06-04
 ==================
 * fix: undefined method `is_requesting?' for nil:NilClass when calling flush (#51)
