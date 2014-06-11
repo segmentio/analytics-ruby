@@ -143,6 +143,10 @@ module Segment
           @queue = @client.instance_variable_get :@queue
         end
 
+        after :each do
+          @client.flush
+        end
+
         it 'should error without group_id' do
           expect { @client.group :user_id => 'foo' }.to raise_error(ArgumentError)
         end
