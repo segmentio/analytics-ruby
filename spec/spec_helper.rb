@@ -1,5 +1,6 @@
 require 'segment/analytics'
 require 'wrong'
+require 'active_support/time'
 
 include Wrong
 

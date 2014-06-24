@@ -65,17 +65,23 @@ module Segment
           @queue.pop
         end
 
-        it 'should convert Time properties into iso8601 format' do
+        it 'should convert time and date traits into iso8601 format' do
           @client.track({
             :user_id => 'user',
             :event => 'Event',
             :properties => {
               :time => Time.utc(2013),
+              :time_with_zone =>  ActiveSupport::TimeZone.new('UTC').parse('2013-01-01'),
+              :date_time => DateTime.new(2013,1,1),
+              :date => Date.new(2013,1,1),
               :nottime => 'x'
             }
           })
           message = @queue.pop
           message[:properties][:time].should == '2013-01-01T00:00:00Z'
+          message[:properties][:time_with_zone].should == '2013-01-01T00:00:00Z'
+          message[:properties][:date_time].should == '2013-01-01T00:00:00Z'
+          message[:properties][:date].should == '2013-01-01'
           message[:properties][:nottime].should == 'x'
         end
       end
@@ -101,16 +107,22 @@ module Segment
           @queue.pop
         end
 
-        it 'should convert Time traits into iso8601 format' do
+        it 'should convert time and date traits into iso8601 format' do
           @client.identify({
             :user_id => 'user',
             :traits => {
               :time => Time.utc(2013),
+              :time_with_zone =>  ActiveSupport::TimeZone.new('UTC').parse('2013-01-01'),
+              :date_time => DateTime.new(2013,1,1),
+              :date => Date.new(2013,1,1),
               :nottime => 'x'
             }
           })
           message = @queue.pop
           message[:traits][:time].should == '2013-01-01T00:00:00Z'
+          message[:traits][:time_with_zone].should == '2013-01-01T00:00:00Z'
+          message[:traits][:date_time].should == '2013-01-01T00:00:00Z'
+          message[:traits][:date].should == '2013-01-01'
           message[:traits][:nottime].should == 'x'
         end
       end
@@ -163,17 +175,23 @@ module Segment
           @client.group Utils.stringify_keys(Queued::GROUP)
         end
 
-        it 'should convert Time traits into iso8601 format' do
-          @client.group({
+        it 'should convert time and date traits into iso8601 format' do
+          @client.identify({
             :user_id => 'user',
             :group_id => 'group',
             :traits => {
               :time => Time.utc(2013),
+              :time_with_zone =>  ActiveSupport::TimeZone.new('UTC').parse('2013-01-01'),
+              :date_time => DateTime.new(2013,1,1),
+              :date => Date.new(2013,1,1),
               :nottime => 'x'
             }
           })
           message = @queue.pop
           message[:traits][:time].should == '2013-01-01T00:00:00Z'
+          message[:traits][:time_with_zone].should == '2013-01-01T00:00:00Z'
+          message[:traits][:date_time].should == '2013-01-01T00:00:00Z'
+          message[:traits][:date].should == '2013-01-01'
           message[:traits][:nottime].should == 'x'
         end
       end

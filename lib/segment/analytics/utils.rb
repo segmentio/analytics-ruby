@@ -49,10 +49,11 @@ module Segment
       end
 
       def datetime_in_iso8601 datetime
-        if datetime.is_a? Date
+        case datetime
+        when Time, DateTime
+            time_in_iso8601 datetime
+        when Date
           date_in_iso8601 datetime
-        elsif datetime.is_a? Time
-          time_in_iso8601 datetime
         else
           datetime
         end
