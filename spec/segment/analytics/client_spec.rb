@@ -71,7 +71,7 @@ module Segment
             :event => 'Event',
             :properties => {
               :time => Time.utc(2013),
-              :time_with_zone =>  ActiveSupport::TimeZone.new('UTC').parse('2013-01-01'),
+              :time_with_zone =>  Time.zone.parse('2013-01-01'),
               :date_time => DateTime.new(2013,1,1),
               :date => Date.new(2013,1,1),
               :nottime => 'x'
@@ -112,7 +112,7 @@ module Segment
             :user_id => 'user',
             :traits => {
               :time => Time.utc(2013),
-              :time_with_zone =>  ActiveSupport::TimeZone.new('UTC').parse('2013-01-01'),
+              :time_with_zone =>  Time.zone.parse('2013-01-01'),
               :date_time => DateTime.new(2013,1,1),
               :date => Date.new(2013,1,1),
               :nottime => 'x'
@@ -181,7 +181,7 @@ module Segment
             :group_id => 'group',
             :traits => {
               :time => Time.utc(2013),
-              :time_with_zone =>  ActiveSupport::TimeZone.new('UTC').parse('2013-01-01'),
+              :time_with_zone =>  Time.zone.parse('2013-01-01'),
               :date_time => DateTime.new(2013,1,1),
               :date => Date.new(2013,1,1),
               :nottime => 'x'

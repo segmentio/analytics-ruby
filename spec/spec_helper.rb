@@ -4,6 +4,9 @@ require 'active_support/time'
 
 include Wrong
 
+# Setting timezone for ActiveSupport::TimeWithZone to UTC
+Time.zone = 'UTC'
+
 module Segment
   class Analytics
     WRITE_KEY = 'testsecret'
