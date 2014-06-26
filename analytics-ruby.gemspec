@@ -19,5 +19,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'wrong', '~> 0.0'
   spec.add_development_dependency 'rspec', '~> 2.0'
   spec.add_development_dependency 'tzinfo'
-  s.add_dependency 'activesupport', '>= 3.0.0', '<4.0.0'
+  spec.add_development_dependency 'activesupport', '>= 3.0.0', '<4.0.0'
 end
