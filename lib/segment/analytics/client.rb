@@ -185,6 +185,7 @@ module Segment
       #           :user_id    - String of the id to alias from
       #           :name       - String name of the page
       #           :properties - Hash of page properties (optional)
+      #           :category   - String of the page category (optional)
       #           :timestamp  - Time of when the pageview occured (optional)
       #           :context    - Hash of context (optional)
       def page(options)
@@ -207,6 +208,7 @@ module Segment
           :userId => options[:user_id],
           :anonymousId => options[:anonymous_id],
           :name => name,
+          :category => options[:category],
           :properties => properties,
           :integrations => options[:integrations],
           :context => context,
@@ -219,6 +221,7 @@ module Segment
       # options - Hash
       #           :user_id    - String of the id to alias from
       #           :name       - String name of the screen
+      #           :category   - String screen category (optional)
       #           :properties - Hash of screen properties (optional)
       #           :timestamp  - Time of when the screen occured (optional)
       #           :context    - Hash of context (optional)
@@ -243,6 +246,7 @@ module Segment
           :anonymousId => options[:anonymous_id],
           :name => name,
           :properties => properties,
+          :category => options[:category],
           :integrations => options[:integrations],
           :context => context,
           :timestamp => timestamp.iso8601,
@@ -333,4 +337,3 @@ module Segment
     end
   end
 end
-
