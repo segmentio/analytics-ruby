@@ -1,3 +1,11 @@
+2.0.6 / 2014-08-12
+==================
+* fix: category param on #page and #screen
+
+2.0.5 / 2014-05-26
+==================
+* fix: datetime conversions
+
 2.0.4 / 2014-06-11
 ==================
 * fix: isofying trait dates in #group
