@@ -44,11 +44,13 @@ module Segment
       # public: Tracks an event
       #
       # options - Hash
-      #           :event      - String of event name.
-      #           :user_id    - String of the user id.
-      #           :properties - Hash of event properties. (optional)
-      #           :timestamp  - Time of when the event occurred. (optional)
-      #           :context    - Hash of context. (optional)
+      #           :anonymous_id - String of the user's id when you don't know who they are yet. (optional but you must provide either an anonymous_id or user_id. See: https://segment.io/docs/tracking-api/track/#user-id)
+      #           :context      - Hash of context. (optional)
+      #           :event        - String of event name.
+      #           :integrations - Hash specifying what integrations this event goes to. (optional)
+      #           :properties   - Hash of event properties. (optional)
+      #           :timestamp    - Time of when the event occurred. (optional)
+      #           :user_id      - String of the user id.
       def track options
         symbolize_keys! options
         check_user_id! options
@@ -84,10 +86,12 @@ module Segment
       # public: Identifies a user
       #
       # options - Hash
-      #           :user_id   - String of the user id
-      #           :traits    - Hash of user traits. (optional)
-      #           :timestamp - Time of when the event occurred. (optional)
-      #           :context   - Hash of context. (optional)
+      #           :anonymous_id - String of the user's id when you don't know who they are yet. (optional but you must provide either an anonymous_id or user_id. See: https://segment.io/docs/tracking - api/track/#user - id)
+      #           :context      - Hash of context. (optional)
+      #           :integrations - Hash specifying what integrations this event goes to. (optional)
+      #           :timestamp    - Time of when the event occurred. (optional)
+      #           :traits       - Hash of user traits. (optional)
+      #           :user_id      - String of the user id
       def identify options
         symbolize_keys! options
         check_user_id! options
@@ -117,10 +121,11 @@ module Segment
       # public: Aliases a user from one id to another
       #
       # options - Hash
-      #           :previous_id      - String of the id to alias from
-      #           :user_id        - String of the id to alias to
-      #           :timestamp - Time of when the alias occured (optional)
-      #           :context   - Hash of context (optional)
+      #           :context     - Hash of context (optional)
+      #           :integrations - Hash specifying what integrations this event goes to. (optional)
+      #           :previous_id - String of the id to alias from
+      #           :timestamp   - Time of when the alias occured (optional)
+      #           :user_id     - String of the id to alias to
       def alias(options)
         symbolize_keys! options
 
@@ -147,10 +152,11 @@ module Segment
       # public: Associates a user identity with a group.
       #
       # options - Hash
-      #           :previous_id      - String of the id to alias from
-      #           :user_id        - String of the id to alias to
-      #           :timestamp - Time of when the alias occured (optional)
-      #           :context   - Hash of context (optional)
+      #           :context      - Hash of context (optional)
+      #           :integrations - Hash specifying what integrations this event goes to. (optional)
+      #           :previous_id  - String of the id to alias from
+      #           :timestamp    - Time of when the alias occured (optional)
+      #           :user_id      - String of the id to alias to
       def group(options)
         symbolize_keys! options
         check_user_id! options
@@ -182,12 +188,14 @@ module Segment
       # public: Records a page view
       #
       # options - Hash
-      #           :user_id    - String of the id to alias from
-      #           :name       - String name of the page
-      #           :properties - Hash of page properties (optional)
-      #           :category   - String of the page category (optional)
-      #           :timestamp  - Time of when the pageview occured (optional)
-      #           :context    - Hash of context (optional)
+      #           :anonymous_id - String of the user's id when you don't know who they are yet. (optional but you must provide either an anonymous_id or user_id. See: https://segment.io/docs/tracking - api/track/#user - id)
+      #           :category     - String of the page category (optional)
+      #           :context      - Hash of context (optional)
+      #           :integrations - Hash specifying what integrations this event goes to. (optional)
+      #           :name         - String name of the page
+      #           :properties   - Hash of page properties (optional)
+      #           :timestamp    - Time of when the pageview occured (optional)
+      #           :user_id      - String of the id to alias from
       def page(options)
         symbolize_keys! options
         check_user_id! options
@@ -219,12 +227,14 @@ module Segment
       # public: Records a screen view (for a mobile app)
       #
       # options - Hash
-      #           :user_id    - String of the id to alias from
-      #           :name       - String name of the screen
-      #           :category   - String screen category (optional)
-      #           :properties - Hash of screen properties (optional)
-      #           :timestamp  - Time of when the screen occured (optional)
-      #           :context    - Hash of context (optional)
+      #           :anonymous_id - String of the user's id when you don't know who they are yet. (optional but you must provide either an anonymous_id or user_id. See: https://segment.io/docs/tracking - api/track/#user - id)
+      #           :category     - String screen category (optional)
+      #           :context      - Hash of context (optional)
+      #           :integrations - Hash specifying what integrations this event goes to. (optional)
+      #           :name         - String name of the screen
+      #           :properties   - Hash of screen properties (optional)
+      #           :timestamp    - Time of when the screen occured (optional)
+      #           :user_id      - String of the id to alias from
       def screen(options)
         symbolize_keys! options
         check_user_id! options
