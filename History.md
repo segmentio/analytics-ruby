@@ -1,3 +1,7 @@
+2.0.7 / 2014-08-27
+==================
+* fix: include optional options hash in calls
+
 2.0.6 / 2014-08-12
 ==================
 * fix: category param on #page and #screen
