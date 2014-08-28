@@ -44,10 +44,11 @@ module Segment
       # public: Tracks an event
       #
       # attrs - Hash
-      #           :anonymous_id - String of the user's id when you don't know who they are yet. (optional but you must provide either an anonymous_id or user_id. See: https://segment.io/docs/tracking-api/track/#user-id)
+      #           :anonymous_id - String of the user's id when you don't know who they are yet. (optional but you must provide either an anonymous_id or user_id. See: https://segment.io/docs/tracking - api/track/#user - id)
       #           :context      - Hash of context. (optional)
       #           :event        - String of event name.
       #           :integrations - Hash specifying what integrations this event goes to. (optional)
+      #           :options      - Hash specifying options such as user traits. (optional)
       #           :properties   - Hash of event properties. (optional)
       #           :timestamp    - Time of when the event occurred. (optional)
       #           :user_id      - String of the user id.
@@ -76,6 +77,7 @@ module Segment
           :userId => attrs[:user_id],
           :anonymousId => attrs[:anonymous_id],
           :context =>  context,
+          :options => attrs[:options],
           :integrations => attrs[:integrations],
           :properties => properties,
           :timestamp => datetime_in_iso8601(timestamp),
@@ -89,6 +91,7 @@ module Segment
       #           :anonymous_id - String of the user's id when you don't know who they are yet. (optional but you must provide either an anonymous_id or user_id. See: https://segment.io/docs/tracking - api/track/#user - id)
       #           :context      - Hash of context. (optional)
       #           :integrations - Hash specifying what integrations this event goes to. (optional)
+      #           :options      - Hash specifying options such as user traits. (optional)
       #           :timestamp    - Time of when the event occurred. (optional)
       #           :traits       - Hash of user traits. (optional)
       #           :user_id      - String of the user id
@@ -113,6 +116,7 @@ module Segment
           :integrations => attrs[:integrations],
           :context => context,
           :traits => traits,
+          :options => attrs[:options],
           :timestamp => datetime_in_iso8601(timestamp),
           :type => 'identify'
         })
@@ -123,6 +127,7 @@ module Segment
       # attrs - Hash
       #           :context     - Hash of context (optional)
       #           :integrations - Hash specifying what integrations this event goes to. (optional)
+      #           :options      - Hash specifying options such as user traits. (optional)
       #           :previous_id - String of the id to alias from
       #           :timestamp   - Time of when the alias occured (optional)
       #           :user_id     - String of the id to alias to
@@ -144,6 +149,7 @@ module Segment
           :userId => to,
           :integrations => attrs[:integrations],
           :context => context,
+          :options => attrs[:options],
           :timestamp => datetime_in_iso8601(timestamp),
           :type => 'alias'
         })
@@ -154,6 +160,7 @@ module Segment
       # attrs - Hash
       #           :context      - Hash of context (optional)
       #           :integrations - Hash specifying what integrations this event goes to. (optional)
+      #           :options      - Hash specifying options such as user traits. (optional)
       #           :previous_id  - String of the id to alias from
       #           :timestamp    - Time of when the alias occured (optional)
       #           :user_id      - String of the id to alias to
@@ -179,6 +186,7 @@ module Segment
           :userId => user_id,
           :traits => traits,
           :integrations => attrs[:integrations],
+          :options => attrs[:options],
           :context => context,
           :timestamp => datetime_in_iso8601(timestamp),
           :type => 'group'
@@ -193,6 +201,7 @@ module Segment
       #           :context      - Hash of context (optional)
       #           :integrations - Hash specifying what integrations this event goes to. (optional)
       #           :name         - String name of the page
+      #           :options      - Hash specifying options such as user traits. (optional)
       #           :properties   - Hash of page properties (optional)
       #           :timestamp    - Time of when the pageview occured (optional)
       #           :user_id      - String of the id to alias from
@@ -219,6 +228,7 @@ module Segment
           :category => attrs[:category],
           :properties => properties,
           :integrations => attrs[:integrations],
+          :options => attrs[:options],
           :context => context,
           :timestamp => datetime_in_iso8601(timestamp),
           :type => 'page'
@@ -232,6 +242,7 @@ module Segment
       #           :context      - Hash of context (optional)
       #           :integrations - Hash specifying what integrations this event goes to. (optional)
       #           :name         - String name of the screen
+      #           :options      - Hash specifying options such as user traits. (optional)
       #           :properties   - Hash of screen properties (optional)
       #           :timestamp    - Time of when the screen occured (optional)
       #           :user_id      - String of the id to alias from
@@ -257,6 +268,7 @@ module Segment
           :name => name,
           :properties => properties,
           :category => attrs[:category],
+          :options => attrs[:options],
           :integrations => attrs[:integrations],
           :context => context,
           :timestamp => timestamp.iso8601,
