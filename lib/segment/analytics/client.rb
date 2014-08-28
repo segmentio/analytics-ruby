@@ -11,17 +11,17 @@ module Segment
 
       # public: Creates a new client
       #
-      # options - Hash
+      # attrs - Hash
       #           :write_key         - String of your project's write_key
       #           :max_queue_size - Fixnum of the max calls to remain queued (optional)
       #           :on_error       - Proc which handles error calls from the API
-      def initialize options = {}
-        symbolize_keys! options
+      def initialize attrs = {}
+        symbolize_keys! attrs
 
         @queue = Queue.new
-        @write_key = options[:write_key]
-        @max_queue_size = options[:max_queue_size] || Defaults::Queue::MAX_SIZE
-        @options = options
+        @write_key = attrs[:write_key]
+        @max_queue_size = attrs[:max_queue_size] || Defaults::Queue::MAX_SIZE
+        @options = attrs
         @worker_mutex = Mutex.new
         @worker = Worker.new @queue, @write_key, @options
 
@@ -43,7 +43,7 @@ module Segment
 
       # public: Tracks an event
       #
-      # options - Hash
+      # attrs - Hash
       #           :anonymous_id - String of the user's id when you don't know who they are yet. (optional but you must provide either an anonymous_id or user_id. See: https://segment.io/docs/tracking-api/track/#user-id)
       #           :context      - Hash of context. (optional)
       #           :event        - String of event name.
@@ -51,14 +51,14 @@ module Segment
       #           :properties   - Hash of event properties. (optional)
       #           :timestamp    - Time of when the event occurred. (optional)
       #           :user_id      - String of the user id.
-      def track options
-        symbolize_keys! options
-        check_user_id! options
+      def track attrs
+        symbolize_keys! attrs
+        check_user_id! attrs
 
-        event = options[:event]
-        properties = options[:properties] || {}
-        timestamp = options[:timestamp] || Time.new
-        context = options[:context] || {}
+        event = attrs[:event]
+        properties = attrs[:properties] || {}
+        timestamp = attrs[:timestamp] || Time.new
+        context = attrs[:context] || {}
 
         check_timestamp! timestamp
 
@@ -73,10 +73,10 @@ module Segment
 
         enqueue({
           :event => event,
-          :userId => options[:user_id],
-          :anonymousId => options[:anonymous_id],
+          :userId => attrs[:user_id],
+          :anonymousId => attrs[:anonymous_id],
           :context =>  context,
-          :integrations => options[:integrations],
+          :integrations => attrs[:integrations],
           :properties => properties,
           :timestamp => datetime_in_iso8601(timestamp),
           :type => 'track'
@@ -85,20 +85,20 @@ module Segment
 
       # public: Identifies a user
       #
-      # options - Hash
+      # attrs - Hash
       #           :anonymous_id - String of the user's id when you don't know who they are yet. (optional but you must provide either an anonymous_id or user_id. See: https://segment.io/docs/tracking - api/track/#user - id)
       #           :context      - Hash of context. (optional)
       #           :integrations - Hash specifying what integrations this event goes to. (optional)
       #           :timestamp    - Time of when the event occurred. (optional)
       #           :traits       - Hash of user traits. (optional)
       #           :user_id      - String of the user id
-      def identify options
-        symbolize_keys! options
-        check_user_id! options
+      def identify attrs
+        symbolize_keys! attrs
+        check_user_id! attrs
 
-        traits = options[:traits] || {}
-        timestamp = options[:timestamp] || Time.new
-        context = options[:context] || {}
+        traits = attrs[:traits] || {}
+        timestamp = attrs[:timestamp] || Time.new
+        context = attrs[:context] || {}
 
         check_timestamp! timestamp
 
@@ -108,9 +108,9 @@ module Segment
         add_context context
 
         enqueue({
-          :userId => options[:user_id],
-          :anonymousId => options[:anonymous_id],
-          :integrations => options[:integrations],
+          :userId => attrs[:user_id],
+          :anonymousId => attrs[:anonymous_id],
+          :integrations => attrs[:integrations],
           :context => context,
           :traits => traits,
           :timestamp => datetime_in_iso8601(timestamp),
@@ -120,19 +120,19 @@ module Segment
 
       # public: Aliases a user from one id to another
       #
-      # options - Hash
+      # attrs - Hash
       #           :context     - Hash of context (optional)
       #           :integrations - Hash specifying what integrations this event goes to. (optional)
       #           :previous_id - String of the id to alias from
       #           :timestamp   - Time of when the alias occured (optional)
       #           :user_id     - String of the id to alias to
-      def alias(options)
-        symbolize_keys! options
+      def alias(attrs)
+        symbolize_keys! attrs
 
-        from = options[:previous_id]
-        to = options[:user_id]
-        timestamp = options[:timestamp] || Time.new
-        context = options[:context] || {}
+        from = attrs[:previous_id]
+        to = attrs[:user_id]
+        timestamp = attrs[:timestamp] || Time.new
+        context = attrs[:context] || {}
 
         check_presence! from, 'previous_id'
         check_presence! to, 'user_id'
@@ -142,7 +142,7 @@ module Segment
         enqueue({
           :previousId => from,
           :userId => to,
-          :integrations => options[:integrations],
+          :integrations => attrs[:integrations],
           :context => context,
           :timestamp => datetime_in_iso8601(timestamp),
           :type => 'alias'
@@ -151,21 +151,21 @@ module Segment
 
       # public: Associates a user identity with a group.
       #
-      # options - Hash
+      # attrs - Hash
       #           :context      - Hash of context (optional)
       #           :integrations - Hash specifying what integrations this event goes to. (optional)
       #           :previous_id  - String of the id to alias from
       #           :timestamp    - Time of when the alias occured (optional)
       #           :user_id      - String of the id to alias to
-      def group(options)
-        symbolize_keys! options
-        check_user_id! options
+      def group(attrs)
+        symbolize_keys! attrs
+        check_user_id! attrs
 
-        group_id = options[:group_id]
-        user_id = options[:user_id]
-        traits = options[:traits] || {}
-        timestamp = options[:timestamp] || Time.new
-        context = options[:context] || {}
+        group_id = attrs[:group_id]
+        user_id = attrs[:user_id]
+        traits = attrs[:traits] || {}
+        timestamp = attrs[:timestamp] || Time.new
+        context = attrs[:context] || {}
 
         fail ArgumentError, '.traits must be a hash' unless traits.is_a? Hash
         isoify_dates! traits
@@ -178,7 +178,7 @@ module Segment
           :groupId => group_id,
           :userId => user_id,
           :traits => traits,
-          :integrations => options[:integrations],
+          :integrations => attrs[:integrations],
           :context => context,
           :timestamp => datetime_in_iso8601(timestamp),
           :type => 'group'
@@ -187,7 +187,7 @@ module Segment
 
       # public: Records a page view
       #
-      # options - Hash
+      # attrs - Hash
       #           :anonymous_id - String of the user's id when you don't know who they are yet. (optional but you must provide either an anonymous_id or user_id. See: https://segment.io/docs/tracking - api/track/#user - id)
       #           :category     - String of the page category (optional)
       #           :context      - Hash of context (optional)
@@ -196,14 +196,14 @@ module Segment
       #           :properties   - Hash of page properties (optional)
       #           :timestamp    - Time of when the pageview occured (optional)
       #           :user_id      - String of the id to alias from
-      def page(options)
-        symbolize_keys! options
-        check_user_id! options
+      def page(attrs)
+        symbolize_keys! attrs
+        check_user_id! attrs
 
-        name = options[:name].to_s
-        properties = options[:properties] || {}
-        timestamp = options[:timestamp] || Time.new
-        context = options[:context] || {}
+        name = attrs[:name].to_s
+        properties = attrs[:properties] || {}
+        timestamp = attrs[:timestamp] || Time.new
+        context = attrs[:context] || {}
 
         fail ArgumentError, '.name must be a string' unless !name.empty?
         fail ArgumentError, '.properties must be a hash' unless properties.is_a? Hash
@@ -213,12 +213,12 @@ module Segment
         add_context context
 
         enqueue({
-          :userId => options[:user_id],
-          :anonymousId => options[:anonymous_id],
+          :userId => attrs[:user_id],
+          :anonymousId => attrs[:anonymous_id],
           :name => name,
-          :category => options[:category],
+          :category => attrs[:category],
           :properties => properties,
-          :integrations => options[:integrations],
+          :integrations => attrs[:integrations],
           :context => context,
           :timestamp => datetime_in_iso8601(timestamp),
           :type => 'page'
@@ -226,7 +226,7 @@ module Segment
       end
       # public: Records a screen view (for a mobile app)
       #
-      # options - Hash
+      # attrs - Hash
       #           :anonymous_id - String of the user's id when you don't know who they are yet. (optional but you must provide either an anonymous_id or user_id. See: https://segment.io/docs/tracking - api/track/#user - id)
       #           :category     - String screen category (optional)
       #           :context      - Hash of context (optional)
@@ -235,14 +235,14 @@ module Segment
       #           :properties   - Hash of screen properties (optional)
       #           :timestamp    - Time of when the screen occured (optional)
       #           :user_id      - String of the id to alias from
-      def screen(options)
-        symbolize_keys! options
-        check_user_id! options
+      def screen(attrs)
+        symbolize_keys! attrs
+        check_user_id! attrs
 
-        name = options[:name].to_s
-        properties = options[:properties] || {}
-        timestamp = options[:timestamp] || Time.new
-        context = options[:context] || {}
+        name = attrs[:name].to_s
+        properties = attrs[:properties] || {}
+        timestamp = attrs[:timestamp] || Time.new
+        context = attrs[:context] || {}
 
         fail ArgumentError, '.name must be a string' if name.empty?
         fail ArgumentError, '.properties must be a hash' unless properties.is_a? Hash
@@ -252,12 +252,12 @@ module Segment
         add_context context
 
         enqueue({
-          :userId => options[:user_id],
-          :anonymousId => options[:anonymous_id],
+          :userId => attrs[:user_id],
+          :anonymousId => attrs[:anonymous_id],
           :name => name,
           :properties => properties,
-          :category => options[:category],
-          :integrations => options[:integrations],
+          :category => attrs[:category],
+          :integrations => attrs[:integrations],
           :context => context,
           :timestamp => timestamp.iso8601,
           :type => 'screen'
@@ -327,8 +327,8 @@ module Segment
         }
       end
 
-      def check_user_id! options
-        fail ArgumentError, 'Must supply either user_id or anonymous_id' unless options[:user_id] || options[:anonymous_id]
+      def check_user_id! attrs
+        fail ArgumentError, 'Must supply either user_id or anonymous_id' unless attrs[:user_id] || attrs[:anonymous_id]
       end
 
       def ensure_worker_running
