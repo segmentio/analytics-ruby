@@ -50,8 +50,10 @@ module Segment
 
       def datetime_in_iso8601 datetime
         case datetime
-        when Time, DateTime
+        when Time
             time_in_iso8601 datetime
+        when DateTime
+            time_in_iso8601 datetime.to_time
         when Date
           date_in_iso8601 datetime
         else
@@ -59,7 +61,7 @@ module Segment
         end
       end
 
-      def time_in_iso8601 time, fraction_digits = 0
+      def time_in_iso8601 time, fraction_digits = 3
         fraction = if fraction_digits > 0
                      (".%06i" % time.usec)[0, fraction_digits + 1]
                    end
