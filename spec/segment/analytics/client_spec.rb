@@ -42,7 +42,7 @@ module Segment
         end
 
         it 'should use the timestamp given' do
-          time = Time.parse("1990-07-16 13:30:00 UTC")
+          time = Time.parse("1990-07-16 13:30:00.123 UTC")
 
           @client.track({
             :event => 'testing the timestamp',
@@ -78,9 +78,9 @@ module Segment
             }
           })
           message = @queue.pop
-          message[:properties][:time].should == '2013-01-01T00:00:00Z'
-          message[:properties][:time_with_zone].should == '2013-01-01T00:00:00Z'
-          message[:properties][:date_time].should == '2013-01-01T00:00:00Z'
+          message[:properties][:time].should == '2013-01-01T00:00:00.000Z'
+          message[:properties][:time_with_zone].should == '2013-01-01T00:00:00.000Z'
+          message[:properties][:date_time].should == '2013-01-01T00:00:00.000Z'
           message[:properties][:date].should == '2013-01-01'
           message[:properties][:nottime].should == 'x'
         end
@@ -119,9 +119,9 @@ module Segment
             }
           })
           message = @queue.pop
-          message[:traits][:time].should == '2013-01-01T00:00:00Z'
-          message[:traits][:time_with_zone].should == '2013-01-01T00:00:00Z'
-          message[:traits][:date_time].should == '2013-01-01T00:00:00Z'
+          message[:traits][:time].should == '2013-01-01T00:00:00.000Z'
+          message[:traits][:time_with_zone].should == '2013-01-01T00:00:00.000Z'
+          message[:traits][:date_time].should == '2013-01-01T00:00:00.000Z'
           message[:traits][:date].should == '2013-01-01'
           message[:traits][:nottime].should == 'x'
         end
@@ -188,9 +188,9 @@ module Segment
             }
           })
           message = @queue.pop
-          message[:traits][:time].should == '2013-01-01T00:00:00Z'
-          message[:traits][:time_with_zone].should == '2013-01-01T00:00:00Z'
-          message[:traits][:date_time].should == '2013-01-01T00:00:00Z'
+          message[:traits][:time].should == '2013-01-01T00:00:00.000Z'
+          message[:traits][:time_with_zone].should == '2013-01-01T00:00:00.000Z'
+          message[:traits][:date_time].should == '2013-01-01T00:00:00.000Z'
           message[:traits][:date].should == '2013-01-01'
           message[:traits][:nottime].should == 'x'
         end
