@@ -1,3 +1,7 @@
+2.0.8 / 2014-09-11
+==================
+* fix: add 3 ms to timestamp 
+
 2.0.7 / 2014-08-27
 ==================
 * fix: include optional options hash in calls
