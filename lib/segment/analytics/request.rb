@@ -55,8 +55,7 @@ module Segment
             body = JSON.parse(res.body)
             error = body["error"]
           end
-
-        rescue Exception => e
+        rescue Exception, Timeout::Error => e
           logger.error e.message
           e.backtrace.each { |line| logger.error line }
           status = -1
