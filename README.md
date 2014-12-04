@@ -3,11 +3,11 @@ analytics-ruby
 
 [![Build Status](https://travis-ci.org/segmentio/analytics-ruby.png?branch=master)](https://travis-ci.org/segmentio/analytics-ruby)
 
-analytics-ruby is a ruby client for [Segment.io](https://segment.io)
+analytics-ruby is a ruby client for [Segment](https://segment.com)
 
 ## Documentation
 
-Documentation is available at [segment.io/libraries/ruby](https://segment.io/libraries/ruby)
+Documentation is available at [segment.com/libraries/ruby](https://segment.com/libraries/ruby)
 
 ## License
 
@@ -26,7 +26,7 @@ WWWWWW||WWWWWW
 
 (The MIT License)
 
-Copyright (c) 2013 Segment.io Inc. <friends@segment.io>
+Copyright (c) 2013 Segment Inc. <friends@segment.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
