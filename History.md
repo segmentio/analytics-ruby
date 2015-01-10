@@ -1,3 +1,8 @@
+2.0.12 / 2015-01-10
+==================
+
+ * Fix batch being cleared and causing duplicates
+
 2.0.11 / 2014-09-22
 ==================
 
