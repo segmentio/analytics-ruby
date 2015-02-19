@@ -45,7 +45,7 @@ module Segment
           request = Net::HTTP::Post.new(@path, headers)
           request.basic_auth write_key, nil
 
-          if self.class.stub
+          if self.class.stub_requests
             status = 200
             error = nil
             logger.debug "stubbed request to #{@path}: write key = #{write_key}, payload = #{payload}"
@@ -71,10 +71,10 @@ module Segment
       end
 
       class << self
-        attr_accessor :stub
+        attr_accessor :stub_requests
 
-        def stub
-          @stub || ENV['STUB']
+        def stub_requests
+          @stub_requests || ENV['STUB']
         end
       end
     end
