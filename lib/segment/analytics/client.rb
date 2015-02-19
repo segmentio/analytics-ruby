@@ -316,8 +316,11 @@ module Segment
         context[:library] =  { :name => "analytics-ruby", :version => Segment::Analytics::VERSION.to_s }
       end
 
-      # private: Checks that the write_key is properly initialized
+      # private: Checks that the write_key is properly initialized.
+      # Short-circuit the test if Requests are being stubbed anyways since it
+      # wont matter.
       def check_write_key!
+        return if Request.stub_requests
         fail ArgumentError, 'Write key must be initialized' if @write_key.nil?
       end
 
