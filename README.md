@@ -5,6 +5,54 @@ analytics-ruby
 
 analytics-ruby is a ruby client for [Segment](https://segment.com)
 
+## Install
+
+Into Gemfile from rubygems.org:
+```
+gem 'analytics-ruby', :require => "segment"
+```
+
+Into environment gems from rubygems.org:
+```
+gem install 'analytics-ruby'
+```
+
+## Usage
+
+Create an instance of the Analytics object:
+```
+analytics = Segment::Analytics.new({
+  write_key: 'YOUR_WRITE_KEY'
+})
+```
+
+Sample usage:
+```
+user = User.last
+
+# Identify the user for the people section
+analytics.identify(
+	{
+		user_id: user.id,
+		traits: {
+			email: user.email,
+			first_name: user.first_name,
+			last_name: user.last_name
+		}
+	}
+)
+
+# Track a user event
+analytics.track(
+	{
+		user_id: user.id,
+		event: 'Created Account'
+	}
+)
+```
+
+Refer to the section below for documenation on individual available calls.
+
 ## Documentation
 
 Documentation is available at [segment.com/libraries/ruby](https://segment.com/libraries/ruby)
