@@ -9,6 +9,10 @@ analytics-ruby is a ruby client for [Segment](https://segment.com)
 
 Documentation is available at [segment.com/libraries/ruby](https://segment.com/libraries/ruby)
 
+## Testing
+
+You can use the `stub` option to Segment::Analytics.new to cause all requests to be stubbed, making it easier to test with this library.
+
 ## License
 
 ```
