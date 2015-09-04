@@ -214,7 +214,7 @@ module Segment
         timestamp = attrs[:timestamp] || Time.new
         context = attrs[:context] || {}
 
-        fail ArgumentError, '.name must be a string' unless !name.empty?
+        fail ArgumentError, '.name must be a string' unless name.is_a? String
         fail ArgumentError, '.properties must be a hash' unless properties.is_a? Hash
         isoify_dates! properties
 
