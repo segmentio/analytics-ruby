@@ -77,6 +77,11 @@ module Segment
         it 'should error without user_id or anonymous_id' do
           expect { analytics.screen :name => 'foo' }.to raise_error(ArgumentError)
         end
+
+        it 'should not error with the required options' do
+          analytics.screen Queued::SCREEN
+          sleep(1)
+        end
       end
 
       describe '#flush' do
