@@ -205,10 +205,6 @@ module Segment
           expect { @client.page :name => 'foo' }.to raise_error(ArgumentError)
         end
 
-        it 'should error without name' do
-          expect { @client.page :user_id => 1 }.to raise_error(ArgumentError)
-        end
-
         it 'should not error with the required options' do
           @client.page Queued::PAGE
         end
