@@ -223,10 +223,6 @@ module Segment
           expect { @client.screen :name => 'foo' }.to raise_error(ArgumentError)
         end
 
-        it 'should error without name' do
-          expect { A@client.screen :user_id => 1 }.to raise_error(ArgumentError)
-        end
-
         it 'should not error with the required options' do
           @client.screen Queued::SCREEN
         end
