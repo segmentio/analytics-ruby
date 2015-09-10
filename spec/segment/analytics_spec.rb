@@ -77,10 +77,6 @@ module Segment
         it 'should error without user_id or anonymous_id' do
           expect { analytics.screen :name => 'foo' }.to raise_error(ArgumentError)
         end
-
-        it 'should error without name' do
-          expect { analytics.screen :user_id => 1 }.to raise_error(ArgumentError)
-        end
       end
 
       describe '#flush' do
