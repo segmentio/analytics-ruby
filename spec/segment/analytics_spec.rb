@@ -67,10 +67,6 @@ module Segment
           expect { analytics.page :name => 'foo' }.to raise_error(ArgumentError)
         end
 
-        it 'should error without name' do
-          expect { analytics.page :user_id => 1 }.to raise_error(ArgumentError)
-        end
-
         it 'should not error with the required options' do
           analytics.page Queued::PAGE
           sleep(1)
@@ -80,10 +76,6 @@ module Segment
       describe '#screen' do
         it 'should error without user_id or anonymous_id' do
           expect { analytics.screen :name => 'foo' }.to raise_error(ArgumentError)
-        end
-
-        it 'should error without name' do
-          expect { analytics.screen :user_id => 1 }.to raise_error(ArgumentError)
         end
 
         it 'should not error with the required options' do
