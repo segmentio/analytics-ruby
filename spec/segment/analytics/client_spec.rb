@@ -113,7 +113,7 @@ module Segment
           end.to_not raise_error
         end
 
-        it 'should convert time and date traits into iso8601 format' do
+        it 'converts time and date traits into iso8601 format' do
           client.identify({
             :user_id => 'user',
             :traits => {
