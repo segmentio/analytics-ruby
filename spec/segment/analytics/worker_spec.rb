@@ -7,7 +7,7 @@ module Segment
         it 'accepts string keys' do
           queue = Queue.new
           worker = Segment::Analytics::Worker.new(queue, 'secret', 'batch_size' => 100)
-          worker.instance_variable_get(:@batch_size).should == 100
+          expect(worker.instance_variable_get(:@batch_size)).to eq(100)
         end
       end
 
@@ -20,27 +20,29 @@ module Segment
           Segment::Analytics::Defaults::Request::BACKOFF = 30.0
         end
 
-        it 'should not error if the endpoint is unreachable' do
-          Net::HTTP.any_instance.stub(:post).and_raise(Exception)
+        it 'does not error if the endpoint is unreachable' do
+          expect do
+            Net::HTTP.any_instance.stub(:post).and_raise(Exception)
 
-          queue = Queue.new
-          queue << {}
-          worker = Segment::Analytics::Worker.new(queue, 'secret')
-          worker.run
+            queue = Queue.new
+            queue << {}
+            worker = Segment::Analytics::Worker.new(queue, 'secret')
+            worker.run
 
-          queue.should be_empty
+            expect(queue).to be_empty
 
-          Net::HTTP.any_instance.unstub(:post)
+            Net::HTTP.any_instance.unstub(:post)
+          end.to_not raise_error
         end
 
-        it 'should execute the error handler if the request is invalid' do
+        it 'executes the error handler if the request is invalid' do
           Segment::Analytics::Request.any_instance.stub(:post).and_return(Segment::Analytics::Response.new(400, "Some error"))
 
           on_error = Proc.new do |status, error|
             puts "#{status}, #{error}"
           end
 
-          on_error.should_receive(:call).once
+          expect(on_error).to receive(:call).once
 
           queue = Queue.new
           queue << {}
@@ -49,46 +51,44 @@ module Segment
 
           Segment::Analytics::Request::any_instance.unstub(:post)
 
-          queue.should be_empty
+          expect(queue).to be_empty
         end
 
-        it 'should not call on_error if the request is good' do
-
+        it 'does not call on_error if the request is good' do
           on_error = Proc.new do |status, error|
             puts "#{status}, #{error}"
           end
 
-          on_error.should_receive(:call).at_most(0).times
+          expect(on_error).to_not receive(:call)
 
           queue = Queue.new
           queue << Requested::TRACK
           worker = Segment::Analytics::Worker.new queue, 'testsecret', :on_error => on_error
           worker.run
 
-          queue.should be_empty
+          expect(queue).to be_empty
         end
       end
 
       describe '#is_requesting?' do
-        it 'should not return true if there isn\'t a current batch' do
-
+        it 'does not return true if there isn\'t a current batch' do
           queue = Queue.new
           worker = Segment::Analytics::Worker.new(queue, 'testsecret')
 
-          worker.is_requesting?.should == false
+          expect(worker.is_requesting?).to eq(false)
         end
 
-        it 'should return true if there is a current batch' do
+        it 'returns true if there is a current batch' do
           queue = Queue.new
           queue << Requested::TRACK
           worker = Segment::Analytics::Worker.new(queue, 'testsecret')
 
           Thread.new do
             worker.run
-            worker.is_requesting?.should == false
+            expect(worker.is_requesting?).to eq(false)
           end
 
-          eventually { worker.is_requesting?.should be_true }
+          eventually { expect(worker.is_requesting?).to eq(true) }
         end
       end
     end
