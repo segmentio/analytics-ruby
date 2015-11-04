@@ -26,7 +26,7 @@ analytics = Segment::Analytics.new(write_key: 'YOUR_WRITE_KEY')
 
 Identify the user for the people section, see more [here](https://segment.com/docs/libraries/ruby/#identify).
 ```ruby
-analytics.identify(user_id: user.id,
+analytics.identify(user_id: 42,
                    traits: {
                      email: 'name@example.com',
                      first_name: 'Foo',
