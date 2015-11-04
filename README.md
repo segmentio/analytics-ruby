@@ -24,26 +24,27 @@ Create an instance of the Analytics object:
 analytics = Segment::Analytics.new(write_key: 'YOUR_WRITE_KEY')
 ```
 
-Sample usage:
+Identify the user for the people section, see more [here](https://segment.com/docs/libraries/ruby/#identify).
 ```ruby
-user = User.last
-
-# Identify the user for the people section, see more [here](https://segment.com/docs/libraries/ruby/#identify).
 analytics.identify(user_id: user.id,
                    traits: {
-                     email: user.email,
-                     first_name: user.first_name,
-                     last_name: user.last_name
+                     email: 'name@example.com',
+                     first_name: 'Foo',
+                     last_name: 'Bar'
                    })
-
-# Alias an user, see more [here](https://segment.com/docs/libraries/ruby/#alias).
-analytics.alias(user_id: user.id)
-
-# Track a user event, see more [here](https://segment.com/docs/libraries/ruby/#track).
-analytics.track(user_id: user.id, event: 'Created Account')
 ```
 
-Refer to the section below for documenation on individual available calls.
+Alias an user, see more [here](https://segment.com/docs/libraries/ruby/#alias).
+```ruby
+analytics.alias(user_id: 41)
+```
+
+Track a user event, see more [here](https://segment.com/docs/libraries/ruby/#track).
+```ruby
+analytics.track(user_id: 42, event: 'Created Account')
+```
+
+There are a few calls available, please check the documentation section.
 
 ## Documentation
 
