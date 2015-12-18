@@ -52,6 +52,7 @@ module Segment
       #           :properties   - Hash of event properties. (optional)
       #           :timestamp    - Time of when the event occurred. (optional)
       #           :user_id      - String of the user id.
+      #           :message_id   - String of the message id that uniquely identified a message across the API. (optional)
       def track attrs
         symbolize_keys! attrs
         check_user_id! attrs
@@ -60,6 +61,7 @@ module Segment
         properties = attrs[:properties] || {}
         timestamp = attrs[:timestamp] || Time.new
         context = attrs[:context] || {}
+        message_id = attrs[:message_id].to_s if attrs[:message_id]
 
         check_timestamp! timestamp
 
@@ -76,10 +78,11 @@ module Segment
           :event => event,
           :userId => attrs[:user_id],
           :anonymousId => attrs[:anonymous_id],
-          :context =>  context,
+          :context => context,
           :options => attrs[:options],
           :integrations => attrs[:integrations],
           :properties => properties,
+          :messageId => message_id,
           :timestamp => datetime_in_iso8601(timestamp),
           :type => 'track'
         })
@@ -95,6 +98,7 @@ module Segment
       #           :timestamp    - Time of when the event occurred. (optional)
       #           :traits       - Hash of user traits. (optional)
       #           :user_id      - String of the user id
+      #           :message_id   - String of the message id that uniquely identified a message across the API. (optional)
       def identify attrs
         symbolize_keys! attrs
         check_user_id! attrs
@@ -102,6 +106,7 @@ module Segment
         traits = attrs[:traits] || {}
         timestamp = attrs[:timestamp] || Time.new
         context = attrs[:context] || {}
+        message_id = attrs[:message_id].to_s if attrs[:message_id]
 
         check_timestamp! timestamp
 
@@ -117,6 +122,7 @@ module Segment
           :context => context,
           :traits => traits,
           :options => attrs[:options],
+          :messageId => message_id,
           :timestamp => datetime_in_iso8601(timestamp),
           :type => 'identify'
         })
@@ -131,6 +137,7 @@ module Segment
       #           :previous_id - String of the id to alias from
       #           :timestamp   - Time of when the alias occured (optional)
       #           :user_id     - String of the id to alias to
+      #           :message_id   - String of the message id that uniquely identified a message across the API. (optional)
       def alias(attrs)
         symbolize_keys! attrs
 
@@ -138,6 +145,7 @@ module Segment
         to = attrs[:user_id]
         timestamp = attrs[:timestamp] || Time.new
         context = attrs[:context] || {}
+        message_id = attrs[:message_id].to_s if attrs[:message_id]
 
         check_presence! from, 'previous_id'
         check_presence! to, 'user_id'
@@ -150,6 +158,7 @@ module Segment
           :integrations => attrs[:integrations],
           :context => context,
           :options => attrs[:options],
+          :messageId => message_id,
           :timestamp => datetime_in_iso8601(timestamp),
           :type => 'alias'
         })
@@ -164,6 +173,7 @@ module Segment
       #           :previous_id  - String of the id to alias from
       #           :timestamp    - Time of when the alias occured (optional)
       #           :user_id      - String of the id to alias to
+      #           :message_id   - String of the message id that uniquely identified a message across the API. (optional)
       def group(attrs)
         symbolize_keys! attrs
         check_user_id! attrs
@@ -173,6 +183,7 @@ module Segment
         traits = attrs[:traits] || {}
         timestamp = attrs[:timestamp] || Time.new
         context = attrs[:context] || {}
+        message_id = attrs[:message_id].to_s if attrs[:message_id]
 
         fail ArgumentError, '.traits must be a hash' unless traits.is_a? Hash
         isoify_dates! traits
@@ -188,6 +199,7 @@ module Segment
           :integrations => attrs[:integrations],
           :options => attrs[:options],
           :context => context,
+          :messageId => message_id,
           :timestamp => datetime_in_iso8601(timestamp),
           :type => 'group'
         })
@@ -205,6 +217,7 @@ module Segment
       #           :properties   - Hash of page properties (optional)
       #           :timestamp    - Time of when the pageview occured (optional)
       #           :user_id      - String of the id to alias from
+      #           :message_id   - String of the message id that uniquely identified a message across the API. (optional)
       def page(attrs)
         symbolize_keys! attrs
         check_user_id! attrs
@@ -213,6 +226,7 @@ module Segment
         properties = attrs[:properties] || {}
         timestamp = attrs[:timestamp] || Time.new
         context = attrs[:context] || {}
+        message_id = attrs[:message_id].to_s if attrs[:message_id]
 
         fail ArgumentError, '.properties must be a hash' unless properties.is_a? Hash
         isoify_dates! properties
@@ -229,6 +243,7 @@ module Segment
           :integrations => attrs[:integrations],
           :options => attrs[:options],
           :context => context,
+          :messageId => message_id,
           :timestamp => datetime_in_iso8601(timestamp),
           :type => 'page'
         })
@@ -253,6 +268,7 @@ module Segment
         properties = attrs[:properties] || {}
         timestamp = attrs[:timestamp] || Time.new
         context = attrs[:context] || {}
+        message_id = attrs[:message_id].to_s if attrs[:message_id]
 
         fail ArgumentError, '.properties must be a hash' unless properties.is_a? Hash
         isoify_dates! properties
@@ -269,6 +285,7 @@ module Segment
           :options => attrs[:options],
           :integrations => attrs[:integrations],
           :context => context,
+          :messageId => message_id,
           :timestamp => timestamp.iso8601,
           :type => 'screen'
         })
@@ -288,7 +305,7 @@ module Segment
       # returns Boolean of whether the item was added to the queue.
       def enqueue(action)
         # add our request id for tracing purposes
-        action[:messageId] = uid
+        action[:messageId] ||= uid
         unless queue_full = @queue.length >= @max_queue_size
           ensure_worker_running
           @queue << action
