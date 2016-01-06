@@ -44,9 +44,9 @@ module Segment
 
           res = Request.new.post @write_key, @batch
 
-          @lock.synchronize { @batch.clear }
-
           @on_error.call res.status, res.error unless res.status == 200
+
+          @lock.synchronize { @batch.clear }
         end
       end
 
