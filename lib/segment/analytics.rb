@@ -10,7 +10,7 @@ require 'segment/analytics/logging'
 module Segment
   class Analytics
     def initialize options = {}
-      Request.stub = options[:stub]
+      Request.stub = options[:stub] if options.has_key?(:stub)
       @client = Segment::Analytics::Client.new options
     end
 

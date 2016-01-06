@@ -256,7 +256,7 @@ module Segment
       context 'common' do
         check_property = proc { |msg, k, v| msg[k] && msg[k] == v }
 
-        let(:data) { { :user_id => 1, :group_id => 2, :previous_id => 3, :anonymous_id => 4, :event => "coco barked", :name => "coco" } }
+        let(:data) { { :user_id => 1, :group_id => 2, :previous_id => 3, :anonymous_id => 4, :message_id => 5, :event => "coco barked", :name => "coco" } }
 
         it 'does not convert ids given as fixnums to strings' do
           [:track, :screen, :page, :identify].each do |s|
@@ -265,6 +265,15 @@ module Segment
 
             expect(check_property.call(message, :userId, 1)).to eq(true)
             expect(check_property.call(message, :anonymousId, 4)).to eq(true)
+          end
+        end
+
+        it 'converts message id to string' do
+          [:track, :screen, :page, :group, :identify, :alias].each do |s|
+            client.send(s, data)
+            message = queue.pop(true)
+
+            expect(check_property.call(message, :messageId, '5')).to eq(true)
           end
         end
 
