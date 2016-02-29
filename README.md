@@ -9,11 +9,11 @@ analytics-ruby is a ruby client for [Segment](https://segment.com)
 
 Into Gemfile from rubygems.org:
 ```ruby
-gem 'analytics-ruby', require: "segment"
+gem 'analytics-ruby'
 ```
 
 Into environment gems from rubygems.org:
-```ruby
+```
 gem install 'analytics-ruby'
 ```
 
