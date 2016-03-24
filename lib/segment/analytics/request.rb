@@ -26,8 +26,8 @@ module Segment
 
         http = Net::HTTP.new(options[:host], options[:port])
         http.use_ssl = options[:ssl]
-        http.read_timeout = 8
-        http.open_timeout = 4
+        http.read_timeout = options[:read_timeout] || READ_TIMEOUT
+        http.open_timeout = options[:open_timeout] || OPEN_TIMEOUT
 
         @http = http
       end
