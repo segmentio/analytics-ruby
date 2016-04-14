@@ -36,6 +36,20 @@ module Segment
         until Thread.current[:should_exit]
           return if @queue.empty?
 
+          flush_queue
+        end
+      end
+
+      # public: Check whether we have outstanding requests.
+      #
+      def is_requesting?
+        @lock.synchronize { !@batch.empty? }
+      end
+
+      private
+
+      def flush_queue
+        until @queue.empty?
           @lock.synchronize do
             until @batch.length >= @batch_size || @queue.empty?
               @batch << @queue.pop
@@ -48,12 +62,6 @@ module Segment
 
           @lock.synchronize { @batch.clear }
         end
-      end
-
-      # public: Check whether we have outstanding requests.
-      #
-      def is_requesting?
-        @lock.synchronize { !@batch.empty? }
       end
     end
   end
