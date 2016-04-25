@@ -1,3 +1,11 @@
+2.0.13 / 2015-09-15
+==================
+
+ * readme: updated install docs
+ * fix: page/screen to allow no name
+ * git: ignore ruby version
+ * travis-ci: remove old rubys
+
 2.0.12 / 2015-01-10
 ==================
 
