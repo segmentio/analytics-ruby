@@ -55,7 +55,7 @@ module Segment
             body = JSON.parse(res.body)
             error = body["error"]
           end
-        rescue Exception => e
+        rescue JSON::ParserError, Net::ReadTimeout, Net::OpenTimeout, EOFError => e
           unless (remaining_retries -=1).zero?
             sleep(backoff)
             retry
