@@ -5,4 +5,4 @@ test:
 build:
 	gem build ./analytics-ruby.gemspec
 
-.PHONY: test
+.PHONY: test build

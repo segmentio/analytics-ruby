@@ -1,3 +1,10 @@
+
+2.1.0 / 2016-06-17
+==================
+
+ * Fix: Ensure error handler is called before Client#flush finishes.
+ * Feature: Support setting a custom message ID.
+
 2.0.13 / 2015-09-15
 ==================
 
