@@ -63,7 +63,7 @@ module Segment
 
       def time_in_iso8601 time, fraction_digits = 3
         fraction = if fraction_digits > 0
-                     (".%06i" % time.usec)[0, fraction_digits + 1]
+                     (".%06i" % time.utc.usec)[0, fraction_digits + 1]
                    end
 
         "#{time.strftime("%Y-%m-%dT%H:%M:%S")}#{fraction}#{formatted_offset(time, true, 'Z')}"
