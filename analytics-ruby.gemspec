@@ -1,4 +1,4 @@
-require File.expand_path('../lib/segment/analytics/version', __FILE__)
+require File.expand_path('../lib/segmentio/analytics/version', __FILE__)
 
 Gem::Specification.new do |spec|
   spec.name    = 'analytics-ruby'
