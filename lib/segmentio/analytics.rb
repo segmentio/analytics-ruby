@@ -1,11 +1,11 @@
-require 'segment/analytics/defaults'
-require 'segment/analytics/utils'
-require 'segment/analytics/version'
-require 'segment/analytics/client'
-require 'segment/analytics/worker'
-require 'segment/analytics/request'
-require 'segment/analytics/response'
-require 'segment/analytics/logging'
+require 'segmentio/analytics/defaults'
+require 'segmentio/analytics/utils'
+require 'segmentio/analytics/version'
+require 'segmentio/analytics/client'
+require 'segmentio/analytics/worker'
+require 'segmentio/analytics/request'
+require 'segmentio/analytics/response'
+require 'segmentio/analytics/logging'
 
 module Segmentio
   class Analytics

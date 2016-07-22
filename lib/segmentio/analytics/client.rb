@@ -1,8 +1,8 @@
 require 'thread'
 require 'time'
-require 'segment/analytics/utils'
-require 'segment/analytics/worker'
-require 'segment/analytics/defaults'
+require 'segmentio/analytics/utils'
+require 'segmentio/analytics/worker'
+require 'segmentio/analytics/defaults'
 
 module Segmentio
   class Analytics
