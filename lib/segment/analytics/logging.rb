@@ -1,6 +1,6 @@
 require 'logger'
 
-module Segment
+module Segmentio
   class Analytics
     module Logging
       class << self
@@ -9,7 +9,7 @@ module Segment
                         Rails.logger
                       else
                         logger = Logger.new STDOUT
-                        logger.progname = 'Segment::Analytics'
+                        logger.progname = 'Segmentio::Analytics'
                         logger
                       end
         end

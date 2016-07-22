@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Segment
+module Segmentio
   class Analytics
     describe Request do
       before do

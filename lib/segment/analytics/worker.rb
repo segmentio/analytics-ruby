@@ -3,11 +3,11 @@ require 'segment/analytics/utils'
 require 'segment/analytics/defaults'
 require 'segment/analytics/request'
 
-module Segment
+module Segmentio
   class Analytics
     class Worker
-      include Segment::Analytics::Utils
-      include Segment::Analytics::Defaults
+      include Segmentio::Analytics::Utils
+      include Segmentio::Analytics::Defaults
 
       # public: Creates a new worker
       #

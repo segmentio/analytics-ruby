@@ -1,6 +1,6 @@
 require 'securerandom'
 
-module Segment
+module Segmentio
   class Analytics
     module Utils
       extend self
