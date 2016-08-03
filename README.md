@@ -55,7 +55,7 @@ Refer to the section below for documenation on individual available calls.
 
 ## Documentation
 
-Documentation is available at [segment.com/libraries/ruby](https://segment.com/libraries/ruby)
+Documentation is available at [segment.com/docs/sources/server/ruby](https://segment.com/docs/sources/server/ruby/)
 
 ## Testing
 
