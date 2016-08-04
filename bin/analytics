@@ -1,14 +1,13 @@
 #!/usr/bin/env ruby
 
 require 'segment/analytics'
-require 'rubygems'
 require 'commander/import'
 require 'time'
 require 'json'
 
-program :name, 'simulator.rb'
+program :name, 'analytics'
 program :version, '0.0.1'
-program :description, 'scripting simulator'
+program :description, 'makes an analytics call'
 
 # use an env var for write key, instead of a flag
 Analytics = Segment::Analytics.new({
@@ -17,15 +16,13 @@ Analytics = Segment::Analytics.new({
 })
 
 def toObject(str)
-  return JSON.parse(str)
+  return JSON.parse(str) if str
 end
 
 # high level
 # analytics <method> [options]
 # SEGMENT_WRITE_KEY=<write_key> ./analytics.rb <method> [options]
 # SEGMENT_WRITE_KEY=<write_key> ./analytics.rb track --event testing --user 1234 --anonymous 567 --properties '{"hello": "goodbye"}' --context '{"slow":"poke"}'
-
-
 
 # track
 command :track do |c|
@@ -43,10 +40,9 @@ command :track do |c|
       anonymous_id: options.anonymous,
       properties: toObject(options.properties),
       context: toObject(options.context)
-       })
+    })
     Analytics.flush
   end
-
 end
 
 # page
@@ -66,10 +62,9 @@ command :page do |c|
       properties: toObject(options.properties),
       context: toObject(options.context),
       category: options.category
-       })
+    })
     Analytics.flush
   end
-
 end
 
 # identify
@@ -85,10 +80,9 @@ command :identify do |c|
       anonymous_id: options.anonymous,
       traits: toObject(options.traits),
       context: toObject(options.context)
-       })
+    })
     Analytics.flush
   end
-
 end
 
 # screen
@@ -107,12 +101,10 @@ command :screen do |c|
       traits: toObject(options.traits),
       properties: toObject(option.properties),
       context: toObject(options.context)
-       })
+    })
     Analytics.flush
   end
-
 end
-
 
 # group
 command :group do |c|
@@ -129,10 +121,9 @@ command :group do |c|
       group_id: options.group,
       traits: toObject(options.traits),
       context: toObject(options.context)
-       })
+    })
     Analytics.flush
   end
-
 end
 
 # alias
@@ -144,9 +135,7 @@ command :alias do |c|
     Analytics.alias({
       user_id: options.user,
       previous_id: options.previous
-       })
+    })
     Analytics.flush
   end
-
 end
-
