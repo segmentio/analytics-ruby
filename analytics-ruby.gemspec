@@ -5,6 +5,7 @@ Gem::Specification.new do |spec|
   spec.version = Segment::Analytics::VERSION
   spec.files   = Dir.glob('**/*')
   spec.require_paths = ['lib']
+  spec.bindir = 'bin'
   spec.summary = 'Segment.io analytics library'
   spec.description = 'The Segment.io ruby analytics library'
   spec.authors = ['Segment.io']
