@@ -1,17 +1,17 @@
-require 'segment/analytics/defaults'
-require 'segment/analytics/utils'
-require 'segment/analytics/version'
-require 'segment/analytics/client'
-require 'segment/analytics/worker'
-require 'segment/analytics/request'
-require 'segment/analytics/response'
-require 'segment/analytics/logging'
+require 'segmentio/analytics/defaults'
+require 'segmentio/analytics/utils'
+require 'segmentio/analytics/version'
+require 'segmentio/analytics/client'
+require 'segmentio/analytics/worker'
+require 'segmentio/analytics/request'
+require 'segmentio/analytics/response'
+require 'segmentio/analytics/logging'
 
-module Segment
+module Segmentio
   class Analytics
     def initialize options = {}
       Request.stub = options[:stub] if options.has_key?(:stub)
-      @client = Segment::Analytics::Client.new options
+      @client = Segmentio::Analytics::Client.new options
     end
 
     def method_missing message, *args, &block

@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'segment/analytics'
+require 'segmentio/analytics'
 require 'rubygems'
 require 'commander/import'
 require 'time'
@@ -11,7 +11,7 @@ program :version, '0.0.1'
 program :description, 'scripting simulator'
 
 # use an env var for write key, instead of a flag
-Analytics = Segment::Analytics.new({
+Analytics = Segmentio::Analytics.new({
   write_key: ENV['SEGMENT_WRITE_KEY'],
   on_error: Proc.new { |status, msg| print msg }
 })
@@ -149,4 +149,3 @@ command :alias do |c|
   end
 
 end
-

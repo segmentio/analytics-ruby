@@ -1,13 +1,13 @@
-require 'segment/analytics/defaults'
-require 'segment/analytics/utils'
-require 'segment/analytics/defaults'
-require 'segment/analytics/request'
+require 'segmentio/analytics/defaults'
+require 'segmentio/analytics/utils'
+require 'segmentio/analytics/defaults'
+require 'segmentio/analytics/request'
 
-module Segment
+module Segmentio
   class Analytics
     class Worker
-      include Segment::Analytics::Utils
-      include Segment::Analytics::Defaults
+      include Segmentio::Analytics::Utils
+      include Segmentio::Analytics::Defaults
 
       # public: Creates a new worker
       #
