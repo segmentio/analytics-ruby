@@ -5,6 +5,8 @@ Gem::Specification.new do |spec|
   spec.version = Segmentio::Analytics::VERSION
   spec.files   = Dir.glob('**/*')
   spec.require_paths = ['lib']
+  spec.bindir = 'bin'
+  spec.executables = ['analytics']
   spec.summary = 'Segment.io analytics library'
   spec.description = 'The Segment.io ruby analytics library'
   spec.authors = ['Segment.io']
@@ -14,6 +16,7 @@ Gem::Specification.new do |spec|
 
   # Ruby 1.8 requires json
   spec.add_dependency 'json', ['~> 1.7'] if RUBY_VERSION < "1.9"
+  spec.add_dependency 'commander', '~> 4.4'
 
   spec.add_development_dependency 'rake', '~> 10.3'
   spec.add_development_dependency 'wrong', '~> 0.0'
