@@ -99,6 +99,10 @@ module Segment
           expect { client.identify({}) }.to raise_error(ArgumentError)
         end
 
+        it 'errors on an empty string' do
+          expect { client.identify({ :user_id => '' }) }.to raise_error(ArgumentError)
+        end
+
         it 'does not error with the required options' do
           expect do
             client.identify Queued::IDENTIFY
