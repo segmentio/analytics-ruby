@@ -83,7 +83,7 @@ end
 # end
 
 module AsyncHelper
-  def eventually(options: {})
+  def eventually(options = {})
     timeout = options[:timeout] || 2
     interval = options[:interval] || 0.1
     time_limit = Time.now + timeout
