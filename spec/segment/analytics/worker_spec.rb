@@ -85,7 +85,6 @@ module Segment
         end
 
         it 'returns true if there is a current batch' do
-
           queue = Queue.new
           queue << Requested::TRACK
           worker = Segment::Analytics::Worker.new(queue, 'testsecret')
