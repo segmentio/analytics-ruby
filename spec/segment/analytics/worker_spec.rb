@@ -85,16 +85,18 @@ module Segment
         end
 
         it 'returns true if there is a current batch' do
+
           queue = Queue.new
           queue << Requested::TRACK
           worker = Segment::Analytics::Worker.new(queue, 'testsecret')
 
           Thread.new do
             worker.run
-            expect(worker.is_requesting?).to eq(false)
+            expect(worker.is_requesting?).to eq(true)
           end
 
-          eventually { expect(worker.is_requesting?).to eq(true) }
+          eventually { expect(worker.is_requesting?).to eq(false) }
+
         end
       end
     end
