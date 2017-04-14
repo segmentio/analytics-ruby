@@ -45,7 +45,6 @@ module Segment
           res = Request.new.post @write_key, @batch
 
           @on_error.call res.status, res.error unless res.status == 200
-
           @lock.synchronize { @batch.clear }
         end
       end
@@ -53,7 +52,7 @@ module Segment
       # public: Check whether we have outstanding requests.
       #
       def is_requesting?
-        @lock.synchronize { !@batch.empty? }
+        @lock.synchronize { @batch.any? }
       end
     end
   end
