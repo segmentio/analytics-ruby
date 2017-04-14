@@ -103,7 +103,7 @@ module Segment
           expect { client.identify({ :anonymous_id => '' }) }.to raise_error(ArgumentError)
         end
 
-        it 'errors on an empty string' do
+        it 'errors on an empty user_id' do
           expect { client.identify({ :user_id => '' }) }.to raise_error(ArgumentError)
         end
 
