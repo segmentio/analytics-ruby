@@ -355,7 +355,7 @@ module Segment
       end
 
       def check_user_id! attrs
-        fail ArgumentError, 'Must supply either user_id or anonymous_id' unless attrs[:user_id] || attrs[:anonymous_id]
+        fail ArgumentError, 'Must supply either user_id or anonymous_id' unless attrs[:user_id].present? || attrs[:anonymous_id].present?
       end
 
       def ensure_worker_running
