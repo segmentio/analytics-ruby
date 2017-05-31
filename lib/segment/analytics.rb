@@ -22,7 +22,7 @@ module Segment
       end
     end
 
-    def respond_to? method_name, include_private = false
+    def respond_to_missing?(method_name, include_private = false)
       @client.respond_to?(method_name) || super
     end
 
