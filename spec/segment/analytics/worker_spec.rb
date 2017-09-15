@@ -84,12 +84,6 @@ module Segment
           expect(worker.is_requesting?).to eq(false)
         end
 
-        # Race Condition
-        # When we call worker.ran it creates new Request object and
-        # do post request. So we expect to check a batch is running.
-        # In eventually function we check for 5 seconds that
-        # all batches finished its process.
-
         it 'returns true if there is a current batch' do
           queue = Queue.new
           queue << Requested::TRACK
@@ -97,11 +91,10 @@ module Segment
 
           Thread.new do
             worker.run
-            expect(worker.is_requesting?).to eq(true)
+            expect(worker.is_requesting?).to eq(false)
           end
 
-          eventually { expect(worker.is_requesting?).to eq(false) }
-
+          eventually { expect(worker.is_requesting?).to eq(true) }
         end
       end
     end
