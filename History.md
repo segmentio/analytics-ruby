@@ -1,4 +1,10 @@
 
+2.2.3.pre / 2017-09-14
+==================
+
+  * [Fix](https://github.com/segmentio/analytics-ruby/pull/120): Override `respond_to_missing` instead of `respond_to?` to facilitate mock the library in tests.
+
+
 2.2.2 / 2016-08-03
 ==================
 
