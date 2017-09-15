@@ -101,6 +101,20 @@ module Segment
           end.to_not raise_error
         end
       end
+
+      describe '#respond_to?' do
+        it 'responds to all public instance methods of Segment::Analytics::Client' do
+          expect(analytics).to respond_to(*Segment::Analytics::Client.public_instance_methods(false))
+        end
+      end
+
+      describe '#method' do
+        Segment::Analytics::Client.public_instance_methods(false).each do |public_method|
+          it "returns a Method object with '#{public_method}' as argument" do
+            expect(analytics.method(public_method).class).to eq(Method)
+          end
+        end
+      end
     end
   end
 end
