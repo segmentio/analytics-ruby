@@ -85,11 +85,12 @@ module Segment
           })
           message = queue.pop
 
-          expect(message[:properties][:time]).to eq('2013-01-01T00:00:00.000Z')
-          expect(message[:properties][:time_with_zone]).to eq('2013-01-01T00:00:00.000Z')
-          expect(message[:properties][:date_time]).to eq('2013-01-01T00:00:00.000Z')
-          expect(message[:properties][:date]).to eq('2013-01-01')
-          expect(message[:properties][:nottime]).to eq('x')
+          properties = message[:properties]
+          expect(properties[:time]).to eq('2013-01-01T00:00:00.000Z')
+          expect(properties[:time_with_zone]).to eq('2013-01-01T00:00:00.000Z')
+          expect(properties[:date_time]).to eq('2013-01-01T00:00:00.000+00:00')
+          expect(properties[:date]).to eq('2013-01-01')
+          expect(properties[:nottime]).to eq('x')
         end
       end
 
@@ -127,11 +128,12 @@ module Segment
 
           message = queue.pop
 
-          expect(message[:traits][:time]).to eq('2013-01-01T00:00:00.000Z')
-          expect(message[:traits][:time_with_zone]).to eq('2013-01-01T00:00:00.000Z')
-          expect(message[:traits][:date_time]).to eq('2013-01-01T00:00:00.000Z')
-          expect(message[:traits][:date]).to eq('2013-01-01')
-          expect(message[:traits][:nottime]).to eq('x')
+          traits = message[:traits]
+          expect(traits[:time]).to eq('2013-01-01T00:00:00.000Z')
+          expect(traits[:time_with_zone]).to eq('2013-01-01T00:00:00.000Z')
+          expect(traits[:date_time]).to eq('2013-01-01T00:00:00.000+00:00')
+          expect(traits[:date]).to eq('2013-01-01')
+          expect(traits[:nottime]).to eq('x')
         end
       end
 
@@ -191,11 +193,12 @@ module Segment
 
           message = queue.pop
 
-          expect(message[:traits][:time]).to eq('2013-01-01T00:00:00.000Z')
-          expect(message[:traits][:time_with_zone]).to eq('2013-01-01T00:00:00.000Z')
-          expect(message[:traits][:date_time]).to eq('2013-01-01T00:00:00.000Z')
-          expect(message[:traits][:date]).to eq('2013-01-01')
-          expect(message[:traits][:nottime]).to eq('x')
+          traits = message[:traits]
+          expect(traits[:time]).to eq('2013-01-01T00:00:00.000Z')
+          expect(traits[:time_with_zone]).to eq('2013-01-01T00:00:00.000Z')
+          expect(traits[:date_time]).to eq('2013-01-01T00:00:00.000+00:00')
+          expect(traits[:date]).to eq('2013-01-01')
+          expect(traits[:nottime]).to eq('x')
         end
       end
 
