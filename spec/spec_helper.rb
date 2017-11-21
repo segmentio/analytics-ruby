@@ -77,6 +77,13 @@ module Segment
   end
 end
 
+# A worker that doesn't consume jobs
+class NoopWorker
+  def run
+    # Does nothing
+  end
+end
+
 # usage:
 # it "should return a result of 5" do
 #   eventually(options: {timeout: 1}) { long_running_thing.result.should eq(5) }

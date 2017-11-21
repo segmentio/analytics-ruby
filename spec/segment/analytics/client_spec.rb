@@ -3,7 +3,12 @@ require 'spec_helper'
 module Segment
   class Analytics
     describe Client do
-      let(:client) { Client.new :write_key => WRITE_KEY }
+      let(:client) do
+        Client.new(:write_key => WRITE_KEY).tap { |client|
+          # Ensure that worker doesn't consume items from the queue
+          client.instance_variable_set(:@worker, NoopWorker.new)
+        }
+      end
       let(:queue) { client.instance_variable_get :@queue }
 
       describe '#initialize' do
@@ -158,10 +163,6 @@ module Segment
       end
 
       describe '#group' do
-        after do
-          client.flush
-        end
-
         it 'errors without group_id' do
           expect { client.group :user_id => 'foo' }.to raise_error(ArgumentError)
         end
@@ -235,21 +236,23 @@ module Segment
       end
 
       describe '#flush' do
-        it 'waits for the queue to finish on a flush' do
-          client.identify Queued::IDENTIFY
-          client.track Queued::TRACK
-          client.flush
+        let(:client_with_worker) { Client.new(:write_key => WRITE_KEY) }
 
-          expect(client.queued_messages).to eq(0)
+        it 'waits for the queue to finish on a flush' do
+          client_with_worker.identify Queued::IDENTIFY
+          client_with_worker.track Queued::TRACK
+          client_with_worker.flush
+
+          expect(client_with_worker.queued_messages).to eq(0)
         end
 
         it 'completes when the process forks' do
-          client.identify Queued::IDENTIFY
+          client_with_worker.identify Queued::IDENTIFY
 
           Process.fork do
-            client.track Queued::TRACK
-            client.flush
-            expect(client.queued_messages).to eq(0)
+            client_with_worker.track Queued::TRACK
+            client_with_worker.flush
+            expect(client_with_worker.queued_messages).to eq(0)
           end
 
           Process.wait
