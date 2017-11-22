@@ -8,7 +8,7 @@ module Segment
       # public: Return a new hash with keys converted from strings to symbols
       #
       def symbolize_keys(hash)
-        hash.inject({}) { |memo, (k,v)| memo[k.to_sym] = v; memo }
+        hash.inject({}) { |memo, (k, v)| memo[k.to_sym] = v; memo }
       end
 
       # public: Convert hash keys from strings to symbols in place
@@ -20,7 +20,7 @@ module Segment
       # public: Return a new hash with keys as strings
       #
       def stringify_keys(hash)
-        hash.inject({}) { |memo, (k,v)| memo[k.to_s] = v; memo }
+        hash.inject({}) { |memo, (k, v)| memo[k.to_s] = v; memo }
       end
 
       # public: Returns a new hash with all the date values in the into iso8601
@@ -51,9 +51,9 @@ module Segment
       def datetime_in_iso8601 datetime
         case datetime
         when Time
-            time_in_iso8601 datetime
+          time_in_iso8601 datetime
         when DateTime
-            time_in_iso8601 datetime.to_time
+          time_in_iso8601 datetime.to_time
         when Date
           date_in_iso8601 datetime
         else

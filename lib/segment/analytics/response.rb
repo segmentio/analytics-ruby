@@ -13,4 +13,3 @@ module Segment
     end
   end
 end
-

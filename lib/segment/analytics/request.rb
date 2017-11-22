@@ -56,7 +56,7 @@ module Segment
             error = body["error"]
           end
         rescue Exception => e
-          unless (remaining_retries -=1).zero?
+          unless (remaining_retries -= 1).zero?
             sleep(backoff)
             retry
           end
