@@ -144,3 +144,6 @@ Style/ParallelAssignment:
 Style/PreferredHashMethods:
   EnforcedStyle: verbose
 
+# Ruby 1.9 doesn't support percent-styled symbol arrays
+Style/SymbolArray:
+  EnforcedStyle: brackets
