@@ -10,12 +10,6 @@ Layout/IndentHash:
   EnforcedStyle: consistent
 
 # Offense count: 1
-# Configuration parameters: AllowSafeAssignment.
-Lint/AssignmentInCondition:
-  Exclude:
-    - 'lib/segment/analytics/client.rb'
-
-# Offense count: 1
 Lint/HandleExceptions:
   Exclude:
     - 'spec/spec_helper.rb'
