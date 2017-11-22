@@ -267,10 +267,3 @@ Style/StringLiterals:
 Style/StringLiteralsInInterpolation:
   Exclude:
     - 'lib/segment/analytics/utils.rb'
-
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: MinSize, SupportedStyles.
-# SupportedStyles: percent, brackets
-Style/SymbolArray:
-  EnforcedStyle: brackets
