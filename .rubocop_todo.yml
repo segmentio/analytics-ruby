@@ -6,6 +6,10 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
+AllCops:
+  # Rubocop doesn't support 1.9, so we'll use the minimum available
+  TargetRubyVersion: 2.1
+
 Layout/IndentHash:
   EnforcedStyle: consistent
 
@@ -225,11 +229,4 @@ Style/Proc:
   Exclude:
     - 'lib/segment/analytics/worker.rb'
     - 'spec/segment/analytics/worker_spec.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: ConvertCodeThatCanStartToReturnNil.
-Style/SafeNavigation:
-  Exclude:
-    - 'lib/segment/analytics/client.rb'
 
