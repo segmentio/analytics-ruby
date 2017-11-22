@@ -9,6 +9,8 @@ module Segment
         HEADERS = { :accept => 'application/json' }
         RETRIES = 4
         BACKOFF = 30.0
+        READ_TIMEOUT = 8
+        OPEN_TIMEOUT = 4
       end
 
       module Queue

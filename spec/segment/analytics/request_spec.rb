@@ -22,12 +22,12 @@ module Segment
         end
 
         it 'sets an initalized Net::HTTP read_timeout' do
-          expect(net_http).to receive(:read_timeout=)
+          expect(net_http).to receive(:read_timeout=).with(described_class::READ_TIMEOUT)
           described_class.new
         end
 
         it 'sets an initalized Net::HTTP open_timeout' do
-          expect(net_http).to receive(:open_timeout=)
+          expect(net_http).to receive(:open_timeout=).with(described_class::OPEN_TIMEOUT)
           described_class.new
         end
 

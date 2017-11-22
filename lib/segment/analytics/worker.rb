@@ -26,6 +26,7 @@ module Segment
         @write_key = write_key
         @batch_size = options[:batch_size] || Queue::BATCH_SIZE
         @on_error = options[:on_error] || Proc.new { |status, error| }
+        @options = options
         @batch = []
         @lock = Mutex.new
       end
@@ -42,7 +43,7 @@ module Segment
             end
           end
 
-          res = Request.new.post @write_key, @batch
+          res = Request.new(@options).post @write_key, @batch
 
           @on_error.call res.status, res.error unless res.status == 200
 
