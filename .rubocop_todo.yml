@@ -31,12 +31,12 @@ Metrics/AbcSize:
 # Offense count: 13
 # Configuration parameters: CountComments, ExcludedMethods.
 Metrics/BlockLength:
-  Max: 253
+  Max: 255
 
 # Offense count: 3
 # Configuration parameters: CountComments.
 Metrics/ClassLength:
-  Max: 255
+  Max: 257
 
 # Offense count: 1
 Metrics/CyclomaticComplexity:
@@ -177,12 +177,6 @@ Style/MethodDefParentheses:
 Style/ModuleFunction:
   Exclude:
     - 'lib/segment/analytics/utils.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/MultilineIfModifier:
-  Exclude:
-    - 'spec/segment/analytics/client_spec.rb'
 
 Style/MutableConstant:
   Enabled: false
