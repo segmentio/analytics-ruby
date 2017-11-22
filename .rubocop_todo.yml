@@ -101,10 +101,9 @@ Style/ColonMethodCall:
   Exclude:
     - 'spec/segment/analytics/worker_spec.rb'
 
-# Offense count: 3
 Style/DateTime:
   Exclude:
-    - 'spec/segment/analytics/client_spec.rb'
+    - 'spec/**/*.rb'
 
 # Offense count: 7
 Style/Documentation:
