@@ -18,7 +18,7 @@ module Segment
       }
     }
 
-    IDENTIFY =  {
+    IDENTIFY = {
       :traits => {
         :likes_animals => true,
         :instrument => 'Guitar',
@@ -77,6 +77,13 @@ module Segment
   end
 end
 
+# A worker that doesn't consume jobs
+class NoopWorker
+  def run
+    # Does nothing
+  end
+end
+
 # usage:
 # it "should return a result of 5" do
 #   eventually(options: {timeout: 1}) { long_running_thing.result.should eq(5) }
@@ -90,11 +97,11 @@ module AsyncHelper
     loop do
       begin
         yield
-      rescue => error
+        return
+      rescue RSpec::Expectations::ExpectationNotMetError => error
+        raise error if Time.now >= time_limit
+        sleep interval
       end
-      return if error.nil?
-      raise error if Time.now >= time_limit
-      sleep interval
     end
   end
 end

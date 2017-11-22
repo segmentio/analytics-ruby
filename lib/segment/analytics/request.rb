@@ -53,10 +53,10 @@ module Segment
             res = @http.request(request, payload)
             status = res.code.to_i
             body = JSON.parse(res.body)
-            error = body["error"]
+            error = body['error']
           end
         rescue Exception => e
-          unless (remaining_retries -=1).zero?
+          unless (remaining_retries -= 1).zero?
             sleep(backoff)
             retry
           end
@@ -71,7 +71,7 @@ module Segment
       end
 
       class << self
-        attr_accessor :stub
+        attr_writer :stub
 
         def stub
           @stub || ENV['STUB']
