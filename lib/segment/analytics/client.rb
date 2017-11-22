@@ -15,7 +15,7 @@ module Segment
       #           :write_key         - String of your project's write_key
       #           :max_queue_size - Fixnum of the max calls to remain queued (optional)
       #           :on_error       - Proc which handles error calls from the API
-      def initialize attrs = {}
+      def initialize(attrs = {})
         symbolize_keys! attrs
 
         @queue = Queue.new
@@ -53,7 +53,7 @@ module Segment
       #           :timestamp    - Time of when the event occurred. (optional)
       #           :user_id      - String of the user id.
       #           :message_id   - String of the message id that uniquely identified a message across the API. (optional)
-      def track attrs
+      def track(attrs)
         symbolize_keys! attrs
         check_user_id! attrs
 
@@ -99,7 +99,7 @@ module Segment
       #           :traits       - Hash of user traits. (optional)
       #           :user_id      - String of the user id
       #           :message_id   - String of the message id that uniquely identified a message across the API. (optional)
-      def identify attrs
+      def identify(attrs)
         symbolize_keys! attrs
         check_user_id! attrs
 
@@ -346,7 +346,7 @@ module Segment
         raise ArgumentError, 'Timestamp must be a Time' unless timestamp.is_a? Time
       end
 
-      def event attrs
+      def event(attrs)
         symbolize_keys! attrs
 
         {
@@ -359,7 +359,7 @@ module Segment
         }
       end
 
-      def check_user_id! attrs
+      def check_user_id!(attrs)
         raise ArgumentError, 'Must supply either user_id or anonymous_id' unless attrs[:user_id] || attrs[:anonymous_id]
       end
 
