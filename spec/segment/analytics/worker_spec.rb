@@ -53,7 +53,7 @@ module Segment
           sleep 0.1 # First give thread time to spin-up.
           sleep 0.01 while worker.is_requesting?
 
-          Segment::Analytics::Request::any_instance.unstub(:post)
+          Segment::Analytics::Request.any_instance.unstub(:post)
 
           expect(queue).to be_empty
           expect(status).to eq(400)
