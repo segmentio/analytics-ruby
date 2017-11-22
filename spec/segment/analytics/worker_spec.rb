@@ -22,7 +22,7 @@ module Segment
 
         it 'does not error if the endpoint is unreachable' do
           expect do
-            Net::HTTP.any_instance.stub(:post).and_raise(Exception)
+            allow_any_instance_of(Net::HTTP).to receive(:post).and_raise(Exception)
 
             queue = Queue.new
             queue << {}
@@ -31,12 +31,11 @@ module Segment
 
             expect(queue).to be_empty
 
-            Net::HTTP.any_instance.unstub(:post)
           end.to_not raise_error
         end
 
         it 'executes the error handler, before the request phase ends, if the request is invalid' do
-          Segment::Analytics::Request.any_instance.stub(:post).and_return(Segment::Analytics::Response.new(400, "Some error"))
+          allow_any_instance_of(Segment::Analytics::Request).to receive(:post).and_return(Segment::Analytics::Response.new(400, "Some error"))
 
           status = error = nil
           on_error = Proc.new do |yielded_status, yielded_error|
@@ -52,8 +51,6 @@ module Segment
           Thread.new { worker.run }
           sleep 0.1 # First give thread time to spin-up.
           sleep 0.01 while worker.is_requesting?
-
-          Segment::Analytics::Request::any_instance.unstub(:post)
 
           expect(queue).to be_empty
           expect(status).to eq(400)
