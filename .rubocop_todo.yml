@@ -119,12 +119,6 @@ Style/Documentation:
     - 'lib/segment/analytics/utils.rb'
     - 'lib/segment/analytics/worker.rb'
 
-# Offense count: 3
-# Cop supports --auto-correct.
-Style/EachWithObject:
-  Exclude:
-    - 'lib/segment/analytics/utils.rb'
-
 Style/FormatString:
   EnforcedStyle: percent
 
