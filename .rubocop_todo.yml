@@ -10,11 +10,6 @@ Layout/IndentHash:
   EnforcedStyle: consistent
 
 # Offense count: 1
-Lint/HandleExceptions:
-  Exclude:
-    - 'spec/spec_helper.rb'
-
-# Offense count: 1
 Lint/RescueException:
   Exclude:
     - 'lib/segment/analytics/request.rb'
