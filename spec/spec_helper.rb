@@ -97,11 +97,11 @@ module AsyncHelper
     loop do
       begin
         yield
+        return
       rescue RSpec::Expectations::ExpectationNotMetError => error
+        raise error if Time.now >= time_limit
+        sleep interval
       end
-      return if error.nil?
-      raise error if Time.now >= time_limit
-      sleep interval
     end
   end
 end
