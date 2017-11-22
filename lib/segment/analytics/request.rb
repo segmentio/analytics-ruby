@@ -71,7 +71,7 @@ module Segment
       end
 
       class << self
-        attr_accessor :stub
+        attr_writer :stub
 
         def stub
           @stub || ENV['STUB']
