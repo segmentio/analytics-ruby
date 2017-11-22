@@ -43,7 +43,7 @@ module Segment
             client.track({
               :user_id => 'user',
               :event => 'Event',
-              :properties => [1,2,3]
+              :properties => [1, 2, 3]
             })
           }.to raise_error(ArgumentError)
         end
@@ -83,8 +83,8 @@ module Segment
             :properties => {
               :time => Time.utc(2013),
               :time_with_zone =>  Time.zone.parse('2013-01-01'),
-              :date_time => DateTime.new(2013,1,1),
-              :date => Date.new(2013,1,1),
+              :date_time => DateTime.new(2013, 1, 1),
+              :date => Date.new(2013, 1, 1),
               :nottime => 'x'
             }
           })
@@ -124,8 +124,8 @@ module Segment
             :traits => {
               :time => Time.utc(2013),
               :time_with_zone =>  Time.zone.parse('2013-01-01'),
-              :date_time => DateTime.new(2013,1,1),
-              :date => Date.new(2013,1,1),
+              :date_time => DateTime.new(2013, 1, 1),
+              :date => Date.new(2013, 1, 1),
               :nottime => 'x'
             }
           })
@@ -185,8 +185,8 @@ module Segment
             :traits => {
               :time => Time.utc(2013),
               :time_with_zone =>  Time.zone.parse('2013-01-01'),
-              :date_time => DateTime.new(2013,1,1),
-              :date => Date.new(2013,1,1),
+              :date_time => DateTime.new(2013, 1, 1),
+              :date => Date.new(2013, 1, 1),
               :nottime => 'x'
             }
           })
