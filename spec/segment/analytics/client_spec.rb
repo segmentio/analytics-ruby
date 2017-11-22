@@ -245,17 +245,19 @@ module Segment
           expect(client_with_worker.queued_messages).to eq(0)
         end
 
-        it 'completes when the process forks' do
-          client_with_worker.identify Queued::IDENTIFY
+        unless defined? JRUBY_VERSION
+          it 'completes when the process forks' do
+            client_with_worker.identify Queued::IDENTIFY
 
-          Process.fork do
-            client_with_worker.track Queued::TRACK
-            client_with_worker.flush
-            expect(client_with_worker.queued_messages).to eq(0)
+            Process.fork do
+              client_with_worker.track Queued::TRACK
+              client_with_worker.flush
+              expect(client_with_worker.queued_messages).to eq(0)
+            end
+
+            Process.wait
           end
-
-          Process.wait
-        end unless defined? JRUBY_VERSION
+        end
       end
 
       context 'common' do
