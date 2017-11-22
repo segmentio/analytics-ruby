@@ -125,20 +125,8 @@ Style/EachWithObject:
   Exclude:
     - 'lib/segment/analytics/utils.rb'
 
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: format, sprintf, percent
 Style/FormatString:
-  Exclude:
-    - 'lib/segment/analytics/utils.rb'
-
-# Offense count: 16
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: when_needed, always, never
-Style/FrozenStringLiteralComment:
-  Enabled: false
+  EnforcedStyle: percent
 
 # Allow one-liner functions to be wrapped in conditionals rather
 # than forcing a guard clause
