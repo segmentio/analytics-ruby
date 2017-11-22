@@ -307,11 +307,15 @@ module Segment
       def enqueue(action)
         # add our request id for tracing purposes
         action[:messageId] ||= uid
-        unless queue_full = @queue.length >= @max_queue_size
+
+        if @queue.length < @max_queue_size
           ensure_worker_running
           @queue << action
+
+          true
+        else
+          false # Queue is full
         end
-        !queue_full
       end
 
       # private: Ensures that a string is non-empty
