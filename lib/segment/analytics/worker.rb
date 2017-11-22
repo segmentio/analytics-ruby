@@ -25,7 +25,7 @@ module Segment
         @queue = queue
         @write_key = write_key
         @batch_size = options[:batch_size] || Queue::BATCH_SIZE
-        @on_error = options[:on_error] || Proc.new { |status, error| }
+        @on_error = options[:on_error] || proc { |status, error| }
         @batch = []
         @lock = Mutex.new
       end

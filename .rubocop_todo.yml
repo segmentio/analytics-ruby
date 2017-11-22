@@ -223,10 +223,3 @@ Style/PreferredHashMethods:
   Exclude:
     - 'lib/segment/analytics.rb'
 
-# Offense count: 3
-# Cop supports --auto-correct.
-Style/Proc:
-  Exclude:
-    - 'lib/segment/analytics/worker.rb'
-    - 'spec/segment/analytics/worker_spec.rb'
-
