@@ -66,10 +66,10 @@ module Segment
         check_timestamp! timestamp
 
         if event.nil? || event.empty?
-          fail ArgumentError, 'Must supply event as a non-empty string'
+          raise ArgumentError, 'Must supply event as a non-empty string'
         end
 
-        fail ArgumentError, 'Properties must be a Hash' unless properties.is_a? Hash
+        raise ArgumentError, 'Properties must be a Hash' unless properties.is_a? Hash
         isoify_dates! properties
 
         add_context context
@@ -110,7 +110,7 @@ module Segment
 
         check_timestamp! timestamp
 
-        fail ArgumentError, 'Must supply traits as a hash' unless traits.is_a? Hash
+        raise ArgumentError, 'Must supply traits as a hash' unless traits.is_a? Hash
         isoify_dates! traits
 
         add_context context
@@ -185,7 +185,7 @@ module Segment
         context = attrs[:context] || {}
         message_id = attrs[:message_id].to_s if attrs[:message_id]
 
-        fail ArgumentError, '.traits must be a hash' unless traits.is_a? Hash
+        raise ArgumentError, '.traits must be a hash' unless traits.is_a? Hash
         isoify_dates! traits
 
         check_presence! group_id, 'group_id'
@@ -228,7 +228,7 @@ module Segment
         context = attrs[:context] || {}
         message_id = attrs[:message_id].to_s if attrs[:message_id]
 
-        fail ArgumentError, '.properties must be a hash' unless properties.is_a? Hash
+        raise ArgumentError, '.properties must be a hash' unless properties.is_a? Hash
         isoify_dates! properties
 
         check_timestamp! timestamp
@@ -271,7 +271,7 @@ module Segment
         context = attrs[:context] || {}
         message_id = attrs[:message_id].to_s if attrs[:message_id]
 
-        fail ArgumentError, '.properties must be a hash' unless properties.is_a? Hash
+        raise ArgumentError, '.properties must be a hash' unless properties.is_a? Hash
         isoify_dates! properties
 
         check_timestamp! timestamp
@@ -325,7 +325,7 @@ module Segment
       #
       def check_presence!(obj, name)
         if obj.nil? || (obj.is_a?(String) && obj.empty?)
-          fail ArgumentError, "#{name} must be given"
+          raise ArgumentError, "#{name} must be given"
         end
       end
 
@@ -338,12 +338,12 @@ module Segment
 
       # private: Checks that the write_key is properly initialized
       def check_write_key!
-        fail ArgumentError, 'Write key must be initialized' if @write_key.nil?
+        raise ArgumentError, 'Write key must be initialized' if @write_key.nil?
       end
 
       # private: Checks the timstamp option to make sure it is a Time.
       def check_timestamp!(timestamp)
-        fail ArgumentError, 'Timestamp must be a Time' unless timestamp.is_a? Time
+        raise ArgumentError, 'Timestamp must be a Time' unless timestamp.is_a? Time
       end
 
       def event attrs
@@ -360,7 +360,7 @@ module Segment
       end
 
       def check_user_id! attrs
-        fail ArgumentError, 'Must supply either user_id or anonymous_id' unless attrs[:user_id] || attrs[:anonymous_id]
+        raise ArgumentError, 'Must supply either user_id or anonymous_id' unless attrs[:user_id] || attrs[:anonymous_id]
       end
 
       def ensure_worker_running
