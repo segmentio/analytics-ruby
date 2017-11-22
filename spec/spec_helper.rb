@@ -18,7 +18,7 @@ module Segment
       }
     }
 
-    IDENTIFY =  {
+    IDENTIFY = {
       :traits => {
         :likes_animals => true,
         :instrument => 'Guitar',
