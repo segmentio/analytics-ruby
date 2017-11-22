@@ -208,12 +208,8 @@ Style/NumericPredicate:
     - 'spec/**/*'
     - 'lib/segment/analytics/utils.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
 Style/ParallelAssignment:
-  Exclude:
-    - 'lib/segment/analytics/request.rb'
-    - 'spec/segment/analytics/worker_spec.rb'
+  Enabled: false
 
 Style/PreferredHashMethods:
   EnforcedStyle: verbose
