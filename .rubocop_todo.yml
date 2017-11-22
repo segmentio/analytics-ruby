@@ -215,11 +215,6 @@ Style/ParallelAssignment:
     - 'lib/segment/analytics/request.rb'
     - 'spec/segment/analytics/worker_spec.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: short, verbose
 Style/PreferredHashMethods:
-  Exclude:
-    - 'lib/segment/analytics.rb'
+  EnforcedStyle: verbose
 
