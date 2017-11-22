@@ -53,7 +53,7 @@ module Segment
             res = @http.request(request, payload)
             status = res.code.to_i
             body = JSON.parse(res.body)
-            error = body["error"]
+            error = body['error']
           end
         rescue Exception => e
           unless (remaining_retries -= 1).zero?

@@ -248,18 +248,6 @@ Style/SignalException:
   Exclude:
     - 'lib/segment/analytics/client.rb'
 
-# Offense count: 13
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles, ConsistentQuotesInMultiline.
-# SupportedStyles: single_quotes, double_quotes
-Style/StringLiterals:
-  Exclude:
-    - 'lib/segment/analytics/client.rb'
-    - 'lib/segment/analytics/request.rb'
-    - 'lib/segment/analytics/utils.rb'
-    - 'spec/segment/analytics/client_spec.rb'
-    - 'spec/segment/analytics/worker_spec.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles.
