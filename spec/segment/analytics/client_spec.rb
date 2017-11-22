@@ -99,7 +99,6 @@ module Segment
         end
       end
 
-
       describe '#identify' do
         it 'errors without any user id' do
           expect { client.identify({}) }.to raise_error(ArgumentError)
