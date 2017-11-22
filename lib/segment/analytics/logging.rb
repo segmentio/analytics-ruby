@@ -14,9 +14,7 @@ module Segment
                       end
         end
 
-        def logger= logger
-          @logger = logger
-        end
+        attr_writer :logger
       end
 
       def self.included base
