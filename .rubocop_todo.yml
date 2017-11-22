@@ -233,10 +233,3 @@ Style/SafeNavigation:
   Exclude:
     - 'lib/segment/analytics/client.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: AllowAsExpressionSeparator.
-Style/Semicolon:
-  Exclude:
-    - 'lib/segment/analytics/utils.rb'
-
