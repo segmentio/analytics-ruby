@@ -160,17 +160,6 @@ Style/HashSyntax:
     - 'spec/segment/analytics_spec.rb'
     - 'spec/spec_helper.rb'
 
-# Offense count: 13
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: require_parentheses, require_no_parentheses, require_no_parentheses_except_multiline
-Style/MethodDefParentheses:
-  Exclude:
-    - 'lib/segment/analytics.rb'
-    - 'lib/segment/analytics/client.rb'
-    - 'lib/segment/analytics/logging.rb'
-    - 'lib/segment/analytics/utils.rb'
-
 # Offense count: 1
 # Configuration parameters: EnforcedStyle, SupportedStyles.
 # SupportedStyles: module_function, extend_self

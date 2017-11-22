@@ -54,7 +54,7 @@ module Segment
         '%08x-%04x-%04x-%04x-%04x%08x' % arr
       end
 
-      def datetime_in_iso8601 datetime
+      def datetime_in_iso8601(datetime)
         case datetime
         when Time
           time_in_iso8601 datetime
@@ -67,7 +67,7 @@ module Segment
         end
       end
 
-      def time_in_iso8601 time, fraction_digits = 3
+      def time_in_iso8601(time, fraction_digits = 3)
         fraction = if fraction_digits > 0
                      ('.%06i' % time.usec)[0, fraction_digits + 1]
                    end
@@ -75,11 +75,11 @@ module Segment
         "#{time.strftime('%Y-%m-%dT%H:%M:%S')}#{fraction}#{formatted_offset(time, true, 'Z')}"
       end
 
-      def date_in_iso8601 date
+      def date_in_iso8601(date)
         date.strftime('%F')
       end
 
-      def formatted_offset time, colon = true, alternate_utc_string = nil
+      def formatted_offset(time, colon = true, alternate_utc_string = nil)
         time.utc? && alternate_utc_string || seconds_to_utc_offset(time.utc_offset, colon)
       end
 
