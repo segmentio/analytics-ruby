@@ -3,7 +3,7 @@ require 'spec_helper'
 module Segment
   class Analytics
     describe Worker do
-      describe "#init" do
+      describe '#init' do
         it 'accepts string keys' do
           queue = Queue.new
           worker = Segment::Analytics::Worker.new(queue, 'secret', 'batch_size' => 100)
@@ -36,7 +36,7 @@ module Segment
         end
 
         it 'executes the error handler, before the request phase ends, if the request is invalid' do
-          Segment::Analytics::Request.any_instance.stub(:post).and_return(Segment::Analytics::Response.new(400, "Some error"))
+          Segment::Analytics::Request.any_instance.stub(:post).and_return(Segment::Analytics::Response.new(400, 'Some error'))
 
           status = error = nil
           on_error = Proc.new do |yielded_status, yielded_error|
