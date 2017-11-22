@@ -184,14 +184,8 @@ Style/MultilineIfModifier:
   Exclude:
     - 'spec/segment/analytics/client_spec.rb'
 
-# Offense count: 12
-# Cop supports --auto-correct.
 Style/MutableConstant:
-  Exclude:
-    - 'lib/segment/analytics/defaults.rb'
-    - 'lib/segment/analytics/utils.rb'
-    - 'lib/segment/analytics/version.rb'
-    - 'spec/spec_helper.rb'
+  Enabled: false
 
 Style/NumericLiterals:
   MinDigits: 6
