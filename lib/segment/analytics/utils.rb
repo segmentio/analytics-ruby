@@ -66,7 +66,7 @@ module Segment
                      ('.%06i' % time.usec)[0, fraction_digits + 1]
                    end
 
-        "#{time.strftime("%Y-%m-%dT%H:%M:%S")}#{fraction}#{formatted_offset(time, true, 'Z')}"
+        "#{time.strftime('%Y-%m-%dT%H:%M:%S')}#{fraction}#{formatted_offset(time, true, 'Z')}"
       end
 
       def date_in_iso8601 date

@@ -248,10 +248,3 @@ Style/SignalException:
   Exclude:
     - 'lib/segment/analytics/client.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: single_quotes, double_quotes
-Style/StringLiteralsInInterpolation:
-  Exclude:
-    - 'lib/segment/analytics/utils.rb'
