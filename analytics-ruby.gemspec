@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'commander', '~> 4.4'
 
   spec.add_development_dependency 'rake', '~> 10.3'
-  spec.add_development_dependency 'rspec', '~> 2.0'
+  spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'tzinfo', '1.2.1'
-  spec.add_development_dependency 'activesupport', '>= 3.0.0', '<4.0.0'
+  spec.add_development_dependency 'activesupport', '~> 4.1.11'
 end
