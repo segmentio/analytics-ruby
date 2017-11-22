@@ -312,6 +312,20 @@ module Segment
           end
         end
       end
+
+      context 'logging' do
+        describe '#enqueue' do
+          it 'logs warns and errors on queue being full' do
+            client = Client.new :write_key => WRITE_KEY, max_queue_size: 5
+            expect(client.logger).to receive(:warn).with(/Queue is .* full/)
+            expect(client.logger).to receive(:error).at_least(:once).with(/Queue is full, dropping events/)
+
+            10.times do
+              client.track({ :user_id => 'user', :event => "Event" })
+            end
+          end
+        end
+      end
     end
   end
 end

@@ -3,11 +3,13 @@ require 'time'
 require 'segment/analytics/utils'
 require 'segment/analytics/worker'
 require 'segment/analytics/defaults'
+require 'segment/analytics/logging'
 
 module Segment
   class Analytics
     class Client
       include Segment::Analytics::Utils
+      include Segment::Analytics::Logging
 
       # public: Creates a new client
       #
@@ -310,7 +312,21 @@ module Segment
           ensure_worker_running
           @queue << action
         end
+        queue_logging(queue_full)
         !queue_full
+      end
+
+      # private: Log warns and error when queue is getting full
+      def queue_logging(is_full)
+        queue_fullness_percentage = @queue.length.to_f / @max_queue_size
+        if queue_fullness_percentage >= 0.7 && queue_fullness_percentage < 1.0
+          logger.warn("Queue is #{queue_fullness_percentage * 100}% full.")
+        end
+        if is_full
+          msg = 'Queue is full, dropping events. ' \
+                'Please supply :max_queue_size value when initializing the client.'
+          logger.error(msg)
+        end
       end
 
       # private: Ensures that a string is non-empty
