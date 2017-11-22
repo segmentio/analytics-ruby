@@ -240,11 +240,3 @@ Style/Semicolon:
   Exclude:
     - 'lib/segment/analytics/utils.rb'
 
-# Offense count: 10
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: only_raise, only_fail, semantic
-Style/SignalException:
-  Exclude:
-    - 'lib/segment/analytics/client.rb'
-
