@@ -8,9 +8,8 @@ module Segment
       # public: Return a new hash with keys converted from strings to symbols
       #
       def symbolize_keys(hash)
-        hash.inject({}) { |memo, (k, v)|
+        hash.each_with_object({}) { |(k, v), memo|
           memo[k.to_sym] = v
-          memo
         }
       end
 
@@ -23,9 +22,8 @@ module Segment
       # public: Return a new hash with keys as strings
       #
       def stringify_keys(hash)
-        hash.inject({}) { |memo, (k, v)|
+        hash.each_with_object({}) { |(k, v), memo|
           memo[k.to_s] = v
-          memo
         }
       end
 
@@ -33,9 +31,8 @@ module Segment
       #         strings
       #
       def isoify_dates(hash)
-        hash.inject({}) { |memo, (k, v)|
+        hash.each_with_object({}) { |(k, v), memo|
           memo[k] = datetime_in_iso8601(v)
-          memo
         }
       end
 
