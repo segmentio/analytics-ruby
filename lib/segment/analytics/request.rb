@@ -39,35 +39,52 @@ module Segment
         status, error = nil, nil
         remaining_retries = @retries
         backoff = @backoff
-        headers = { 'Content-Type' => 'application/json', 'accept' => 'application/json' }
-        begin
-          payload = JSON.generate :sentAt => datetime_in_iso8601(Time.new), :batch => batch
-          request = Net::HTTP::Post.new(@path, headers)
-          request.basic_auth write_key, nil
 
-          if self.class.stub
-            status = 200
-            error = nil
-            logger.debug "stubbed request to #{@path}: write key = #{write_key}, payload = #{payload}"
-          else
-            res = @http.request(request, payload)
-            status = res.code.to_i
-            body = JSON.parse(res.body)
-            error = body['error']
-          end
+        begin
+          status, error = send_request(write_key, batch)
         rescue Exception => e
-          unless (remaining_retries -= 1).zero?
+          if (remaining_retries -= 1) > 0
             sleep(backoff)
             retry
+          else
+            logger.error e.message
+            e.backtrace.each { |line| logger.error line }
+            status = -1
+            error = "Connection error: #{e}"
           end
-
-          logger.error e.message
-          e.backtrace.each { |line| logger.error line }
-          status = -1
-          error = "Connection error: #{e}"
         end
 
         Response.new status, error
+      end
+
+      private
+
+      # Sends a request for the batch, returns [status, error]
+      def send_request(write_key, batch)
+        headers = {
+          'Content-Type' => 'application/json',
+          'accept' => 'application/json'
+        }
+        payload = JSON.generate(
+          :sentAt => datetime_in_iso8601(Time.now),
+          :batch => batch
+        )
+        request = Net::HTTP::Post.new(@path, headers)
+        request.basic_auth(write_key, nil)
+
+        if self.class.stub
+          status = 200
+          error = nil
+          logger.debug "stubbed request to #{@path}: " \
+                       "write key = #{write_key}, payload = #{payload}"
+        else
+          res = @http.request(request, payload)
+          status = res.code.to_i
+          body = JSON.parse(res.body)
+          error = body['error']
+        end
+
+        [status, error]
       end
 
       class << self
