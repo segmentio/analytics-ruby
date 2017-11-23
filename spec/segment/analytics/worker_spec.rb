@@ -48,7 +48,7 @@ module Segment
           queue << {}
           worker = Segment::Analytics::Worker.new queue, 'secret', :on_error => on_error
 
-          # This is to ensure that Client#flush doesn’t finish before calling the error handler.
+          # This is to ensure that Client#flush doesn't finish before calling the error handler.
           Thread.new { worker.run }
           sleep 0.1 # First give thread time to spin-up.
           sleep 0.01 while worker.is_requesting?

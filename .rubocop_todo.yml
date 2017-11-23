@@ -68,11 +68,6 @@ Naming/PredicateName:
     - 'spec/**/*'
     - 'lib/segment/analytics/worker.rb'
 
-# Offense count: 1
-Style/AsciiComments:
-  Exclude:
-    - 'spec/segment/analytics/worker_spec.rb'
-
 Style/BlockDelimiters:
   Exclude:
     - 'spec/**/*'
