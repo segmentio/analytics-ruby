@@ -59,15 +59,8 @@ Style/BlockDelimiters:
   Exclude:
     - 'spec/**/*'
 
-# Offense count: 14
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: braces, no_braces, context_dependent
 Style/BracesAroundHashParameters:
-  Exclude:
-    - 'lib/segment/analytics/client.rb'
-    - 'spec/segment/analytics/client_spec.rb'
-    - 'spec/spec_helper.rb'
+  Enabled: false
 
 Style/DateTime:
   Exclude:
