@@ -1,1 +1,58 @@
 inherit_from: .rubocop_todo.yml
+
+AllCops:
+  # Rubocop doesn't support 1.9, so we'll use the minimum available
+  TargetRubyVersion: 2.1
+
+Layout/IndentHash:
+  EnforcedStyle: consistent
+
+Naming/PredicateName:
+  NameWhitelist:
+    - is_requesting? # Can't be renamed, backwards compatibility
+
+Style/BlockDelimiters:
+  Exclude:
+    - 'spec/**/*'
+
+Style/BracesAroundHashParameters:
+  Enabled: false
+
+Style/DateTime:
+  Exclude:
+    - 'spec/**/*.rb'
+
+Style/Documentation:
+  Enabled: false
+
+Style/FormatString:
+  EnforcedStyle: percent
+
+# Allow one-liner functions to be wrapped in conditionals rather
+# than forcing a guard clause
+Style/GuardClause:
+  MinBodyLength: 2
+
+Style/HashSyntax:
+  EnforcedStyle: hash_rockets
+  Exclude:
+    - 'spec/**/*.rb'
+
+Style/ModuleFunction:
+  Enabled: false
+
+Style/MutableConstant:
+  Enabled: false
+
+Style/NumericLiterals:
+  MinDigits: 6
+
+Style/ParallelAssignment:
+  Enabled: false
+
+Style/PreferredHashMethods:
+  EnforcedStyle: verbose
+
+# Ruby 1.9 doesn't support percent-styled symbol arrays
+Style/SymbolArray:
+  EnforcedStyle: brackets

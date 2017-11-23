@@ -6,13 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-AllCops:
-  # Rubocop doesn't support 1.9, so we'll use the minimum available
-  TargetRubyVersion: 2.1
-
-Layout/IndentHash:
-  EnforcedStyle: consistent
-
 # Offense count: 1
 Lint/RescueException:
   Exclude:
@@ -50,57 +43,3 @@ Metrics/MethodLength:
 # Offense count: 1
 Metrics/PerceivedComplexity:
   Max: 8
-
-Naming/PredicateName:
-  NameWhitelist:
-    - is_requesting? # Can't be renamed, backwards compatibility
-
-Style/BlockDelimiters:
-  Exclude:
-    - 'spec/**/*'
-
-Style/BracesAroundHashParameters:
-  Enabled: false
-
-Style/DateTime:
-  Exclude:
-    - 'spec/**/*.rb'
-
-Style/Documentation:
-  Enabled: false
-
-Style/FormatString:
-  EnforcedStyle: percent
-
-# Allow one-liner functions to be wrapped in conditionals rather
-# than forcing a guard clause
-Style/GuardClause:
-  MinBodyLength: 2
-
-Style/HashSyntax:
-  EnforcedStyle: hash_rockets
-  Exclude:
-    - 'spec/**/*.rb'
-
-# Offense count: 1
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: module_function, extend_self
-Style/ModuleFunction:
-  Exclude:
-    - 'lib/segment/analytics/utils.rb'
-
-Style/MutableConstant:
-  Enabled: false
-
-Style/NumericLiterals:
-  MinDigits: 6
-
-Style/ParallelAssignment:
-  Enabled: false
-
-Style/PreferredHashMethods:
-  EnforcedStyle: verbose
-
-# Ruby 1.9 doesn't support percent-styled symbol arrays
-Style/SymbolArray:
-  EnforcedStyle: brackets
