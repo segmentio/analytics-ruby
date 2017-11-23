@@ -7,6 +7,34 @@ AllCops:
 Layout/IndentHash:
   EnforcedStyle: consistent
 
+Metrics/AbcSize:
+  Exclude:
+    - "spec/**/*.rb"
+
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*.rb"
+
+Metrics/ClassLength:
+  Exclude:
+    - "spec/**/*.rb"
+
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - "spec/**/*.rb"
+
+Metrics/LineLength:
+  Exclude:
+    - "spec/**/*.rb"
+
+Metrics/MethodLength:
+  Exclude:
+    - "spec/**/*.rb"
+
+Metrics/PerceivedComplexity:
+  Exclude:
+    - "spec/**/*.rb"
+
 Naming/PredicateName:
   NameWhitelist:
     - is_requesting? # Can't be renamed, backwards compatibility
