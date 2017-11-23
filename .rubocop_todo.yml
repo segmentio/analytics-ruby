@@ -18,12 +18,6 @@ Lint/RescueException:
   Exclude:
     - 'lib/segment/analytics/request.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Lint/UnneededRequireStatement:
-  Exclude:
-    - 'lib/segment/analytics/client.rb'
-
 # Offense count: 9
 Metrics/AbcSize:
   Max: 32
@@ -57,16 +51,9 @@ Metrics/MethodLength:
 Metrics/PerceivedComplexity:
   Max: 8
 
-# Offense count: 1
-# Configuration parameters: NamePrefix, NamePrefixBlacklist, NameWhitelist, MethodDefinitionMacros.
-# NamePrefix: is_, has_, have_
-# NamePrefixBlacklist: is_, has_, have_
-# NameWhitelist: is_a?
-# MethodDefinitionMacros: define_method, define_singleton_method
 Naming/PredicateName:
-  Exclude:
-    - 'spec/**/*'
-    - 'lib/segment/analytics/worker.rb'
+  NameWhitelist:
+    - is_requesting? # Can't be renamed, backwards compatibility
 
 Style/BlockDelimiters:
   Exclude:
