@@ -8,9 +8,9 @@ module Segment
       # public: Return a new hash with keys converted from strings to symbols
       #
       def symbolize_keys(hash)
-        hash.each_with_object({}) { |(k, v), memo|
+        hash.each_with_object({}) do |(k, v), memo|
           memo[k.to_sym] = v
-        }
+        end
       end
 
       # public: Convert hash keys from strings to symbols in place
@@ -22,18 +22,18 @@ module Segment
       # public: Return a new hash with keys as strings
       #
       def stringify_keys(hash)
-        hash.each_with_object({}) { |(k, v), memo|
+        hash.each_with_object({}) do |(k, v), memo|
           memo[k.to_s] = v
-        }
+        end
       end
 
       # public: Returns a new hash with all the date values in the into iso8601
       #         strings
       #
       def isoify_dates(hash)
-        hash.each_with_object({}) { |(k, v), memo|
+        hash.each_with_object({}) do |(k, v), memo|
           memo[k] = datetime_in_iso8601(v)
-        }
+        end
       end
 
       # public: Converts all the date values in the into iso8601 strings in place

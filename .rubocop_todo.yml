@@ -73,17 +73,9 @@ Style/AsciiComments:
   Exclude:
     - 'spec/segment/analytics/worker_spec.rb'
 
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles, ProceduralMethods, FunctionalMethods, IgnoredMethods.
-# SupportedStyles: line_count_based, semantic, braces_for_chaining
-# ProceduralMethods: benchmark, bm, bmbm, create, each_with_object, measure, new, realtime, tap, with_object
-# FunctionalMethods: let, let!, subject, watch
-# IgnoredMethods: lambda, proc, it
 Style/BlockDelimiters:
   Exclude:
-    - 'lib/segment/analytics/utils.rb'
-    - 'spec/segment/analytics/client_spec.rb'
+    - 'spec/**/*'
 
 # Offense count: 14
 # Cop supports --auto-correct.
