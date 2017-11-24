@@ -36,30 +36,51 @@ module Segment
       #
       # returns - Response of the status and error if it exists
       def post(write_key, batch)
-        status, error = nil, nil
-        remaining_retries = @retries
-        backoff = @backoff
+        last_result, exception = retry_with_backoff(@retries, @backoff) do
+          result = send_request(write_key, batch)
+          should_retry = false # TODO: Use status code
 
-        begin
-          status, error = send_request(write_key, batch)
-        rescue Exception => e
-          if (remaining_retries -= 1) > 0
-            sleep(backoff)
-            retry
-          else
-            logger.error e.message
-            e.backtrace.each { |line| logger.error line }
-            status = -1
-            error = "Connection error: #{e}"
-          end
+          [result, should_retry]
         end
 
-        Response.new status, error
+        if exception
+          logger.error(exception.message)
+          exception.backtrace.each { |line| logger.error(line) }
+          Response.new(-1, "Connection error: #{exception}")
+        else
+          last_result
+        end
       end
 
       private
 
-      # Sends a request for the batch, returns [status, error]
+      # Takes a block that returns [result, should_retry].
+      #
+      # Retries upto `retries_remaining` times, if `should_retry` is false or
+      # an exception is raised.
+      #
+      # Returns [last_result, raised_exception]
+      def retry_with_backoff(retries_remaining, backoff, &block)
+        result, caught_exception = nil
+        should_retry = false
+
+        begin
+          result, should_retry = yield
+          return [result, nil] unless should_retry
+        rescue Exception => e
+          should_retry = true
+          caught_exception = e
+        end
+
+        if should_retry && (retries_remaining > 1)
+          sleep(backoff)
+          retry_with_backoff(retries_remaining - 1, backoff, &block)
+        else
+          [result, caught_exception]
+        end
+      end
+
+      # Sends a request for the batch, returns a `Response` object.
       def send_request(write_key, batch)
         headers = {
           'Content-Type' => 'application/json',
@@ -84,7 +105,7 @@ module Segment
           error = body['error']
         end
 
-        [status, error]
+        Response.new(status, error)
       end
 
       class << self
