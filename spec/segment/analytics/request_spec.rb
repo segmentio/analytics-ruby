@@ -37,19 +37,25 @@ module Segment
 
         context 'no options are set' do
           it 'sets a default path' do
-            expect(subject.instance_variable_get(:@path)).to eq(described_class::PATH)
+            path = subject.instance_variable_get(:@path)
+            expect(path).to eq(described_class::PATH)
           end
 
           it 'sets a default retries' do
-            expect(subject.instance_variable_get(:@retries)).to eq(described_class::RETRIES)
+            retries = subject.instance_variable_get(:@retries)
+            expect(retries).to eq(described_class::RETRIES)
           end
 
           it 'sets a default backoff' do
-            expect(subject.instance_variable_get(:@backoff)).to eq(described_class::BACKOFF)
+            backoff = subject.instance_variable_get(:@backoff)
+            expect(backoff).to eq(described_class::BACKOFF)
           end
 
           it 'initializes a new Net::HTTP with default host and port' do
-            expect(Net::HTTP).to receive(:new).with(described_class::HOST, described_class::PORT)
+            expect(Net::HTTP).to receive(:new).with(
+              described_class::HOST,
+              described_class::PORT
+            )
             described_class.new
           end
         end
@@ -92,7 +98,9 @@ module Segment
       end
 
       describe '#post' do
-        let(:response) { Net::HTTPResponse.new(http_version, status_code, response_body) }
+        let(:response) {
+          Net::HTTPResponse.new(http_version, status_code, response_body)
+        }
         let(:http_version) { 1.1 }
         let(:status_code) { 200 }
         let(:response_body) { {}.to_json }
@@ -100,19 +108,28 @@ module Segment
         let(:batch) { [] }
 
         before do
-          allow(subject.instance_variable_get(:@http)).to receive(:request) { response }
+          http = subject.instance_variable_get(:@http)
+          allow(http).to receive(:request) { response }
           allow(response).to receive(:body) { response_body }
         end
 
         it 'initalizes a new Net::HTTP::Post with path and default headers' do
           path = subject.instance_variable_get(:@path)
-          default_headers = { 'Content-Type' => 'application/json', 'accept' => 'application/json' }
-          expect(Net::HTTP::Post).to receive(:new).with(path, default_headers).and_call_original
+          default_headers = {
+            'Content-Type' => 'application/json',
+            'accept' => 'application/json'
+          }
+          expect(Net::HTTP::Post).to receive(:new).with(
+            path, default_headers
+          ).and_call_original
+
           subject.post(write_key, batch)
         end
 
         it 'adds basic auth to the Net::HTTP::Post' do
-          expect_any_instance_of(Net::HTTP::Post).to receive(:basic_auth).with(write_key, nil)
+          expect_any_instance_of(Net::HTTP::Post).to receive(:basic_auth)
+            .with(write_key, nil)
+
           subject.post(write_key, batch)
         end
 
@@ -180,7 +197,8 @@ module Segment
               end
 
               it 'has a connection error' do
-                expect(subject.post(write_key, batch).error).to match(/Connection error/)
+                error = subject.post(write_key, batch).error
+                expect(error).to match(/Connection error/)
               end
             end
           end
