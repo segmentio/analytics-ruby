@@ -36,11 +36,12 @@ module Segment
       #
       # returns - Response of the status and error if it exists
       def post(write_key, batch)
-        last_result, exception = retry_with_backoff(@retries, @backoff) do
-          result = send_request(write_key, batch)
-          should_retry = false # TODO: Use status code
+        last_response, exception = retry_with_backoff(@retries, @backoff) do
+          status_code, body = send_request(write_key, batch)
+          error = JSON.parse(body)['error']
+          should_retry = should_retry_request?(status_code, body)
 
-          [result, should_retry]
+          [Response.new(status_code, error), should_retry]
         end
 
         if exception
@@ -48,11 +49,24 @@ module Segment
           exception.backtrace.each { |line| logger.error(line) }
           Response.new(-1, "Connection error: #{exception}")
         else
-          last_result
+          last_response
         end
       end
 
       private
+
+      def should_retry_request?(status_code, body)
+        if status_code >= 500
+          true # Server error
+        elsif status_code == 429
+          true # Rate limited
+        elsif status_code >= 400
+          logger.error(body)
+          false # Client error. Do not retry, but log
+        else
+          false
+        end
+      end
 
       # Takes a block that returns [result, should_retry].
       #
@@ -80,7 +94,7 @@ module Segment
         end
       end
 
-      # Sends a request for the batch, returns a `Response` object.
+      # Sends a request for the batch, returns [status_code, body]
       def send_request(write_key, batch)
         headers = {
           'Content-Type' => 'application/json',
@@ -94,18 +108,14 @@ module Segment
         request.basic_auth(write_key, nil)
 
         if self.class.stub
-          status = 200
-          error = nil
           logger.debug "stubbed request to #{@path}: " \
-                       "write key = #{write_key}, payload = #{payload}"
-        else
-          res = @http.request(request, payload)
-          status = res.code.to_i
-          body = JSON.parse(res.body)
-          error = body['error']
-        end
+            "write key = #{write_key}, batch = JSON.generate(#{batch})"
 
-        Response.new(status, error)
+          [200, '{}']
+        else
+          response = @http.request(request, payload)
+          [response.code.to_i, response.body]
+        end
       end
 
       class << self
