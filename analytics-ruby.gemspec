@@ -26,4 +26,6 @@ Gem::Specification.new do |spec|
   if RUBY_VERSION >= "2.1"
     spec.add_development_dependency 'rubocop', '~> 0.51.0'
   end
+
+  spec.add_development_dependency 'codecov', '~> 0.1.4'
 end
