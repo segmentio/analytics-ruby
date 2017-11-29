@@ -22,4 +22,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'tzinfo', '1.2.1'
   spec.add_development_dependency 'activesupport', '~> 4.1.11'
+
+  if RUBY_VERSION >= "2.1"
+    spec.add_development_dependency 'rubocop', '~> 0.51.0'
+  end
 end

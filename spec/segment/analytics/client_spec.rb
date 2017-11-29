@@ -43,13 +43,13 @@ module Segment
             client.track({
               :user_id => 'user',
               :event => 'Event',
-              :properties => [1,2,3]
+              :properties => [1, 2, 3]
             })
           }.to raise_error(ArgumentError)
         end
 
         it 'uses the timestamp given' do
-          time = Time.parse("1990-07-16 13:30:00.123 UTC")
+          time = Time.parse('1990-07-16 13:30:00.123 UTC')
 
           client.track({
             :event => 'testing the timestamp',
@@ -83,8 +83,8 @@ module Segment
             :properties => {
               :time => Time.utc(2013),
               :time_with_zone =>  Time.zone.parse('2013-01-01'),
-              :date_time => DateTime.new(2013,1,1),
-              :date => Date.new(2013,1,1),
+              :date_time => DateTime.new(2013, 1, 1),
+              :date => Date.new(2013, 1, 1),
               :nottime => 'x'
             }
           })
@@ -98,7 +98,6 @@ module Segment
           expect(properties[:nottime]).to eq('x')
         end
       end
-
 
       describe '#identify' do
         it 'errors without any user id' do
@@ -125,8 +124,8 @@ module Segment
             :traits => {
               :time => Time.utc(2013),
               :time_with_zone =>  Time.zone.parse('2013-01-01'),
-              :date_time => DateTime.new(2013,1,1),
-              :date => Date.new(2013,1,1),
+              :date_time => DateTime.new(2013, 1, 1),
+              :date => Date.new(2013, 1, 1),
               :nottime => 'x'
             }
           })
@@ -186,8 +185,8 @@ module Segment
             :traits => {
               :time => Time.utc(2013),
               :time_with_zone =>  Time.zone.parse('2013-01-01'),
-              :date_time => DateTime.new(2013,1,1),
-              :date => Date.new(2013,1,1),
+              :date_time => DateTime.new(2013, 1, 1),
+              :date => Date.new(2013, 1, 1),
               :nottime => 'x'
             }
           })
@@ -246,23 +245,25 @@ module Segment
           expect(client_with_worker.queued_messages).to eq(0)
         end
 
-        it 'completes when the process forks' do
-          client_with_worker.identify Queued::IDENTIFY
+        unless defined? JRUBY_VERSION
+          it 'completes when the process forks' do
+            client_with_worker.identify Queued::IDENTIFY
 
-          Process.fork do
-            client_with_worker.track Queued::TRACK
-            client_with_worker.flush
-            expect(client_with_worker.queued_messages).to eq(0)
+            Process.fork do
+              client_with_worker.track Queued::TRACK
+              client_with_worker.flush
+              expect(client_with_worker.queued_messages).to eq(0)
+            end
+
+            Process.wait
           end
-
-          Process.wait
-        end unless defined? JRUBY_VERSION
+        end
       end
 
       context 'common' do
         check_property = proc { |msg, k, v| msg[k] && msg[k] == v }
 
-        let(:data) { { :user_id => 1, :group_id => 2, :previous_id => 3, :anonymous_id => 4, :message_id => 5, :event => "coco barked", :name => "coco" } }
+        let(:data) { { :user_id => 1, :group_id => 2, :previous_id => 3, :anonymous_id => 4, :message_id => 5, :event => 'coco barked', :name => 'coco' } }
 
         it 'does not convert ids given as fixnums to strings' do
           [:track, :screen, :page, :identify].each do |s|
@@ -305,7 +306,7 @@ module Segment
 
         it 'sends integrations' do
           [:track, :screen, :page, :group, :identify, :alias].each do |s|
-            client.send s, :integrations => { :All => true, :Salesforce => false }, :user_id => 1, :group_id => 2, :previous_id => 3, :anonymous_id => 4, :event => "coco barked", :name => "coco"
+            client.send s, :integrations => { :All => true, :Salesforce => false }, :user_id => 1, :group_id => 2, :previous_id => 3, :anonymous_id => 4, :event => 'coco barked', :name => 'coco'
             message = queue.pop(true)
             expect(message[:integrations][:All]).to eq(true)
             expect(message[:integrations][:Salesforce]).to eq(false)

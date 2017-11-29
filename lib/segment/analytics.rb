@@ -9,12 +9,12 @@ require 'segment/analytics/logging'
 
 module Segment
   class Analytics
-    def initialize options = {}
+    def initialize(options = {})
       Request.stub = options[:stub] if options.has_key?(:stub)
       @client = Segment::Analytics::Client.new options
     end
 
-    def method_missing message, *args, &block
+    def method_missing(message, *args, &block)
       if @client.respond_to? message
         @client.send message, *args, &block
       else
