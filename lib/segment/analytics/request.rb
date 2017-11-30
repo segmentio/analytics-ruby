@@ -41,7 +41,7 @@ module Segment
         backoff = @backoff
         headers = { 'Content-Type' => 'application/json', 'accept' => 'application/json' }
         begin
-          payload = JSON.generate :sentAt => datetime_in_iso8601(Time.new), :batch => batch
+          payload = {:sentAt => datetime_in_iso8601(Time.new), :batch => batch}.to_json
           request = Net::HTTP::Post.new(@path, headers)
           request.basic_auth write_key, nil
 
