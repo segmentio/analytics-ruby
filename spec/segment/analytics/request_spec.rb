@@ -37,19 +37,25 @@ module Segment
 
         context 'no options are set' do
           it 'sets a default path' do
-            expect(subject.instance_variable_get(:@path)).to eq(described_class::PATH)
+            path = subject.instance_variable_get(:@path)
+            expect(path).to eq(described_class::PATH)
           end
 
           it 'sets a default retries' do
-            expect(subject.instance_variable_get(:@retries)).to eq(described_class::RETRIES)
+            retries = subject.instance_variable_get(:@retries)
+            expect(retries).to eq(described_class::RETRIES)
           end
 
           it 'sets a default backoff' do
-            expect(subject.instance_variable_get(:@backoff)).to eq(described_class::BACKOFF)
+            backoff = subject.instance_variable_get(:@backoff)
+            expect(backoff).to eq(described_class::BACKOFF)
           end
 
           it 'initializes a new Net::HTTP with default host and port' do
-            expect(Net::HTTP).to receive(:new).with(described_class::HOST, described_class::PORT)
+            expect(Net::HTTP).to receive(:new).with(
+              described_class::HOST,
+              described_class::PORT
+            )
             described_class.new
           end
         end
@@ -92,7 +98,9 @@ module Segment
       end
 
       describe '#post' do
-        let(:response) { Net::HTTPResponse.new(http_version, status_code, response_body) }
+        let(:response) {
+          Net::HTTPResponse.new(http_version, status_code, response_body)
+        }
         let(:http_version) { 1.1 }
         let(:status_code) { 200 }
         let(:response_body) { {}.to_json }
@@ -100,19 +108,28 @@ module Segment
         let(:batch) { [] }
 
         before do
-          allow(subject.instance_variable_get(:@http)).to receive(:request) { response }
+          http = subject.instance_variable_get(:@http)
+          allow(http).to receive(:request) { response }
           allow(response).to receive(:body) { response_body }
         end
 
         it 'initalizes a new Net::HTTP::Post with path and default headers' do
           path = subject.instance_variable_get(:@path)
-          default_headers = { 'Content-Type' => 'application/json', 'accept' => 'application/json' }
-          expect(Net::HTTP::Post).to receive(:new).with(path, default_headers).and_call_original
+          default_headers = {
+            'Content-Type' => 'application/json',
+            'accept' => 'application/json'
+          }
+          expect(Net::HTTP::Post).to receive(:new).with(
+            path, default_headers
+          ).and_call_original
+
           subject.post(write_key, batch)
         end
 
         it 'adds basic auth to the Net::HTTP::Post' do
-          expect_any_instance_of(Net::HTTP::Post).to receive(:basic_auth).with(write_key, nil)
+          expect_any_instance_of(Net::HTTP::Post).to receive(:basic_auth)
+            .with(write_key, nil)
+
           subject.post(write_key, batch)
         end
 
@@ -136,6 +153,38 @@ module Segment
         end
 
         context 'a real request' do
+          RSpec.shared_examples('retried request') do |status_code, body|
+            let(:status_code) { status_code }
+            let(:body) { body }
+            let(:retries) { 4 }
+            let(:backoff) { 1 }
+            subject { described_class.new(retries: retries, backoff: backoff) }
+
+            it 'retries the request' do
+              expect(subject)
+                .to receive(:sleep)
+                .exactly(retries - 1).times
+                .with(backoff)
+                .and_return(nil)
+              subject.post(write_key, batch)
+            end
+          end
+
+          RSpec.shared_examples('non-retried request') do |status_code, body|
+            let(:status_code) { status_code }
+            let(:body) { body }
+            let(:retries) { 4 }
+            let(:backoff) { 1 }
+            subject { described_class.new(retries: retries, backoff: backoff) }
+
+            it 'does not retry the request' do
+              expect(subject)
+                .to receive(:sleep)
+                .never
+              subject.post(write_key, batch)
+            end
+          end
+
           context 'request is successful' do
             let(:status_code) { 201 }
             it 'returns a response code' do
@@ -156,33 +205,32 @@ module Segment
             end
           end
 
+          context 'a request returns a failure status code' do
+            # Server errors must be retried
+            it_behaves_like('retried request', 500, '{}')
+            it_behaves_like('retried request', 503, '{}')
+
+            # All 4xx errors other than 429 (rate limited) must be retried
+            it_behaves_like('retried request', 429, '{}')
+            it_behaves_like('non-retried request', 404, '{}')
+            it_behaves_like('non-retried request', 400, '{}')
+          end
+
           context 'request or parsing of response results in an exception' do
             let(:response_body) { 'Malformed JSON ---' }
 
-            let(:backoff) { 0 }
+            subject { described_class.new(backoff: 0) }
 
-            subject { described_class.new(retries: retries, backoff: backoff) }
-
-            context 'remaining retries is > 1' do
-              let(:retries) { 2 }
-
-              it 'sleeps' do
-                expect(subject).to receive(:sleep).exactly(retries - 1).times
-                subject.post(write_key, batch)
-              end
+            it 'returns a -1 for status' do
+              expect(subject.post(write_key, batch).status).to eq(-1)
             end
 
-            context 'remaining retries is 1' do
-              let(:retries) { 1 }
-
-              it 'returns a -1 for status' do
-                expect(subject.post(write_key, batch).status).to eq(-1)
-              end
-
-              it 'has a connection error' do
-                expect(subject.post(write_key, batch).error).to match(/Connection error/)
-              end
+            it 'has a connection error' do
+              error = subject.post(write_key, batch).error
+              expect(error).to match(/Connection error/)
             end
+
+            it_behaves_like('retried request', 200, 'Malformed JSON ---')
           end
         end
       end
