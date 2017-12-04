@@ -19,7 +19,7 @@ module Segment
         options[:host] ||= HOST
         options[:port] ||= PORT
         options[:ssl] ||= SSL
-        options[:headers] ||= HEADERS
+        @headers = options[:headers] || HEADERS
         @path = options[:path] || PATH
         @retries = options[:retries] || RETRIES
         @backoff = options[:backoff] || BACKOFF
@@ -96,15 +96,11 @@ module Segment
 
       # Sends a request for the batch, returns [status_code, body]
       def send_request(write_key, batch)
-        headers = {
-          'Content-Type' => 'application/json',
-          'accept' => 'application/json'
-        }
         payload = JSON.generate(
           :sentAt => datetime_in_iso8601(Time.now),
           :batch => batch
         )
-        request = Net::HTTP::Post.new(@path, headers)
+        request = Net::HTTP::Post.new(@path, @headers)
         request.basic_auth(write_key, nil)
 
         if self.class.stub

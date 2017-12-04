@@ -117,7 +117,7 @@ module Segment
           path = subject.instance_variable_get(:@path)
           default_headers = {
             'Content-Type' => 'application/json',
-            'accept' => 'application/json'
+            'Accept' => 'application/json'
           }
           expect(Net::HTTP::Post).to receive(:new).with(
             path, default_headers

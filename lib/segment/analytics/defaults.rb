@@ -6,7 +6,8 @@ module Segment
         PORT = 443
         PATH = '/v1/import'
         SSL = true
-        HEADERS = { :accept => 'application/json' }
+        HEADERS = { 'Accept' => 'application/json',
+                    'Content-Type' => 'application/json' }
         RETRIES = 4
         BACKOFF = 30.0
       end
