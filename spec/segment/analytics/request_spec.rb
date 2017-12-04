@@ -46,9 +46,9 @@ module Segment
             expect(retries).to eq(described_class::RETRIES)
           end
 
-          it 'sets a default backoff' do
-            backoff = subject.instance_variable_get(:@backoff)
-            expect(backoff).to eq(described_class::BACKOFF)
+          it 'sets a default backoff policy' do
+            backoff_policy = subject.instance_variable_get(:@backoff_policy)
+            expect(backoff_policy).to be_a(Segment::Analytics::BackoffPolicy)
           end
 
           it 'initializes a new Net::HTTP with default host and port' do
@@ -63,14 +63,14 @@ module Segment
         context 'options are given' do
           let(:path) { 'my/cool/path' }
           let(:retries) { 1234 }
-          let(:backoff) { 10 }
+          let(:backoff_policy) { FakeBackoffPolicy.new([1, 2, 3]) }
           let(:host) { 'http://www.example.com' }
           let(:port) { 8080 }
           let(:options) do
             {
               path: path,
               retries: retries,
-              backoff: backoff,
+              backoff_policy: backoff_policy,
               host: host,
               port: port
             }
@@ -86,8 +86,9 @@ module Segment
             expect(subject.instance_variable_get(:@retries)).to eq(retries)
           end
 
-          it 'sets passed in backoff' do
-            expect(subject.instance_variable_get(:@backoff)).to eq(backoff)
+          it 'sets passed in backoff backoff policy' do
+            expect(subject.instance_variable_get(:@backoff_policy))
+              .to eq(backoff_policy)
           end
 
           it 'initializes a new Net::HTTP with passed in host and port' do
@@ -157,14 +158,17 @@ module Segment
             let(:status_code) { status_code }
             let(:body) { body }
             let(:retries) { 4 }
-            let(:backoff) { 1 }
-            subject { described_class.new(retries: retries, backoff: backoff) }
+            let(:backoff_policy) { FakeBackoffPolicy.new([1000, 1000, 1000]) }
+            subject {
+              described_class.new(retries: retries,
+                                  backoff_policy: backoff_policy)
+            }
 
             it 'retries the request' do
               expect(subject)
                 .to receive(:sleep)
                 .exactly(retries - 1).times
-                .with(backoff)
+                .with(1)
                 .and_return(nil)
               subject.post(write_key, batch)
             end
@@ -219,7 +223,7 @@ module Segment
           context 'request or parsing of response results in an exception' do
             let(:response_body) { 'Malformed JSON ---' }
 
-            subject { described_class.new(backoff: 0) }
+            subject { described_class.new(retries: 0) }
 
             it 'returns a -1 for status' do
               expect(subject.post(write_key, batch).status).to eq(-1)

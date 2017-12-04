@@ -90,6 +90,18 @@ class NoopWorker
   end
 end
 
+# A backoff policy that returns a fixed list of values
+class FakeBackoffPolicy
+  def initialize(interval_values)
+    @interval_values = interval_values
+  end
+
+  def next_interval
+    raise 'FakeBackoffPolicy has no values left' if @interval_values.empty?
+    @interval_values.shift
+  end
+end
+
 # usage:
 # it "should return a result of 5" do
 #   eventually(options: {timeout: 1}) { long_running_thing.result.should eq(5) }
