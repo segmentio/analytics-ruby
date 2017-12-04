@@ -35,6 +35,10 @@ Metrics/PerceivedComplexity:
   Exclude:
     - "spec/**/*.rb"
 
+Naming/FileName:
+  Exclude:
+    - lib/analytics-ruby.rb # Gem name, added for easier Gemfile usage
+
 Naming/PredicateName:
   NameWhitelist:
     - is_requesting? # Can't be renamed, backwards compatibility
