@@ -8,7 +8,7 @@ module Segment
         SSL = true
         HEADERS = { 'Accept' => 'application/json',
                     'Content-Type' => 'application/json' }
-        RETRIES = 4
+        RETRIES = 10
       end
 
       module Queue
