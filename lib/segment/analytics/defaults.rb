@@ -7,7 +7,8 @@ module Segment
         PATH = '/v1/import'
         SSL = true
         HEADERS = { 'Accept' => 'application/json',
-                    'Content-Type' => 'application/json' }
+                    'Content-Type' => 'application/json',
+                    'User-Agent' => "analytics-ruby/#{Analytics::VERSION}" }
         RETRIES = 10
       end
 
