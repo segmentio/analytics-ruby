@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'tzinfo', '1.2.1'
   spec.add_development_dependency 'activesupport', '~> 4.1.11'
-  spec.add_development_dependency 'httparty', '~> 0.15'
+  spec.add_development_dependency 'faraday', '~> 0.13'
   spec.add_development_dependency 'pmap', '~> 1.1'
 
   if RUBY_VERSION >= "2.1"
