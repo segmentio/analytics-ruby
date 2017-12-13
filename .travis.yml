@@ -1,5 +1,8 @@
 language: ruby
 
+env:
+  - RUN_E2E_TESTS=true
+
 rvm:
   - jruby-19mode
   - 1.9.3
