@@ -6,6 +6,7 @@ SimpleCov.formatter = SimpleCov::Formatter::Codecov
 
 require 'segment/analytics'
 require 'active_support/time'
+require './spec/helpers/runscope_client'
 
 # Setting timezone for ActiveSupport::TimeWithZone to UTC
 Time.zone = 'UTC'
