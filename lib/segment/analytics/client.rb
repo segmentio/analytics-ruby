@@ -309,8 +309,8 @@ module Segment
         action[:messageId] ||= uid
 
         if @queue.length < @max_queue_size
-          ensure_worker_running
           @queue << action
+          ensure_worker_running
 
           true
         else
