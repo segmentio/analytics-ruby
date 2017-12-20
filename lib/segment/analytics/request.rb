@@ -84,7 +84,7 @@ module Segment
         begin
           result, should_retry = yield
           return [result, nil] unless should_retry
-        rescue Exception => e
+        rescue StandardError => e
           should_retry = true
           caught_exception = e
         end
