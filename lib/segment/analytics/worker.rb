@@ -1,5 +1,6 @@
 require 'segment/analytics/defaults'
 require 'segment/analytics/message'
+require 'segment/analytics/message_batch'
 require 'segment/analytics/request'
 require 'segment/analytics/utils'
 
@@ -26,7 +27,7 @@ module Segment
         @write_key = write_key
         @batch_size = options[:batch_size] || Queue::BATCH_SIZE
         @on_error = options[:on_error] || proc { |status, error| }
-        @batch = []
+        @batch = MessageBatch.new
         @lock = Mutex.new
       end
 
