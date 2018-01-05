@@ -17,6 +17,10 @@ module Segment
         MAX_SIZE = 10000
       end
 
+      module Message
+        MAX_BYTES = 32768 # 32Kb
+      end
+
       module BackoffPolicy
         MIN_TIMEOUT_MS = 100
         MAX_TIMEOUT_MS = 10000
