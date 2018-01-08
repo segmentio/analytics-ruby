@@ -1,13 +1,16 @@
 require 'thread'
 require 'time'
+
+require 'segment/analytics/defaults'
+require 'segment/analytics/logging'
 require 'segment/analytics/utils'
 require 'segment/analytics/worker'
-require 'segment/analytics/defaults'
 
 module Segment
   class Analytics
     class Client
       include Segment::Analytics::Utils
+      include Segment::Analytics::Logging
 
       # public: Creates a new client
       #
@@ -314,7 +317,12 @@ module Segment
 
           true
         else
-          false # Queue is full
+          logger.warn(
+            'Queue is full, dropping events. The :max_queue_size ' \
+            'configuration parameter can be increased to prevent this from ' \
+            'happening.'
+          )
+          false
         end
       end
 
