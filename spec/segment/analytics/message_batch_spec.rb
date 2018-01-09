@@ -4,7 +4,7 @@ module Segment
   class Analytics
     describe MessageBatch do
       describe '#<<' do
-        subject { described_class.new }
+        subject { described_class.new(100) }
 
         it 'appends messages' do
           subject << Message.new('a' => 'b')

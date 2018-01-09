@@ -6,8 +6,11 @@ module Segment
       describe '#init' do
         it 'accepts string keys' do
           queue = Queue.new
-          worker = Segment::Analytics::Worker.new(queue, 'secret', 'batch_size' => 100)
-          expect(worker.instance_variable_get(:@batch_size)).to eq(100)
+          worker = Segment::Analytics::Worker.new(queue,
+                                                  'secret',
+                                                  'batch_size' => 100)
+          batch = worker.instance_variable_get(:@batch)
+          expect(batch.instance_variable_get(:@max_message_count)).to eq(100)
         end
       end
 

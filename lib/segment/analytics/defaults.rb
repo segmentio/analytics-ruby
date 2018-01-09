@@ -13,12 +13,16 @@ module Segment
       end
 
       module Queue
-        BATCH_SIZE = 100
         MAX_SIZE = 10000
       end
 
       module Message
         MAX_BYTES = 32768 # 32Kb
+      end
+
+      module MessageBatch
+        MAX_BYTES = 512_000 # 500Kb
+        MAX_SIZE = 100
       end
 
       module BackoffPolicy
