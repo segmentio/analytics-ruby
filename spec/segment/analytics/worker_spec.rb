@@ -38,8 +38,11 @@ module Segment
           end.to_not raise_error
         end
 
-        it 'executes the error handler, before the request phase ends, if the request is invalid' do
-          Segment::Analytics::Request.any_instance.stub(:post).and_return(Segment::Analytics::Response.new(400, 'Some error'))
+        it 'executes the error handler if the request is invalid' do
+          Segment::Analytics::Request
+            .any_instance
+            .stub(:post)
+            .and_return(Segment::Analytics::Response.new(400, 'Some error'))
 
           status = error = nil
           on_error = proc do |yielded_status, yielded_error|
@@ -49,9 +52,10 @@ module Segment
 
           queue = Queue.new
           queue << {}
-          worker = Segment::Analytics::Worker.new queue, 'secret', :on_error => on_error
+          worker = described_class.new(queue, 'secret', :on_error => on_error)
 
-          # This is to ensure that Client#flush doesn't finish before calling the error handler.
+          # This is to ensure that Client#flush doesn't finish before calling
+          # the error handler.
           Thread.new { worker.run }
           sleep 0.1 # First give thread time to spin-up.
           sleep 0.01 while worker.is_requesting?
@@ -72,7 +76,9 @@ module Segment
 
           queue = Queue.new
           queue << Requested::TRACK
-          worker = Segment::Analytics::Worker.new queue, 'testsecret', :on_error => on_error
+          worker = described_class.new(queue,
+                                       'testsecret',
+                                       :on_error => on_error)
           worker.run
 
           expect(queue).to be_empty
