@@ -28,6 +28,7 @@ module Segment
         @on_error = options[:on_error] || proc { |status, error| }
         @batch = []
         @lock = Mutex.new
+        @request = Request.new
       end
 
       # public: Continuously runs the loop to check for new events
@@ -42,8 +43,7 @@ module Segment
             end
           end
 
-          res = Request.new.post @write_key, @batch
-
+          res = @request.post(@write_key, @batch)
           @on_error.call(res.status, res.error) unless res.status == 200
 
           @lock.synchronize { @batch.clear }
