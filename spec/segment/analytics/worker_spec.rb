@@ -98,12 +98,11 @@ module Segment
           queue << Requested::TRACK
           worker = Segment::Analytics::Worker.new(queue, 'testsecret')
 
-          Thread.new do
-            worker.run
-            expect(worker.is_requesting?).to eq(false)
-          end
-
+          worker_thread = Thread.new { worker.run }
           eventually { expect(worker.is_requesting?).to eq(true) }
+
+          worker_thread.join
+          expect(worker.is_requesting?).to eq(false)
         end
       end
     end
