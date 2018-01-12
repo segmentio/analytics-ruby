@@ -9,7 +9,7 @@ class RunscopeClient
 
   def requests(bucket_key)
     with_retries(3) do
-      response = @conn.get("/buckets/#{bucket_key}/messages", count: 10)
+      response = @conn.get("/buckets/#{bucket_key}/messages", count: 20)
 
       raise "Runscope error. #{response.body}" unless response.status == 200
 

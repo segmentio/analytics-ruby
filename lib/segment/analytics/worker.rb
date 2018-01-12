@@ -25,9 +25,9 @@ module Segment
         symbolize_keys! options
         @queue = queue
         @write_key = write_key
-        @batch_size = options[:batch_size] || Queue::BATCH_SIZE
         @on_error = options[:on_error] || proc { |status, error| }
-        @batch = MessageBatch.new
+        batch_size = options[:batch_size] || Defaults::MessageBatch::MAX_SIZE
+        @batch = MessageBatch.new(batch_size)
         @lock = Mutex.new
         @request = Request.new
       end
@@ -39,7 +39,7 @@ module Segment
           return if @queue.empty?
 
           @lock.synchronize do
-            until @batch.length >= @batch_size || @queue.empty?
+            until @batch.full? || @queue.empty?
               @batch << Message.new(@queue.pop)
             end
           end

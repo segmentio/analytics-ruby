@@ -9,7 +9,11 @@ module Segment
       end
 
       def too_big?
-        to_json.bytesize > Defaults::Message::MAX_BYTES
+        json_size > Defaults::Message::MAX_BYTES
+      end
+
+      def json_size
+        to_json.bytesize
       end
 
       # Since the hash is expected to not be modified (set at initialization),
