@@ -9,6 +9,13 @@ require 'segment/analytics/logging'
 
 module Segment
   class Analytics
+    # Initializes a new instance of {Segment::Analytics::Client}, to which all
+    # method calls are proxied.
+    #
+    # @param options includes options that are passed down to
+    #   {Segment::Analytics::Client#initialize}
+    # @option options [Boolean] :stub (false) If true, requests don't hit the
+    #   server and are stubbed to be successful.
     def initialize(options = {})
       Request.stub = options[:stub] if options.has_key?(:stub)
       @client = Segment::Analytics::Client.new options

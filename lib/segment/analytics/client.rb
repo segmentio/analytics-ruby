@@ -12,31 +12,30 @@ module Segment
       include Segment::Analytics::Utils
       include Segment::Analytics::Logging
 
-      # public: Creates a new client
-      #
-      # attrs - Hash
-      #           :write_key         - String of your project's write_key
-      #           :max_queue_size - Fixnum of the max calls to remain queued (optional)
-      #           :on_error       - Proc which handles error calls from the API
-      def initialize(attrs = {})
-        symbolize_keys! attrs
+      # @param [Hash] opts
+      # @option opts [String] :write_key Your project's write_key
+      # @option opts [FixNum] :max_queue_size Maximum number of calls to be
+      #   remain queued.
+      # @option opts [Proc] :on_error Handles error calls from the API.
+      def initialize(opts = {})
+        symbolize_keys!(opts)
 
         @queue = Queue.new
-        @write_key = attrs[:write_key]
-        @max_queue_size = attrs[:max_queue_size] || Defaults::Queue::MAX_SIZE
-        @options = attrs
+        @write_key = opts[:write_key]
+        @max_queue_size = opts[:max_queue_size] || Defaults::Queue::MAX_SIZE
+        @options = opts
         @worker_mutex = Mutex.new
-        @worker = Worker.new @queue, @write_key, @options
+        @worker = Worker.new(@queue, @write_key, @options)
 
         check_write_key!
 
         at_exit { @worker_thread && @worker_thread[:should_exit] = true }
       end
 
-      # public: Synchronously waits until the worker has flushed the queue.
-      #         Use only for scripts which are not long-running, and will
-      #         specifically exit
+      # Synchronously waits until the worker has flushed the queue.
       #
+      # Use only for scripts which are not long-running, and will specifically
+      # exit
       def flush
         while !@queue.empty? || @worker.is_requesting?
           ensure_worker_running
@@ -44,18 +43,25 @@ module Segment
         end
       end
 
-      # public: Tracks an event
+      # Tracks an event
       #
-      # attrs - Hash
-      #           :anonymous_id - String of the user's id when you don't know who they are yet. (optional but you must provide either an anonymous_id or user_id. See: https://segment.io/docs/tracking - api/track/#user - id)
-      #           :context      - Hash of context. (optional)
-      #           :event        - String of event name.
-      #           :integrations - Hash specifying what integrations this event goes to. (optional)
-      #           :options      - Hash specifying options such as user traits. (optional)
-      #           :properties   - Hash of event properties. (optional)
-      #           :timestamp    - Time of when the event occurred. (optional)
-      #           :user_id      - String of the user id.
-      #           :message_id   - String of the message id that uniquely identified a message across the API. (optional)
+      # @see https://segment.com/docs/sources/server/ruby/#track
+      #
+      # @param [Hash] attrs
+      # @option attrs [String] :anonymous_id ID for a user when you don't know
+      #   who they are yet. (optional but you must provide either an
+      #   `anonymous_id` or `user_id`)
+      # @option attrs [Hash] :context ({})
+      # @option attrs [String] :event Event name
+      # @option attrs [Hash] :integrations What integrations this event
+      #   goes to (optional)
+      # @option attrs [Hash] :options Options such as user traits (optional)
+      # @option attrs [Hash] :properties Event properties (optional)
+      # @option attrs [Time] :timestamp When the event occurred (optional)
+      # @option attrs [String] :user_id The ID for this user in your database
+      #   (optional but you must provide either an `anonymous_id` or `user_id`)
+      # @option attrs [String] :message_id ID that uniquely
+      #   identifies a message across the API. (optional)
       def track(attrs)
         symbolize_keys! attrs
         check_user_id! attrs
@@ -91,17 +97,24 @@ module Segment
         })
       end
 
-      # public: Identifies a user
+      # Identifies a user
       #
-      # attrs - Hash
-      #           :anonymous_id - String of the user's id when you don't know who they are yet. (optional but you must provide either an anonymous_id or user_id. See: https://segment.io/docs/tracking - api/track/#user - id)
-      #           :context      - Hash of context. (optional)
-      #           :integrations - Hash specifying what integrations this event goes to. (optional)
-      #           :options      - Hash specifying options such as user traits. (optional)
-      #           :timestamp    - Time of when the event occurred. (optional)
-      #           :traits       - Hash of user traits. (optional)
-      #           :user_id      - String of the user id
-      #           :message_id   - String of the message id that uniquely identified a message across the API. (optional)
+      # @see https://segment.com/docs/sources/server/ruby/#identify
+      #
+      # @param [Hash] attrs
+      # @option attrs [String] :anonymous_id ID for a user when you don't know
+      #   who they are yet. (optional but you must provide either an
+      #   `anonymous_id` or `user_id`)
+      # @option attrs [Hash] :context ({})
+      # @option attrs [Hash] :integrations What integrations this event
+      #   goes to (optional)
+      # @option attrs [Hash] :options Options such as user traits (optional)
+      # @option attrs [Time] :timestamp When the event occurred (optional)
+      # @option attrs [Hash] :traits User traits (optional)
+      # @option attrs [String] :user_id The ID for this user in your database
+      #   (optional but you must provide either an `anonymous_id` or `user_id`)
+      # @option attrs [String] :message_id ID that uniquely identifies a
+      #   message across the API. (optional)
       def identify(attrs)
         symbolize_keys! attrs
         check_user_id! attrs
@@ -131,16 +144,20 @@ module Segment
         })
       end
 
-      # public: Aliases a user from one id to another
+      # Aliases a user from one id to another
       #
-      # attrs - Hash
-      #           :context     - Hash of context (optional)
-      #           :integrations - Hash specifying what integrations this event goes to. (optional)
-      #           :options      - Hash specifying options such as user traits. (optional)
-      #           :previous_id - String of the id to alias from
-      #           :timestamp   - Time of when the alias occured (optional)
-      #           :user_id     - String of the id to alias to
-      #           :message_id   - String of the message id that uniquely identified a message across the API. (optional)
+      # @see https://segment.com/docs/sources/server/ruby/#alias
+      #
+      # @param [Hash] attrs
+      # @option attrs [Hash] :context ({})
+      # @option attrs [Hash] :integrations What integrations this must be
+      #   sent to (optional)
+      # @option attrs [Hash] :options Options such as user traits (optional)
+      # @option attrs [String] :previous_id The ID to alias from
+      # @option attrs [Time] :timestamp When the alias occurred (optional)
+      # @option attrs [String] :user_id The ID to alias to
+      # @option attrs [String] :message_id ID that uniquely identifies a
+      #   message across the API. (optional)
       def alias(attrs)
         symbolize_keys! attrs
 
@@ -167,16 +184,24 @@ module Segment
         })
       end
 
-      # public: Associates a user identity with a group.
+      # Associates a user identity with a group.
       #
-      # attrs - Hash
-      #           :context      - Hash of context (optional)
-      #           :integrations - Hash specifying what integrations this event goes to. (optional)
-      #           :options      - Hash specifying options such as user traits. (optional)
-      #           :previous_id  - String of the id to alias from
-      #           :timestamp    - Time of when the alias occured (optional)
-      #           :user_id      - String of the id to alias to
-      #           :message_id   - String of the message id that uniquely identified a message across the API. (optional)
+      # @see https://segment.com/docs/sources/server/ruby/#group
+      #
+      # @param [Hash] attrs
+      # @option attrs [String] :anonymous_id ID for a user when you don't know
+      #   who they are yet. (optional but you must provide either an
+      #   `anonymous_id` or `user_id`)
+      # @option attrs [Hash] :context ({})
+      # @option attrs [String] :group_id The ID of the group
+      # @option attrs [Hash] :integrations What integrations this event
+      #   goes to (optional)
+      # @option attrs [Hash] :options Options such as user traits (optional)
+      # @option attrs [Time] :timestamp When the event occurred (optional)
+      # @option attrs [String] :user_id The ID for the user that is part of
+      #   the group
+      # @option attrs [String] :message_id ID that uniquely identifies a
+      #   message across the API. (optional)
       def group(attrs)
         symbolize_keys! attrs
         check_user_id! attrs
@@ -208,19 +233,25 @@ module Segment
         })
       end
 
-      # public: Records a page view
+      # Records a page view
       #
-      # attrs - Hash
-      #           :anonymous_id - String of the user's id when you don't know who they are yet. (optional but you must provide either an anonymous_id or user_id. See: https://segment.io/docs/tracking - api/track/#user - id)
-      #           :category     - String of the page category (optional)
-      #           :context      - Hash of context (optional)
-      #           :integrations - Hash specifying what integrations this event goes to. (optional)
-      #           :name         - String name of the page
-      #           :options      - Hash specifying options such as user traits. (optional)
-      #           :properties   - Hash of page properties (optional)
-      #           :timestamp    - Time of when the pageview occured (optional)
-      #           :user_id      - String of the id to alias from
-      #           :message_id   - String of the message id that uniquely identified a message across the API. (optional)
+      # @see https://segment.com/docs/sources/server/ruby/#page
+      #
+      # @param [Hash] attrs
+      # @option attrs [String] :anonymous_id ID for a user when you don't know
+      #   who they are yet. (optional but you must provide either an
+      #   `anonymous_id` or `user_id`)
+      # @option attrs [String] :category The page category (optional)
+      # @option attrs [Hash] :context ({})
+      # @option attrs [Hash] :integrations What integrations this event
+      #   goes to (optional)
+      # @option attrs [String] :name Name of the page
+      # @option attrs [Hash] :options Options such as user traits (optional)
+      # @option attrs [Hash] :properties Page properties (optional)
+      # @option attrs [Time] :timestamp When the pageview occurred (optional)
+      # @option attrs [String] :user_id The ID of the user viewing the page
+      # @option attrs [String] :message_id ID that uniquely identifies a
+      #   message across the API. (optional)
       def page(attrs)
         symbolize_keys! attrs
         check_user_id! attrs
@@ -252,18 +283,23 @@ module Segment
         })
       end
 
-      # public: Records a screen view (for a mobile app)
+      # Records a screen view (for a mobile app)
       #
-      # attrs - Hash
-      #           :anonymous_id - String of the user's id when you don't know who they are yet. (optional but you must provide either an anonymous_id or user_id. See: https://segment.io/docs/tracking - api/track/#user - id)
-      #           :category     - String screen category (optional)
-      #           :context      - Hash of context (optional)
-      #           :integrations - Hash specifying what integrations this event goes to. (optional)
-      #           :name         - String name of the screen
-      #           :options      - Hash specifying options such as user traits. (optional)
-      #           :properties   - Hash of screen properties (optional)
-      #           :timestamp    - Time of when the screen occured (optional)
-      #           :user_id      - String of the id to alias from
+      # @param [Hash] attrs
+      # @option attrs [String] :anonymous_id ID for a user when you don't know
+      #   who they are yet. (optional but you must provide either an
+      #   `anonymous_id` or `user_id`)
+      # @option attrs [String] :category The screen category (optional)
+      # @option attrs [Hash] :context ({})
+      # @option attrs [Hash] :integrations What integrations this event
+      #   goes to (optional)
+      # @option attrs [String] :name Name of the screen
+      # @option attrs [Hash] :options Options such as user traits (optional)
+      # @option attrs [Hash] :properties Page properties (optional)
+      # @option attrs [Time] :timestamp When the pageview occurred (optional)
+      # @option attrs [String] :user_id The ID of the user viewing the screen
+      # @option attrs [String] :message_id ID that uniquely identifies a
+      #   message across the API. (optional)
       def screen(attrs)
         symbolize_keys! attrs
         check_user_id! attrs
@@ -295,9 +331,7 @@ module Segment
         })
       end
 
-      # public: Returns the number of queued messages
-      #
-      # returns Fixnum of messages in the queue
+      # @return [Fixnum] number of messages in the queue
       def queued_messages
         @queue.length
       end
@@ -368,7 +402,9 @@ module Segment
       end
 
       def check_user_id!(attrs)
-        raise ArgumentError, 'Must supply either user_id or anonymous_id' unless attrs[:user_id] || attrs[:anonymous_id]
+        unless attrs[:user_id] || attrs[:anonymous_id]
+          raise ArgumentError, 'Must supply either user_id or anonymous_id'
+        end
       end
 
       def ensure_worker_running
