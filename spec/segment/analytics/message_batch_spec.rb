@@ -19,15 +19,6 @@ module Segment
           subject << message
           expect(subject.length).to eq(0)
         end
-
-        it 'rejects messages that exceed the maximum allowed size' do
-          max_bytes = Defaults::Message::MAX_BYTES
-          hash = { 'a' => 'b' * max_bytes }
-          message = Message.new(hash)
-
-          subject << message
-          expect(subject.length).to eq(0)
-        end
       end
 
       describe '#full?' do

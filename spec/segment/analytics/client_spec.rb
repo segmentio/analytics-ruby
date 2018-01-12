@@ -275,6 +275,16 @@ module Segment
           end
         end
 
+        it 'returns false if queue is full' do
+          client.instance_variable_set(:@max_queue_size, 1)
+
+          [:track, :screen, :page, :group, :identify, :alias].each do |s|
+            expect(client.send(s, data)).to eq(true)
+            expect(client.send(s, data)).to eq(false) # Queue is full
+            queue.pop(true)
+          end
+        end
+
         it 'converts message id to string' do
           [:track, :screen, :page, :group, :identify, :alias].each do |s|
             client.send(s, data)
