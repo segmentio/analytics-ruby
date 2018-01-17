@@ -9,5 +9,4 @@ rvm:
   - 2.3.5
   - 2.4.2
 
-before_install:
-  - gem install bundler
+script: make check
