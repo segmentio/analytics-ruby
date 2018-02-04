@@ -1,3 +1,19 @@
+2.2.4.pre / 2018-02-04
+==================
+
+  * [Fix](https://github.com/segmentio/analytics-ruby/pull/147): Prevent 'batch
+    size exceeded' errors by automatically batching
+    items according to size
+  * [Performance](https://github.com/segmentio/analytics-ruby/pull/149): Reuse
+    TCP connections
+  * [Improvement](https://github.com/segmentio/analytics-ruby/pull/145): Emit logs
+    when in-memory queue is full
+  * [Improvement](https://github.com/segmentio/analytics-ruby/pull/143): Emit logs
+    when messages exceed maximum allowed size
+  * [Improvement](https://github.com/segmentio/analytics-ruby/pull/134): Add
+    exponential backoff to retries
+  * [Improvement](https://github.com/segmentio/analytics-ruby/pull/132): Handle
+    HTTP status code failure appropriately
 
 2.2.3.pre / 2017-09-14
 ==================
