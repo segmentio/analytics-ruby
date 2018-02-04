@@ -10,3 +10,10 @@ rvm:
   - 2.4.2
 
 script: make check
+
+# Deploy tagged commits to Rubygems
+# See https://docs.travis-ci.com/user/deployment/rubygems/ for more details
+deploy:
+  provider: rubygems
+  on:
+    tags: true
