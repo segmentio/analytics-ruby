@@ -10,3 +10,7 @@ rvm:
   - 2.4.2
 
 script: make check
+
+deploy:
+  api_key:
+    secure: Ceq6J4aBpsoqRfSiC7z+/J4moOXNjcPMFb2Bfm5qE51cIZzeyuOIOc6zhrad9tUgoX6uTRRxLxkybyu4wNYSluMA3IXW20CJyXZeJEHIaTYIDTWFAIYyerBJyMujJycSo7XueWb0faKBENrBQKx1K1tS0EiXpA2rMhdA6RM3DOY=
