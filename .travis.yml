@@ -11,6 +11,11 @@ rvm:
 
 script: make check
 
+# Deploy tagged commits to Rubygems
+# See https://docs.travis-ci.com/user/deployment/rubygems/ for more details
 deploy:
+  provider: rubygems
+  on:
+    tags: true
   api_key:
     secure: Ceq6J4aBpsoqRfSiC7z+/J4moOXNjcPMFb2Bfm5qE51cIZzeyuOIOc6zhrad9tUgoX6uTRRxLxkybyu4wNYSluMA3IXW20CJyXZeJEHIaTYIDTWFAIYyerBJyMujJycSo7XueWb0faKBENrBQKx1K1tS0EiXpA2rMhdA6RM3DOY=
