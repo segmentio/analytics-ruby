@@ -1,5 +1,10 @@
-2.2.4.pre / 2018-02-04
+2.2.4 / 2018-04-30
 ==================
+
+  * Promote pre-release version to stable.
+
+2.2.4.pre / 2018-02-04
+======================
 
   * [Fix](https://github.com/segmentio/analytics-ruby/pull/147): Prevent 'batch
     size exceeded' errors by automatically batching
