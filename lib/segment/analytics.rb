@@ -1,6 +1,6 @@
+require 'segment/analytics/version'
 require 'segment/analytics/defaults'
 require 'segment/analytics/utils'
-require 'segment/analytics/version'
 require 'segment/analytics/client'
 require 'segment/analytics/worker'
 require 'segment/analytics/request'
