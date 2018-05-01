@@ -1,3 +1,8 @@
+2.2.5 / 2018-05-01
+==================
+
+  * [Fix](https://github.com/segmentio/analytics-ruby/pull/158): Require `version` module first.
+
 2.2.4 / 2018-04-30
 ==================
 
