@@ -15,7 +15,7 @@ module Segment
     # Runscope bucket key for https://www.runscope.com/stream/umkvkgv7ndby
     RUNSCOPE_BUCKET_KEY = 'umkvkgv7ndby'
 
-    let(:client) { Segment::Analytics.new(write_key: WRITE_KEY) }
+    let(:client) { Segment::Analytics.new({write_key: WRITE_KEY, max_queue_size: 1}) }
     let(:runscope_client) { RunscopeClient.new(ENV.fetch('RUNSCOPE_TOKEN')) }
 
     it 'tracks events' do
@@ -25,7 +25,6 @@ module Segment
         event: 'E2E Test',
         properties: { id: id }
       )
-      client.flush
 
       # Allow events to propagate to runscope
       eventually(timeout: 30) {
