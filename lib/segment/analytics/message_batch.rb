@@ -1,3 +1,4 @@
+require 'forwardable'
 require 'segment/analytics/logging'
 
 module Segment
