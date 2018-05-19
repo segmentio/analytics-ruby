@@ -90,6 +90,7 @@ module Segment
         end
 
         if should_retry && (retries_remaining > 1)
+          logger.debug("Retrying request, #{retries_remaining} retries left")
           sleep(@backoff_policy.next_interval.to_f / 1000)
           retry_with_backoff(retries_remaining - 1, &block)
         else

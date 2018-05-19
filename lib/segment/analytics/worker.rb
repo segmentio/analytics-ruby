@@ -9,6 +9,7 @@ module Segment
     class Worker
       include Segment::Analytics::Utils
       include Segment::Analytics::Defaults
+      include Segment::Analytics::Logging
 
       # public: Creates a new worker
       #
@@ -44,6 +45,7 @@ module Segment
             end
           end
 
+          logger.debug("Sending request for #{@batch.length} items")
           res = @request.post(@write_key, @batch)
           @on_error.call(res.status, res.error) unless res.status == 200
 
