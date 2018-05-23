@@ -38,10 +38,14 @@ module Segment
       #
       # returns - Response of the status and error if it exists
       def post(write_key, batch)
+        logger.debug("Sending request for #{batch.length} items")
+
         last_response, exception = retry_with_backoff(@retries) do
           status_code, body = send_request(write_key, batch)
           error = JSON.parse(body)['error']
           should_retry = should_retry_request?(status_code, body)
+          logger.debug("Response status code: #{status_code}")
+          logger.debug("Response error: #{error}") if error
 
           [Response.new(status_code, error), should_retry]
         end

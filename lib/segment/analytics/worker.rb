@@ -45,7 +45,6 @@ module Segment
             end
           end
 
-          logger.debug("Sending request for #{@batch.length} items")
           res = @request.post(@write_key, @batch)
           @on_error.call(res.status, res.error) unless res.status == 200
 
