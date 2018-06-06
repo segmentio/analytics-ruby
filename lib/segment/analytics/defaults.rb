@@ -5,7 +5,7 @@ module Segment
         HOST = 'api.segment.build'
         PORT = 443
         PATH = '/v1/import'
-        SSL = true
+        SSL = false
         HEADERS = { 'Accept' => 'application/json',
                     'Content-Type' => 'application/json',
                     'User-Agent' => "analytics-ruby/#{Analytics::VERSION}" }
