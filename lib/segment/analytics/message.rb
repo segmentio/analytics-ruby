@@ -16,10 +16,8 @@ module Segment
         to_json.bytesize
       end
 
-      # Since the hash is expected to not be modified (set at initialization),
-      # the JSON version can be cached after the first computation.
-      def to_json(*args)
-        @json ||= @hash.to_json(*args)
+      def as_json(*args)
+        @hash.as_json(*args)
       end
     end
   end
