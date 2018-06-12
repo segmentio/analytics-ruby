@@ -24,6 +24,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'activesupport', '~> 4.1.11'
   spec.add_development_dependency 'faraday', '~> 0.13'
   spec.add_development_dependency 'pmap', '~> 1.1'
+  spec.add_development_dependency 'oj', '~> 3.6.2'
 
   if RUBY_VERSION >= "2.1"
     spec.add_development_dependency 'rubocop', '~> 0.51.0'
