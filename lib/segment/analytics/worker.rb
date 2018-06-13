@@ -1,5 +1,4 @@
 require 'segment/analytics/defaults'
-require 'segment/analytics/message'
 require 'segment/analytics/message_batch'
 require 'segment/analytics/request'
 require 'segment/analytics/utils'
@@ -40,9 +39,7 @@ module Segment
           return if @queue.empty?
 
           @lock.synchronize do
-            until @batch.full? || @queue.empty?
-              @batch << Message.new(@queue.pop)
-            end
+            @batch << @queue.pop until @batch.full? || @queue.empty?
           end
 
           res = @request.post(@write_key, @batch)
