@@ -16,11 +16,13 @@ module Segment
       end
 
       def <<(message)
-        if message.too_big?
+        message_json_size = message.to_json.bytesize
+
+        if message_too_big?(message_json_size)
           logger.error('a message exceeded the maximum allowed size')
         else
           @messages << message
-          @json_size += message.json_size + 1 # One byte for the comma
+          @json_size += message_json_size + 1 # One byte for the comma
         end
       end
 
@@ -41,6 +43,10 @@ module Segment
 
       def item_count_exhausted?
         @messages.length >= @max_message_count
+      end
+
+      def message_too_big?(message_json_size)
+        message_json_size > Defaults::Message::MAX_BYTES
       end
 
       # We consider the max size here as just enough to leave room for one more
