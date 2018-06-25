@@ -117,11 +117,6 @@ module Segment
 
           [200, '{}']
         else
-          # If `start` is not called, Ruby adds a 'Connection: close' header to
-          # all requests, preventing us from reusing a connection for multiple
-          # HTTP requests
-          @http.start unless @http.started?
-
           response = @http.request(request, payload)
           [response.code.to_i, response.body]
         end
