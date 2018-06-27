@@ -1,3 +1,5 @@
+require 'date'
+
 require 'spec_helper'
 
 module Segment
@@ -19,6 +21,10 @@ module Segment
     let(:runscope_client) { RunscopeClient.new(ENV.fetch('RUNSCOPE_TOKEN')) }
 
     it 'tracks events' do
+      # Runscope inspector has shut down, disable for a while until we've
+      # found a replacement.
+      skip if Date.today < Date.new(2018, 7, 27)
+
       id = SecureRandom.uuid
       client.track(
         user_id: 'dummy_user_id',
