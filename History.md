@@ -1,3 +1,15 @@
+2.2.6.pre / 2018-06-27
+==================
+
+  * [Fix](https://github.com/segmentio/analytics-ruby/pull/168): Revert 'reuse
+    TCP connections' to fix EMFILE errors
+  * [Fix](https://github.com/segmentio/analytics-ruby/pull/166): Fix oj/rails
+    conflict
+  * [Fix](https://github.com/segmentio/analytics-ruby/pull/162): Add missing
+    'Forwardable' requirement
+  * [Improvement](https://github.com/segmentio/analytics-ruby/pull/163): Better
+    logging
+
 2.2.5 / 2018-05-01
 ==================
 
