@@ -1,3 +1,7 @@
+Note: There is a known issue when using `2.2.5` with both `oj` and `rails` gems
+installed. Please test out `2.2.6.pre` and hold off on using `2.2.5`.
+[Details](https://github.com/segmentio/analytics-ruby/pull/166)
+
 2.2.6.pre / 2018-06-27
 ==================
 
