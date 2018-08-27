@@ -3,7 +3,7 @@ require File.expand_path('../lib/segment/analytics/version', __FILE__)
 Gem::Specification.new do |spec|
   spec.name = 'analytics-ruby'
   spec.version = Segment::Analytics::VERSION
-  spec.files = Dir.glob('**/*')
+  spec.files = Dir.glob("{lib,bin}/**/*")
   spec.require_paths = ['lib']
   spec.bindir = 'bin'
   spec.executables = ['analytics']
@@ -22,8 +22,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'tzinfo', '1.2.1'
   spec.add_development_dependency 'activesupport', '~> 4.1.11'
-  spec.add_development_dependency 'faraday', '~> 0.13'
-  spec.add_development_dependency 'pmap', '~> 1.1'
 
   if RUBY_VERSION >= '2.0' && RUBY_PLATFORM != 'java'
     spec.add_development_dependency 'oj', '~> 3.6.2'
