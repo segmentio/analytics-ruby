@@ -10,7 +10,8 @@ rvm:
   - 2.4.3
   - 2.5.0 # Performs deploys. Change condition below when changing this.
 
-script: make check
+script:
+  - make check
 
 # Deploy tagged commits to Rubygems
 # See https://docs.travis-ci.com/user/deployment/rubygems/ for more details

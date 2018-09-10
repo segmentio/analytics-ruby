@@ -9,9 +9,14 @@ dependencies:
 	bundle install --verbose
 
 # Run all tests and checks (including linters).
-check:
+check: install  # Installation required for testing binary
 	bundle exec rake
+	sh .buildscript/e2e.sh
 
 # Compile the code and produce any binaries where applicable.
 build:
+	rm -f analytics-ruby-*.gem
 	gem build ./analytics-ruby.gemspec
+
+install: build
+	gem install analytics-ruby-*.gem

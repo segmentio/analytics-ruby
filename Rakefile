@@ -4,7 +4,6 @@ default_tasks = []
 
 RSpec::Core::RakeTask.new(:spec) do |spec|
   spec.pattern = 'spec/segment/**/*_spec.rb'
-  spec.rspec_opts = "--tag ~e2e" if ENV["RUN_E2E_TESTS"] != "true"
 end
 
 default_tasks << :spec
