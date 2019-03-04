@@ -1,8 +1,6 @@
 analytics-ruby
 ==============
 
-[![Build Status](https://travis-ci.org/segmentio/analytics-ruby.png?branch=master)](https://travis-ci.org/segmentio/analytics-ruby)
-
 analytics-ruby is a ruby client for [Segment](https://segment.com)
 
 <div align="center">
