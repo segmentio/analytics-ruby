@@ -375,7 +375,7 @@ module Segment
       #
       # context - Hash of call context
       def add_context(context)
-        context[:library] = { :name => 'analytics-ruby', :version => Segment::Analytics::VERSION.to_s }
+        context[:library] ||= { :name => 'analytics-ruby', :version => Segment::Analytics::VERSION.to_s }
       end
 
       # private: Checks that the write_key is properly initialized
