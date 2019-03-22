@@ -97,6 +97,20 @@ module Segment
           expect(properties[:date]).to eq('2013-01-01')
           expect(properties[:nottime]).to eq('x')
         end
+
+        it 'respects the context library property when set' do
+          library = 'custom library property'
+
+          client.track({
+            :event => 'testing with context.library set',
+            :user_id => 'test',
+            :context => { :library => library }
+          })
+
+          msg = queue.pop
+
+          expect(msg[:context][:library]).to eq(library)
+        end
       end
 
       describe '#identify' do
