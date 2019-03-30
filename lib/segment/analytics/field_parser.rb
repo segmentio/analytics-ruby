@@ -60,6 +60,28 @@ module Segment
           })
         end
 
+        # In addition to the common fields, group accepts:
+        #
+        # - "group_id"
+        # - "traits"
+        def parse_for_group(fields)
+          common = parse_common_fields(fields)
+
+          group_id = fields[:group_id]
+          traits = fields[:traits] || {}
+
+          check_presence!(group_id, 'group_id')
+          check_is_hash!(traits, 'traits')
+
+          isoify_dates! traits
+
+          common.merge({
+            :type => 'group',
+            :groupId => group_id,
+            :traits => traits
+          })
+        end
+
         private
 
         def parse_common_fields(fields)

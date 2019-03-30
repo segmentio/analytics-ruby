@@ -123,48 +123,25 @@ module Segment
       # @see https://segment.com/docs/sources/server/ruby/#group
       #
       # @param [Hash] attrs
+      #
+      # @option attrs [String] :group_id The ID of the group
+      # @option attrs [Hash] :traits User traits (optional)
+      #
       # @option attrs [String] :anonymous_id ID for a user when you don't know
       #   who they are yet. (optional but you must provide either an
       #   `anonymous_id` or `user_id`)
       # @option attrs [Hash] :context ({})
-      # @option attrs [String] :group_id The ID of the group
       # @option attrs [Hash] :integrations What integrations this event
       #   goes to (optional)
-      # @option attrs [Hash] :options Options such as user traits (optional)
+      # @option attrs [String] :message_id ID that uniquely
+      #   identifies a message across the API. (optional)
       # @option attrs [Time] :timestamp When the event occurred (optional)
-      # @option attrs [String] :user_id The ID for the user that is part of
-      #   the group
-      # @option attrs [String] :message_id ID that uniquely identifies a
-      #   message across the API. (optional)
+      # @option attrs [String] :user_id The ID for this user in your database
+      #   (optional but you must provide either an `anonymous_id` or `user_id`)
+      # @option attrs [Hash] :options Options such as user traits (optional)
       def group(attrs)
         symbolize_keys! attrs
-        check_user_id! attrs
-
-        group_id = attrs[:group_id]
-        user_id = attrs[:user_id]
-        traits = attrs[:traits] || {}
-        timestamp = attrs[:timestamp] || Time.new
-        context = attrs[:context] || {}
-        message_id = attrs[:message_id].to_s if attrs[:message_id]
-
-        raise ArgumentError, '.traits must be a hash' unless traits.is_a? Hash
-        isoify_dates! traits
-
-        check_presence! group_id, 'group_id'
-        check_timestamp! timestamp
-        add_context context
-
-        enqueue({
-          :groupId => group_id,
-          :userId => user_id,
-          :traits => traits,
-          :integrations => attrs[:integrations],
-          :options => attrs[:options],
-          :context => context,
-          :messageId => message_id,
-          :timestamp => datetime_in_iso8601(timestamp),
-          :type => 'group'
-        })
+        enqueue(FieldParser.parse_for_group(attrs))
       end
 
       # Records a page view
@@ -291,17 +268,6 @@ module Segment
             'happening.'
           )
           false
-        end
-      end
-
-      # private: Ensures that a string is non-empty
-      #
-      # obj    - String|Number that must be non-blank
-      # name   - Name of the validated value
-      #
-      def check_presence!(obj, name)
-        if obj.nil? || (obj.is_a?(String) && obj.empty?)
-          raise ArgumentError, "#{name} must be given"
         end
       end
 
