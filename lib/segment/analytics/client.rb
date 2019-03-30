@@ -149,49 +149,25 @@ module Segment
       # @see https://segment.com/docs/sources/server/ruby/#page
       #
       # @param [Hash] attrs
+      #
+      # @option attrs [String] :name Name of the page
+      # @option attrs [Hash] :properties Page properties (optional)
+      #
       # @option attrs [String] :anonymous_id ID for a user when you don't know
       #   who they are yet. (optional but you must provide either an
       #   `anonymous_id` or `user_id`)
-      # @option attrs [String] :category The page category (optional)
       # @option attrs [Hash] :context ({})
       # @option attrs [Hash] :integrations What integrations this event
       #   goes to (optional)
-      # @option attrs [String] :name Name of the page
+      # @option attrs [String] :message_id ID that uniquely
+      #   identifies a message across the API. (optional)
+      # @option attrs [Time] :timestamp When the event occurred (optional)
+      # @option attrs [String] :user_id The ID for this user in your database
+      #   (optional but you must provide either an `anonymous_id` or `user_id`)
       # @option attrs [Hash] :options Options such as user traits (optional)
-      # @option attrs [Hash] :properties Page properties (optional)
-      # @option attrs [Time] :timestamp When the pageview occurred (optional)
-      # @option attrs [String] :user_id The ID of the user viewing the page
-      # @option attrs [String] :message_id ID that uniquely identifies a
-      #   message across the API. (optional)
       def page(attrs)
         symbolize_keys! attrs
-        check_user_id! attrs
-
-        name = attrs[:name].to_s
-        properties = attrs[:properties] || {}
-        timestamp = attrs[:timestamp] || Time.new
-        context = attrs[:context] || {}
-        message_id = attrs[:message_id].to_s if attrs[:message_id]
-
-        raise ArgumentError, '.properties must be a hash' unless properties.is_a? Hash
-        isoify_dates! properties
-
-        check_timestamp! timestamp
-        add_context context
-
-        enqueue({
-          :userId => attrs[:user_id],
-          :anonymousId => attrs[:anonymous_id],
-          :name => name,
-          :category => attrs[:category],
-          :properties => properties,
-          :integrations => attrs[:integrations],
-          :options => attrs[:options],
-          :context => context,
-          :messageId => message_id,
-          :timestamp => datetime_in_iso8601(timestamp),
-          :type => 'page'
-        })
+        enqueue(FieldParser.parse_for_page(attrs))
       end
 
       # Records a screen view (for a mobile app)
