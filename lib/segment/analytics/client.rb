@@ -388,19 +388,6 @@ module Segment
         raise ArgumentError, 'Timestamp must be a Time' unless timestamp.is_a? Time
       end
 
-      def event(attrs)
-        symbolize_keys! attrs
-
-        {
-          :userId => user_id,
-          :name => name,
-          :properties => properties,
-          :context => context,
-          :timestamp => datetime_in_iso8601(timestamp),
-          :type => 'screen'
-        }
-      end
-
       def check_user_id!(attrs)
         unless attrs[:user_id] || attrs[:anonymous_id]
           raise ArgumentError, 'Must supply either user_id or anonymous_id'
