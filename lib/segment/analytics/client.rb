@@ -224,27 +224,9 @@ module Segment
         end
       end
 
-      # private: Adds contextual information to the call
-      #
-      # context - Hash of call context
-      def add_context(context)
-        context[:library] = { :name => 'analytics-ruby', :version => Segment::Analytics::VERSION.to_s }
-      end
-
       # private: Checks that the write_key is properly initialized
       def check_write_key!
         raise ArgumentError, 'Write key must be initialized' if @write_key.nil?
-      end
-
-      # private: Checks the timstamp option to make sure it is a Time.
-      def check_timestamp!(timestamp)
-        raise ArgumentError, 'Timestamp must be a Time' unless timestamp.is_a? Time
-      end
-
-      def check_user_id!(attrs)
-        unless attrs[:user_id] || attrs[:anonymous_id]
-          raise ArgumentError, 'Must supply either user_id or anonymous_id'
-        end
       end
 
       def ensure_worker_running
