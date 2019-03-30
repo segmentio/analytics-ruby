@@ -232,7 +232,7 @@ module Segment
 
             it 'has a connection error' do
               error = subject.post(write_key, batch).error
-              expect(error).to match(/Connection error/)
+              expect(error).to match(/Malformed JSON/)
             end
 
             it_behaves_like('retried request', 200, 'Malformed JSON ---')
