@@ -47,53 +47,25 @@ module Segment
       # @see https://segment.com/docs/sources/server/ruby/#track
       #
       # @param [Hash] attrs
+      #
+      # @option attrs [String] :event Event name
+      # @option attrs [Hash] :properties Event properties (optional)
+      #
       # @option attrs [String] :anonymous_id ID for a user when you don't know
       #   who they are yet. (optional but you must provide either an
       #   `anonymous_id` or `user_id`)
       # @option attrs [Hash] :context ({})
-      # @option attrs [String] :event Event name
       # @option attrs [Hash] :integrations What integrations this event
       #   goes to (optional)
-      # @option attrs [Hash] :options Options such as user traits (optional)
-      # @option attrs [Hash] :properties Event properties (optional)
+      # @option attrs [String] :message_id ID that uniquely
+      #   identifies a message across the API. (optional)
       # @option attrs [Time] :timestamp When the event occurred (optional)
       # @option attrs [String] :user_id The ID for this user in your database
       #   (optional but you must provide either an `anonymous_id` or `user_id`)
-      # @option attrs [String] :message_id ID that uniquely
-      #   identifies a message across the API. (optional)
+      # @option attrs [Hash] :options Options such as user traits (optional)
       def track(attrs)
         symbolize_keys! attrs
-        check_user_id! attrs
-
-        event = attrs[:event]
-        properties = attrs[:properties] || {}
-        timestamp = attrs[:timestamp] || Time.new
-        context = attrs[:context] || {}
-        message_id = attrs[:message_id].to_s if attrs[:message_id]
-
-        check_timestamp! timestamp
-
-        if event.nil? || event.empty?
-          raise ArgumentError, 'Must supply event as a non-empty string'
-        end
-
-        raise ArgumentError, 'Properties must be a Hash' unless properties.is_a? Hash
-        isoify_dates! properties
-
-        add_context context
-
-        enqueue({
-          :event => event,
-          :userId => attrs[:user_id],
-          :anonymousId => attrs[:anonymous_id],
-          :context => context,
-          :options => attrs[:options],
-          :integrations => attrs[:integrations],
-          :properties => properties,
-          :messageId => message_id,
-          :timestamp => datetime_in_iso8601(timestamp),
-          :type => 'track'
-        })
+        enqueue(FieldParser.parse_for_track(attrs))
       end
 
       # Identifies a user
