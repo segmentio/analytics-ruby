@@ -29,6 +29,22 @@ module Segment
           })
         end
 
+        # In addition to the common fields, identify accepts:
+        #
+        # - "traits"
+        def parse_for_identify(fields)
+          common = parse_common_fields(fields)
+
+          traits = fields[:traits] || {}
+          check_is_hash!(traits, 'traits')
+          isoify_dates! traits
+
+          common.merge({
+            :type => 'identify',
+            :traits => traits
+          })
+        end
+
         private
 
         def parse_common_fields(fields)

@@ -73,46 +73,24 @@ module Segment
       # @see https://segment.com/docs/sources/server/ruby/#identify
       #
       # @param [Hash] attrs
+      #
+      # @option attrs [Hash] :traits User traits (optional)
+      #
       # @option attrs [String] :anonymous_id ID for a user when you don't know
       #   who they are yet. (optional but you must provide either an
       #   `anonymous_id` or `user_id`)
       # @option attrs [Hash] :context ({})
       # @option attrs [Hash] :integrations What integrations this event
       #   goes to (optional)
-      # @option attrs [Hash] :options Options such as user traits (optional)
+      # @option attrs [String] :message_id ID that uniquely
+      #   identifies a message across the API. (optional)
       # @option attrs [Time] :timestamp When the event occurred (optional)
-      # @option attrs [Hash] :traits User traits (optional)
       # @option attrs [String] :user_id The ID for this user in your database
       #   (optional but you must provide either an `anonymous_id` or `user_id`)
-      # @option attrs [String] :message_id ID that uniquely identifies a
-      #   message across the API. (optional)
+      # @option attrs [Hash] :options Options such as user traits (optional)
       def identify(attrs)
         symbolize_keys! attrs
-        check_user_id! attrs
-
-        traits = attrs[:traits] || {}
-        timestamp = attrs[:timestamp] || Time.new
-        context = attrs[:context] || {}
-        message_id = attrs[:message_id].to_s if attrs[:message_id]
-
-        check_timestamp! timestamp
-
-        raise ArgumentError, 'Must supply traits as a hash' unless traits.is_a? Hash
-        isoify_dates! traits
-
-        add_context context
-
-        enqueue({
-          :userId => attrs[:user_id],
-          :anonymousId => attrs[:anonymous_id],
-          :integrations => attrs[:integrations],
-          :context => context,
-          :traits => traits,
-          :options => attrs[:options],
-          :messageId => message_id,
-          :timestamp => datetime_in_iso8601(timestamp),
-          :type => 'identify'
-        })
+        enqueue(FieldParser.parse_for_identify(attrs))
       end
 
       # Aliases a user from one id to another
