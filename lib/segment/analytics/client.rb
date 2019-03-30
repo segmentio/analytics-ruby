@@ -98,39 +98,24 @@ module Segment
       # @see https://segment.com/docs/sources/server/ruby/#alias
       #
       # @param [Hash] attrs
-      # @option attrs [Hash] :context ({})
-      # @option attrs [Hash] :integrations What integrations this must be
-      #   sent to (optional)
-      # @option attrs [Hash] :options Options such as user traits (optional)
+      #
       # @option attrs [String] :previous_id The ID to alias from
-      # @option attrs [Time] :timestamp When the alias occurred (optional)
-      # @option attrs [String] :user_id The ID to alias to
-      # @option attrs [String] :message_id ID that uniquely identifies a
-      #   message across the API. (optional)
+      #
+      # @option attrs [String] :anonymous_id ID for a user when you don't know
+      #   who they are yet. (optional but you must provide either an
+      #   `anonymous_id` or `user_id`)
+      # @option attrs [Hash] :context ({})
+      # @option attrs [Hash] :integrations What integrations this event
+      #   goes to (optional)
+      # @option attrs [String] :message_id ID that uniquely
+      #   identifies a message across the API. (optional)
+      # @option attrs [Time] :timestamp When the event occurred (optional)
+      # @option attrs [String] :user_id The ID for this user in your database
+      #   (optional but you must provide either an `anonymous_id` or `user_id`)
+      # @option attrs [Hash] :options Options such as user traits (optional)
       def alias(attrs)
         symbolize_keys! attrs
-
-        from = attrs[:previous_id]
-        to = attrs[:user_id]
-        timestamp = attrs[:timestamp] || Time.new
-        context = attrs[:context] || {}
-        message_id = attrs[:message_id].to_s if attrs[:message_id]
-
-        check_presence! from, 'previous_id'
-        check_presence! to, 'user_id'
-        check_timestamp! timestamp
-        add_context context
-
-        enqueue({
-          :previousId => from,
-          :userId => to,
-          :integrations => attrs[:integrations],
-          :context => context,
-          :options => attrs[:options],
-          :messageId => message_id,
-          :timestamp => datetime_in_iso8601(timestamp),
-          :type => 'alias'
-        })
+        enqueue(FieldParser.parse_for_alias(attrs))
       end
 
       # Associates a user identity with a group.

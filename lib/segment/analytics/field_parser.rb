@@ -45,6 +45,21 @@ module Segment
           })
         end
 
+        # In addition to the common fields, alias accepts:
+        #
+        # - "previous_id"
+        def parse_for_alias(fields)
+          common = parse_common_fields(fields)
+
+          previous_id = fields[:previous_id]
+          check_presence!(previous_id, 'previous_id')
+
+          common.merge({
+            :type => 'alias',
+            :previousId => previous_id
+          })
+        end
+
         private
 
         def parse_common_fields(fields)
