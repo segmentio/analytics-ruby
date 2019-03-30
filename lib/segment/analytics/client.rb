@@ -173,49 +173,26 @@ module Segment
       # Records a screen view (for a mobile app)
       #
       # @param [Hash] attrs
+      #
+      # @option attrs [String] :name Name of the screen
+      # @option attrs [Hash] :properties Screen properties (optional)
+      # @option attrs [String] :category The screen category (optional)
+      #
       # @option attrs [String] :anonymous_id ID for a user when you don't know
       #   who they are yet. (optional but you must provide either an
       #   `anonymous_id` or `user_id`)
-      # @option attrs [String] :category The screen category (optional)
       # @option attrs [Hash] :context ({})
       # @option attrs [Hash] :integrations What integrations this event
       #   goes to (optional)
-      # @option attrs [String] :name Name of the screen
+      # @option attrs [String] :message_id ID that uniquely
+      #   identifies a message across the API. (optional)
+      # @option attrs [Time] :timestamp When the event occurred (optional)
+      # @option attrs [String] :user_id The ID for this user in your database
+      #   (optional but you must provide either an `anonymous_id` or `user_id`)
       # @option attrs [Hash] :options Options such as user traits (optional)
-      # @option attrs [Hash] :properties Page properties (optional)
-      # @option attrs [Time] :timestamp When the pageview occurred (optional)
-      # @option attrs [String] :user_id The ID of the user viewing the screen
-      # @option attrs [String] :message_id ID that uniquely identifies a
-      #   message across the API. (optional)
       def screen(attrs)
         symbolize_keys! attrs
-        check_user_id! attrs
-
-        name = attrs[:name].to_s
-        properties = attrs[:properties] || {}
-        timestamp = attrs[:timestamp] || Time.new
-        context = attrs[:context] || {}
-        message_id = attrs[:message_id].to_s if attrs[:message_id]
-
-        raise ArgumentError, '.properties must be a hash' unless properties.is_a? Hash
-        isoify_dates! properties
-
-        check_timestamp! timestamp
-        add_context context
-
-        enqueue({
-          :userId => attrs[:user_id],
-          :anonymousId => attrs[:anonymous_id],
-          :name => name,
-          :properties => properties,
-          :category => attrs[:category],
-          :options => attrs[:options],
-          :integrations => attrs[:integrations],
-          :context => context,
-          :messageId => message_id,
-          :timestamp => timestamp.iso8601,
-          :type => 'screen'
-        })
+        enqueue(FieldParser.parse_for_screen(attrs))
       end
 
       # @return [Fixnum] number of messages in the queue

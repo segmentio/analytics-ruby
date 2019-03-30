@@ -104,6 +104,31 @@ module Segment
           })
         end
 
+        # In addition to the common fields, screen accepts:
+        #
+        # - "name"
+        # - "properties"
+        # - "category" (Not in spec, retained for backward compatibility"
+        def parse_for_screen(fields)
+          common = parse_common_fields(fields)
+
+          name = fields[:name]
+          properties = fields[:properties] || {}
+          category = fields[:category]
+
+          check_presence!(name, 'name')
+          check_is_hash!(properties, 'properties')
+
+          isoify_dates! properties
+
+          common.merge({
+            :type => 'screen',
+            :name => name,
+            :properties => properties,
+            :category => category
+          })
+        end
+
         private
 
         def parse_common_fields(fields)
