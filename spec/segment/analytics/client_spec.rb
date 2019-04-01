@@ -76,25 +76,30 @@ module Segment
           end.to_not raise_error
         end
 
-        it 'converts time and date traits into iso8601 format' do
+        it 'converts time and date properties into iso8601 format' do
           client.track({
             :user_id => 'user',
             :event => 'Event',
             :properties => {
               :time => Time.utc(2013),
-              :time_with_zone =>  Time.zone.parse('2013-01-01'),
+              :time_with_zone => Time.zone.parse('2013-01-01'),
               :date_time => DateTime.new(2013, 1, 1),
               :date => Date.new(2013, 1, 1),
               :nottime => 'x'
             }
           })
-          message = queue.pop
 
+          message = queue.pop
           properties = message[:properties]
-          expect(properties[:time]).to eq('2013-01-01T00:00:00.000Z')
-          expect(properties[:time_with_zone]).to eq('2013-01-01T00:00:00.000Z')
-          expect(properties[:date_time]).to eq('2013-01-01T00:00:00.000+00:00')
-          expect(properties[:date]).to eq('2013-01-01')
+
+          date_time = DateTime.new(2013, 1, 1)
+          expect(Time.iso8601(properties[:time])).to eq(date_time)
+          expect(Time.iso8601(properties[:time_with_zone])).to eq(date_time)
+          expect(Time.iso8601(properties[:date_time])).to eq(date_time)
+
+          date = Date.new(2013, 1, 1)
+          expect(Date.iso8601(properties[:date])).to eq(date)
+
           expect(properties[:nottime]).to eq('x')
         end
       end
@@ -131,12 +136,16 @@ module Segment
           })
 
           message = queue.pop
-
           traits = message[:traits]
-          expect(traits[:time]).to eq('2013-01-01T00:00:00.000Z')
-          expect(traits[:time_with_zone]).to eq('2013-01-01T00:00:00.000Z')
-          expect(traits[:date_time]).to eq('2013-01-01T00:00:00.000+00:00')
-          expect(traits[:date]).to eq('2013-01-01')
+
+          date_time = DateTime.new(2013, 1, 1)
+          expect(Time.iso8601(traits[:time])).to eq(date_time)
+          expect(Time.iso8601(traits[:time_with_zone])).to eq(date_time)
+          expect(Time.iso8601(traits[:date_time])).to eq(date_time)
+
+          date = Date.new(2013, 1, 1)
+          expect(Date.iso8601(traits[:date])).to eq(date)
+
           expect(traits[:nottime]).to eq('x')
         end
       end
@@ -192,12 +201,16 @@ module Segment
           })
 
           message = queue.pop
-
           traits = message[:traits]
-          expect(traits[:time]).to eq('2013-01-01T00:00:00.000Z')
-          expect(traits[:time_with_zone]).to eq('2013-01-01T00:00:00.000Z')
-          expect(traits[:date_time]).to eq('2013-01-01T00:00:00.000+00:00')
-          expect(traits[:date]).to eq('2013-01-01')
+
+          date_time = DateTime.new(2013, 1, 1)
+          expect(Time.iso8601(traits[:time])).to eq(date_time)
+          expect(Time.iso8601(traits[:time_with_zone])).to eq(date_time)
+          expect(Time.iso8601(traits[:date_time])).to eq(date_time)
+
+          date = Date.new(2013, 1, 1)
+          expect(Date.iso8601(traits[:date])).to eq(date)
+
           expect(traits[:nottime]).to eq('x')
         end
       end
