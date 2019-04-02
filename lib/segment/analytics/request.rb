@@ -53,7 +53,7 @@ module Segment
         if exception
           logger.error(exception.message)
           exception.backtrace.each { |line| logger.error(line) }
-          Response.new(-1, "Connection error: #{exception}")
+          Response.new(-1, exception.to_s)
         else
           last_response
         end
