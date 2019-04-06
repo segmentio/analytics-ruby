@@ -16,6 +16,12 @@ module Segment
           expect { Client.new }.to raise_error(ArgumentError)
         end
 
+        it 'does not error if no write_key is supplied in stub mode' do
+          expect do
+            Client.new :stub => true
+          end.to_not raise_error
+        end
+
         it 'does not error if a write_key is supplied' do
           expect do
             Client.new :write_key => WRITE_KEY
