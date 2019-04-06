@@ -111,7 +111,7 @@ module Segment
         )
         if stub
           logger.debug "stubbed request to #{@path}: " \
-            "write key = #{write_key}, batch = JSON.generate(#{batch})"
+            "batch = JSON.generate(#{batch})"
 
           [200, '{}']
         else

@@ -35,7 +35,7 @@ module Segment
           :stub => opts[:stub]
         )
 
-        check_write_key!
+        check_write_key! unless opts[:stub]
 
         at_exit { @worker_thread && @worker_thread[:should_exit] = true }
       end
