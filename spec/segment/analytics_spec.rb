@@ -10,8 +10,10 @@ module Segment
           expect { analytics.track(:user_id => 'user') }.to raise_error(ArgumentError)
         end
 
-        it 'errors without a user_id' do
-          expect { analytics.track(:event => 'Event') }.to raise_error(ArgumentError)
+        it 'errors without user_id or anonymous_id' do
+          expect { analytics.track :event => 'event' }.to raise_error(ArgumentError)
+          expect { analytics.track :event => 'event', user_id: '1234' }.to_not raise_error(ArgumentError)
+          expect { analytics.track :event => 'event', anonymous_id: '2345' }.to_not raise_error(ArgumentError)
         end
 
         it 'does not error with the required options' do
@@ -23,8 +25,10 @@ module Segment
       end
 
       describe '#identify' do
-        it 'errors without a user_id' do
+        it 'errors without user_id or anonymous_id' do
           expect { analytics.identify :traits => {} }.to raise_error(ArgumentError)
+          expect { analytics.identify :traits => {}, user_id: '1234' }.to_not raise_error(ArgumentError)
+          expect { analytics.identify :traits => {}, anonymous_id: '2345' }.to_not raise_error(ArgumentError)
         end
 
         it 'does not error with the required options' do
@@ -34,12 +38,14 @@ module Segment
       end
 
       describe '#alias' do
-        it 'errors without from' do
+        it 'errors without previous_id' do
           expect { analytics.alias :user_id => 1234 }.to raise_error(ArgumentError)
         end
 
-        it 'errors without to' do
-          expect { analytics.alias :previous_id => 1234 }.to raise_error(ArgumentError)
+        it 'errors without user_id or anonymous_id' do
+          expect { analytics.alias :previous_id => 'foo' }.to raise_error(ArgumentError)
+          expect { analytics.alias :previous_id => 'foo', user_id: '1234' }.to_not raise_error(ArgumentError)
+          expect { analytics.alias :previous_id => 'foo', anonymous_id: '2345' }.to_not raise_error(ArgumentError)
         end
 
         it 'does not error with the required options' do
@@ -57,6 +63,8 @@ module Segment
 
         it 'errors without user_id or anonymous_id' do
           expect { analytics.group :group_id => 'foo' }.to raise_error(ArgumentError)
+          expect { analytics.group :group_id => 'foo', user_id: '1234' }.to_not raise_error(ArgumentError)
+          expect { analytics.group :group_id => 'foo', anonymous_id: '2345' }.to_not raise_error(ArgumentError)
         end
 
         it 'does not error with the required options' do
@@ -70,6 +78,8 @@ module Segment
       describe '#page' do
         it 'errors without user_id or anonymous_id' do
           expect { analytics.page :name => 'foo' }.to raise_error(ArgumentError)
+          expect { analytics.page :name => 'foo', user_id: '1234' }.to_not raise_error(ArgumentError)
+          expect { analytics.page :name => 'foo', anonymous_id: '2345' }.to_not raise_error(ArgumentError)
         end
 
         it 'does not error with the required options' do
@@ -83,6 +93,8 @@ module Segment
       describe '#screen' do
         it 'errors without user_id or anonymous_id' do
           expect { analytics.screen :name => 'foo' }.to raise_error(ArgumentError)
+          expect { analytics.screen :name => 'foo', user_id: '1234' }.to_not raise_error(ArgumentError)
+          expect { analytics.screen :name => 'foo', anonymous_id: '2345' }.to_not raise_error(ArgumentError)
         end
 
         it 'does not error with the required options' do
