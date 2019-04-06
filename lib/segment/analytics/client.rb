@@ -42,6 +42,20 @@ module Segment
         end
       end
 
+      # @!macro common_attrs
+      #   @option attrs [String] :anonymous_id ID for a user when you don't know
+      #     who they are yet. (optional but you must provide either an
+      #     `anonymous_id` or `user_id`)
+      #   @option attrs [Hash] :context ({})
+      #   @option attrs [Hash] :integrations What integrations this event
+      #     goes to (optional)
+      #   @option attrs [String] :message_id ID that uniquely
+      #     identifies a message across the API. (optional)
+      #   @option attrs [Time] :timestamp When the event occurred (optional)
+      #   @option attrs [String] :user_id The ID for this user in your database
+      #     (optional but you must provide either an `anonymous_id` or `user_id`)
+      #   @option attrs [Hash] :options Options such as user traits (optional)
+
       # Tracks an event
       #
       # @see https://segment.com/docs/sources/server/ruby/#track
@@ -50,19 +64,7 @@ module Segment
       #
       # @option attrs [String] :event Event name
       # @option attrs [Hash] :properties Event properties (optional)
-      #
-      # @option attrs [String] :anonymous_id ID for a user when you don't know
-      #   who they are yet. (optional but you must provide either an
-      #   `anonymous_id` or `user_id`)
-      # @option attrs [Hash] :context ({})
-      # @option attrs [Hash] :integrations What integrations this event
-      #   goes to (optional)
-      # @option attrs [String] :message_id ID that uniquely
-      #   identifies a message across the API. (optional)
-      # @option attrs [Time] :timestamp When the event occurred (optional)
-      # @option attrs [String] :user_id The ID for this user in your database
-      #   (optional but you must provide either an `anonymous_id` or `user_id`)
-      # @option attrs [Hash] :options Options such as user traits (optional)
+      # @macro common_attrs
       def track(attrs)
         symbolize_keys! attrs
         enqueue(FieldParser.parse_for_track(attrs))
@@ -75,19 +77,7 @@ module Segment
       # @param [Hash] attrs
       #
       # @option attrs [Hash] :traits User traits (optional)
-      #
-      # @option attrs [String] :anonymous_id ID for a user when you don't know
-      #   who they are yet. (optional but you must provide either an
-      #   `anonymous_id` or `user_id`)
-      # @option attrs [Hash] :context ({})
-      # @option attrs [Hash] :integrations What integrations this event
-      #   goes to (optional)
-      # @option attrs [String] :message_id ID that uniquely
-      #   identifies a message across the API. (optional)
-      # @option attrs [Time] :timestamp When the event occurred (optional)
-      # @option attrs [String] :user_id The ID for this user in your database
-      #   (optional but you must provide either an `anonymous_id` or `user_id`)
-      # @option attrs [Hash] :options Options such as user traits (optional)
+      # @macro common_attrs
       def identify(attrs)
         symbolize_keys! attrs
         enqueue(FieldParser.parse_for_identify(attrs))
@@ -100,19 +90,7 @@ module Segment
       # @param [Hash] attrs
       #
       # @option attrs [String] :previous_id The ID to alias from
-      #
-      # @option attrs [String] :anonymous_id ID for a user when you don't know
-      #   who they are yet. (optional but you must provide either an
-      #   `anonymous_id` or `user_id`)
-      # @option attrs [Hash] :context ({})
-      # @option attrs [Hash] :integrations What integrations this event
-      #   goes to (optional)
-      # @option attrs [String] :message_id ID that uniquely
-      #   identifies a message across the API. (optional)
-      # @option attrs [Time] :timestamp When the event occurred (optional)
-      # @option attrs [String] :user_id The ID for this user in your database
-      #   (optional but you must provide either an `anonymous_id` or `user_id`)
-      # @option attrs [Hash] :options Options such as user traits (optional)
+      # @macro common_attrs
       def alias(attrs)
         symbolize_keys! attrs
         enqueue(FieldParser.parse_for_alias(attrs))
@@ -126,19 +104,7 @@ module Segment
       #
       # @option attrs [String] :group_id The ID of the group
       # @option attrs [Hash] :traits User traits (optional)
-      #
-      # @option attrs [String] :anonymous_id ID for a user when you don't know
-      #   who they are yet. (optional but you must provide either an
-      #   `anonymous_id` or `user_id`)
-      # @option attrs [Hash] :context ({})
-      # @option attrs [Hash] :integrations What integrations this event
-      #   goes to (optional)
-      # @option attrs [String] :message_id ID that uniquely
-      #   identifies a message across the API. (optional)
-      # @option attrs [Time] :timestamp When the event occurred (optional)
-      # @option attrs [String] :user_id The ID for this user in your database
-      #   (optional but you must provide either an `anonymous_id` or `user_id`)
-      # @option attrs [Hash] :options Options such as user traits (optional)
+      # @macro common_attrs
       def group(attrs)
         symbolize_keys! attrs
         enqueue(FieldParser.parse_for_group(attrs))
@@ -152,19 +118,7 @@ module Segment
       #
       # @option attrs [String] :name Name of the page
       # @option attrs [Hash] :properties Page properties (optional)
-      #
-      # @option attrs [String] :anonymous_id ID for a user when you don't know
-      #   who they are yet. (optional but you must provide either an
-      #   `anonymous_id` or `user_id`)
-      # @option attrs [Hash] :context ({})
-      # @option attrs [Hash] :integrations What integrations this event
-      #   goes to (optional)
-      # @option attrs [String] :message_id ID that uniquely
-      #   identifies a message across the API. (optional)
-      # @option attrs [Time] :timestamp When the event occurred (optional)
-      # @option attrs [String] :user_id The ID for this user in your database
-      #   (optional but you must provide either an `anonymous_id` or `user_id`)
-      # @option attrs [Hash] :options Options such as user traits (optional)
+      # @macro common_attrs
       def page(attrs)
         symbolize_keys! attrs
         enqueue(FieldParser.parse_for_page(attrs))
@@ -177,19 +131,7 @@ module Segment
       # @option attrs [String] :name Name of the screen
       # @option attrs [Hash] :properties Screen properties (optional)
       # @option attrs [String] :category The screen category (optional)
-      #
-      # @option attrs [String] :anonymous_id ID for a user when you don't know
-      #   who they are yet. (optional but you must provide either an
-      #   `anonymous_id` or `user_id`)
-      # @option attrs [Hash] :context ({})
-      # @option attrs [Hash] :integrations What integrations this event
-      #   goes to (optional)
-      # @option attrs [String] :message_id ID that uniquely
-      #   identifies a message across the API. (optional)
-      # @option attrs [Time] :timestamp When the event occurred (optional)
-      # @option attrs [String] :user_id The ID for this user in your database
-      #   (optional but you must provide either an `anonymous_id` or `user_id`)
-      # @option attrs [Hash] :options Options such as user traits (optional)
+      # @macro common_attrs
       def screen(attrs)
         symbolize_keys! attrs
         enqueue(FieldParser.parse_for_screen(attrs))
