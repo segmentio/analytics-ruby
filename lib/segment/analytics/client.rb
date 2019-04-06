@@ -14,18 +14,26 @@ module Segment
 
       # @param [Hash] opts
       # @option opts [String] :write_key Your project's write_key
-      # @option opts [FixNum] :max_queue_size Maximum number of calls to be
-      #   remain queued.
-      # @option opts [Proc] :on_error Handles error calls from the API.
+      # @option opts [Proc] :on_error Handles error calls from the API (optional)
+      # @option opts [Integer] :max_queue_size Maximum number of calls to be
+      #   remain queued (optional)
+      # @option opts [Integer] :batch_size How many items to send in a batch (optional)
+      # @option opts [Boolean] :stub (false) If true, requests don't hit the
+      #   server and are stubbed to be successful (optional)
       def initialize(opts = {})
         symbolize_keys!(opts)
 
         @queue = Queue.new
         @write_key = opts[:write_key]
         @max_queue_size = opts[:max_queue_size] || Defaults::Queue::MAX_SIZE
-        @options = opts
         @worker_mutex = Mutex.new
-        @worker = Worker.new(@queue, @write_key, @options)
+        @worker = Worker.new(
+          @queue,
+          @write_key,
+          :on_error => opts[:on_error],
+          :batch_size => opts[:batch_size],
+          :stub => opts[:stub]
+        )
 
         check_write_key!
 

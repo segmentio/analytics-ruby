@@ -25,6 +25,7 @@ module Segment
         @retries = options[:retries] || RETRIES
         @backoff_policy =
           options[:backoff_policy] || Segment::Analytics::BackoffPolicy.new
+        @stub = options[:stub]
 
         http = Net::HTTP.new(options[:host], options[:port])
         http.use_ssl = options[:ssl]
@@ -108,26 +109,21 @@ module Segment
           :sentAt => datetime_in_iso8601(Time.now),
           :batch => batch
         )
-        request = Net::HTTP::Post.new(@path, @headers)
-        request.basic_auth(write_key, nil)
-
-        if self.class.stub
+        if stub
           logger.debug "stubbed request to #{@path}: " \
             "write key = #{write_key}, batch = JSON.generate(#{batch})"
 
           [200, '{}']
         else
+          request = Net::HTTP::Post.new(@path, @headers)
+          request.basic_auth(write_key, nil)
           response = @http.request(request, payload)
           [response.code.to_i, response.body]
         end
       end
 
-      class << self
-        attr_writer :stub
-
-        def stub
-          @stub || ENV['STUB']
-        end
+      def stub
+        @stub || ENV['STUB']
       end
     end
   end

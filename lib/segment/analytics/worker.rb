@@ -15,12 +15,11 @@ module Segment
       # The worker continuously takes messages off the queue
       # and makes requests to the segment.io api
       #
-      # queue   - Queue synchronized between client and worker
-      # write_key  - String of the project's Write key
-      # options - Hash of worker options
-      #           batch_size - Fixnum of how many items to send in a batch
-      #           on_error   - Proc of what to do on an error
-      #
+      # @param [Queue] queue Queue synchronized between client and worker
+      # @param [String] write_key project's write key
+      # @param [Hash] opts
+      # @options opts [Proc] :on_error Proc of what to do on an error
+      # @options opts [Integer] :batch_size How many items to send in a batch
       def initialize(queue, write_key, options = {})
         symbolize_keys! options
         @queue = queue
@@ -29,6 +28,7 @@ module Segment
         batch_size = options[:batch_size] || Defaults::MessageBatch::MAX_SIZE
         @batch = MessageBatch.new(batch_size)
         @lock = Mutex.new
+        @stub = options[:stub]
       end
 
       # public: Continuously runs the loop to check for new events
@@ -41,12 +41,17 @@ module Segment
             @batch << @queue.pop until @batch.full? || @queue.empty?
           end
 
-          res = Request.new.post @write_key, @batch
-
-          @on_error.call(res.status, res.error) unless res.status == 200
+          response = send_batch_request(@batch)
+          unless response.status == 200
+            @on_error.call(response.status, response.error)
+          end
 
           @lock.synchronize { @batch.clear }
         end
+      end
+
+      def send_batch_request(batch)
+        Request.new(:stub => @stub).post(@write_key, batch)
       end
 
       # public: Check whether we have outstanding requests.

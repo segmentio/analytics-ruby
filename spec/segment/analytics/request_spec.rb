@@ -136,9 +136,9 @@ module Segment
         end
 
         context 'with a stub' do
-          before do
-            allow(described_class).to receive(:stub) { true }
-          end
+          subject {
+            described_class.new(stub: true)
+          }
 
           it 'returns a 200 response' do
             expect(subject.post(write_key, batch).status).to eq(200)
