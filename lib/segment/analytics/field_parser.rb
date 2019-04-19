@@ -89,10 +89,9 @@ module Segment
         def parse_for_page(fields)
           common = parse_common_fields(fields)
 
-          name = fields[:name]
+          name = fields[:name] || ''
           properties = fields[:properties] || {}
 
-          check_presence!(name, 'name')
           check_is_hash!(properties, 'properties')
 
           isoify_dates! properties
