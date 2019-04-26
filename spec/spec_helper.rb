@@ -39,9 +39,7 @@ module Segment
 
     GROUP = {}
 
-    PAGE = {
-      :name => 'home'
-    }
+    PAGE = {}
 
     SCREEN = {
       :name => 'main'

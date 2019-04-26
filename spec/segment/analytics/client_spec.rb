@@ -224,10 +224,12 @@ module Segment
           expect { client.page Queued::PAGE }.to_not raise_error
         end
 
-        it 'does not error with the required options as strings' do
-          expect do
-            client.page Utils.stringify_keys(Queued::PAGE)
-          end.to_not raise_error
+        it 'accepts name' do
+          client.page :name => 'foo', :user_id => 1234
+
+          message = queue.pop
+          expect(message[:userId]).to eq(1234)
+          expect(message[:name]).to eq('foo')
         end
       end
 
