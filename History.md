@@ -1,3 +1,9 @@
+2.2.7.pre / 2019-05-09
+==================
+
+  * [Fix](https://github.com/segmentio/analytics-ruby/pull/188): Allow `anonymous_id`
+    in `#alias` and `#group`.
+
 2.2.6 / 2018-06-11
 ==================
 
