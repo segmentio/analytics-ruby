@@ -1,4 +1,4 @@
-2.2.7.pre / 2019-05-09
+2.2.7 / 2019-05-09
 ==================
 
   * [Fix](https://github.com/segmentio/analytics-ruby/pull/188): Allow `anonymous_id`
