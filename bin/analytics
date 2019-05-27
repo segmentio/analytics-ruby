@@ -29,6 +29,7 @@ command :send do |c|
   c.option '--userId=<userId>', String, 'the user id to send the event as'
   c.option '--anonymousId=<anonymousId>', String, 'the anonymous user id to send the event as'
   c.option '--context=<context>', 'additional context for the event (JSON-encoded)'
+  c.option '--integrations=<integrations>', 'additional integrations for the event (JSON-encoded)'
 
   c.option '--event=<event>', String, 'the event name to send with the event'
   c.option '--properties=<properties>', 'the event properties to send (JSON-encoded)'
@@ -52,7 +53,8 @@ command :send do |c|
         event: options.event,
         anonymous_id: options.anonymousId,
         properties: json_hash(options.properties),
-        context: json_hash(options.context)
+        context: json_hash(options.context),
+        integrations: json_hash(options.integrations)
       })
     when "page"
       Analytics.page({
@@ -60,22 +62,25 @@ command :send do |c|
         anonymous_id: options.anonymousId,
         name: options.name,
         properties: json_hash(options.properties),
-        context: json_hash(options.context)
+        context: json_hash(options.context),
+        integrations: json_hash(options.integrations)
       })
     when "screen"
       Analytics.screen({
         user_id: options.userId,
         anonymous_id: options.anonymousId,
-        name: option.name,
-        traits: json_hash(options.traits),
-        properties: json_hash(option.properties)
+        name: options.name,
+        properties: json_hash(options.properties),
+        context: json_hash(options.context),
+        integrations: json_hash(options.integrations)
       })
     when "identify"
       Analytics.identify({
         user_id: options.userId,
         anonymous_id: options.anonymousId,
         traits: json_hash(options.traits),
-        context: json_hash(options.context)
+        context: json_hash(options.context),
+        integrations: json_hash(options.integrations)
       })
     when "group"
       Analytics.group({
@@ -83,7 +88,8 @@ command :send do |c|
         anonymous_id: options.anonymousId,
         group_id: options.groupId,
         traits: json_hash(options.traits),
-        context: json_hash(options.context)
+        context: json_hash(options.context),
+        integrations: json_hash(options.integrations)
       })
     else
       raise "Invalid Message Type #{options.type}"
