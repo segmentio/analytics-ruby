@@ -120,12 +120,15 @@ module Segment
 
           isoify_dates! properties
 
-          common.merge({
+          parsed = common.merge({
             :type => 'screen',
             :name => name,
-            :properties => properties,
-            :category => category
+            :properties => properties
           })
+
+          parsed[:category] = category if category
+
+          parsed
         end
 
         private
@@ -140,15 +143,20 @@ module Segment
 
           add_context! context
 
-          {
-            :anonymousId => fields[:anonymous_id],
+          parsed = {
             :context => context,
-            :integrations => fields[:integrations],
             :messageId => message_id,
-            :timestamp => datetime_in_iso8601(timestamp),
-            :userId => fields[:user_id],
-            :options => fields[:options] # Not in spec, retained for backward compatibility
+            :timestamp => datetime_in_iso8601(timestamp)
           }
+
+          parsed[:userId] = fields[:user_id] if fields[:user_id]
+          parsed[:anonymousId] = fields[:anonymous_id] if fields[:anonymous_id]
+          parsed[:integrations] = fields[:integrations] if fields[:integrations]
+
+          # Not in spec, retained for backward compatibility
+          parsed[:options] = fields[:options] if fields[:options]
+
+          parsed
         end
 
         def check_user_id!(fields)
