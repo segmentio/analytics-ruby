@@ -1,24 +1,28 @@
-Pre-Releases
+We automatically push tags to Rubygems via CI.
+
+Pre-releases
 ============
 
- 1. Verify everything works with `make check build`.
- 2. Bump version in
-    [`version.rb`](https://github.com/segmentio/analytics-ruby/blob/master/lib/segment/analytics/version.rb).
-    This version string should not include a `.pre` suffix, as the same commit will
-    be re-tagged when the pre-release is promoted.
- 3. Update
-    [`History.md`](https://github.com/segmentio/analytics-ruby/blob/master/History.md).
- 4. Commit and tag the pre-release. `git commit -am "Release {version.pre}" &&
-    git tag -a {version.pre} -m "Version {version.pre}"`.
- 5. Upload to Github with `git push -u origin master && git push --tags`.  The
-    tagged commit will be pushed to RubyGems via Travis.
+- Make sure you're on the latest `master`
+- Bump the version in [`version.rb`](lib/segment/analytics/version.rb)
+- Update [`History.md`](History.md)
+- Commit these changes. `git commit -am "Release x.y.z.pre"`
+- Tag the pre-release. `git tag -a -m "Version x.y.z.pre" x.y.z.pre`
+- `git push -u origin master && git push --tags`. The tagged commit will be
+  pushed to RubyGems via Travis
 
-Promoting Pre-releases
+
+Promoting pre-releases
 ======================
 
-- Find the tag for the pre-release you want to promote. `git tag --list
-  '*.pre'`
-- Re-tag this commit without the `.pre` prefix. `git tag -a -m "Version
-  {version}" {version} {pre_version}`
-- Upload to Github with `git push --tags`. The tagged commit will be pushed to
-  RubyGems via Travis.
+- Find the tag for the pre-release you want to promote. Use `git tag --list
+  '*.pre'` to list all pre-release tags
+- Checkout that tag. `git checkout tags/x.y.z.pre`
+- Update the version in [`version.rb`](lib/segment/analytics/version.rb) to not
+  include the `.pre` suffix
+- Commit these changes. `git commit -am "Promote x.y.z.pre"`
+- Tag the release. `git tag -a -m "Version x.y.z" x.y.z`
+- `git push -u origin master && git push --tags`. The tagged commit will be
+  pushed to RubyGems via Travis
+- On `master`, add an entry to [`History.md`](History.md) under `x.y.z` that
+  says 'Promoted pre-release to stable'
