@@ -5,6 +5,8 @@ module Segment
   class Analytics
     # A batch of `Message`s to be sent to the API
     class MessageBatch
+      class JSONGenerationError < StandardError; end
+
       extend Forwardable
       include Segment::Analytics::Logging
       include Segment::Analytics::Defaults::MessageBatch
@@ -16,8 +18,13 @@ module Segment
       end
 
       def <<(message)
-        message_json_size = message.to_json.bytesize
+        begin
+          message_json = message.to_json
+        rescue StandardError => e
+          raise JSONGenerationError, "Serialization error: #{e}"
+        end
 
+        message_json_size = message_json.bytesize
         if message_too_big?(message_json_size)
           logger.error('a message exceeded the maximum allowed size')
         else

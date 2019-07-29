@@ -83,6 +83,29 @@ module Segment
 
           expect(queue).to be_empty
         end
+
+        it 'calls on_error for bad json' do
+          bad_obj = Object.new
+          def bad_obj.to_json(*_args)
+            raise "can't serialize to json"
+          end
+
+          on_error = proc {}
+          expect(on_error).to receive(:call).once.with(-1, /serialize to json/)
+
+          good_message = Requested::TRACK
+          bad_message = Requested::TRACK.merge({ 'bad_obj' => bad_obj })
+
+          queue = Queue.new
+          queue << good_message
+          queue << bad_message
+
+          worker = described_class.new(queue,
+                                       'testsecret',
+                                       :on_error => on_error)
+          worker.run
+          expect(queue).to be_empty
+        end
       end
 
       describe '#is_requesting?' do
