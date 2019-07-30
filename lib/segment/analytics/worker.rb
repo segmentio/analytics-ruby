@@ -38,11 +38,10 @@ module Segment
           return if @queue.empty?
 
           @lock.synchronize do
-            @batch << @queue.pop until @batch.full? || @queue.empty?
+            consume_message_from_queue! until @batch.full? || @queue.empty?
           end
 
           res = Request.new.post @write_key, @batch
-
           @on_error.call(res.status, res.error) unless res.status == 200
 
           @lock.synchronize { @batch.clear }
@@ -53,6 +52,14 @@ module Segment
       #
       def is_requesting?
         @lock.synchronize { !@batch.empty? }
+      end
+
+      private
+
+      def consume_message_from_queue!
+        @batch << @queue.pop
+      rescue MessageBatch::JSONGenerationError => e
+        @on_error.call(-1, e.to_s)
       end
     end
   end
