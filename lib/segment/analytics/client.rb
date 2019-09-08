@@ -25,6 +25,7 @@ module Segment
         @max_queue_size = opts[:max_queue_size] || Defaults::Queue::MAX_SIZE
         @worker_mutex = Mutex.new
         @worker = Worker.new(@queue, @write_key, opts)
+        @worker_thread = nil
 
         check_write_key!
 
