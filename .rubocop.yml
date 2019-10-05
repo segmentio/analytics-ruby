@@ -1,7 +1,7 @@
 inherit_from: .rubocop_todo.yml
 
 AllCops:
-  # Rubocop doesn't support 1.9, so we'll use the minimum available
+  # Rubocop doesn't support 2.0, so we'll use the minimum available
   TargetRubyVersion: 2.1
 
 Layout/IndentHash:
@@ -84,7 +84,3 @@ Style/ParallelAssignment:
 
 Style/PreferredHashMethods:
   EnforcedStyle: verbose
-
-# Ruby 1.9 doesn't support percent-styled symbol arrays
-Style/SymbolArray:
-  EnforcedStyle: brackets

@@ -13,9 +13,7 @@ Gem::Specification.new do |spec|
   spec.email = 'friends@segment.io'
   spec.homepage = 'https://github.com/segmentio/analytics-ruby'
   spec.license = 'MIT'
-
-  # Ruby 1.8 requires json
-  spec.add_dependency 'json', ['~> 1.7'] if RUBY_VERSION < "1.9"
+  spec.required_ruby_version = '>= 2.0'
 
   # Used in the executable testing script
   spec.add_development_dependency 'commander', '~> 4.4'
