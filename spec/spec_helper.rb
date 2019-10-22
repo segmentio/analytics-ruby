@@ -4,13 +4,13 @@ SimpleCov.start
 require 'codecov'
 SimpleCov.formatter = SimpleCov::Formatter::Codecov
 
-require 'segment/analytics'
+require 'segmentio/analytics'
 require 'active_support/time'
 
 # Setting timezone for ActiveSupport::TimeWithZone to UTC
 Time.zone = 'UTC'
 
-module Segment
+module Segmentio
   class Analytics
     WRITE_KEY = 'testsecret'
 

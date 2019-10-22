@@ -1,16 +1,16 @@
 require 'spec_helper'
 
-module Segment
+module Segmentio
   class Analytics
     describe Worker do
       before do
-        Segment::Analytics::Transport.stub = true
+        Segmentio::Analytics::Transport.stub = true
       end
 
       describe '#init' do
         it 'accepts string keys' do
           queue = Queue.new
-          worker = Segment::Analytics::Worker.new(queue,
+          worker = Segmentio::Analytics::Worker.new(queue,
                                                   'secret',
                                                   'batch_size' => 100)
           batch = worker.instance_variable_get(:@batch)
@@ -20,36 +20,36 @@ module Segment
 
       describe '#run' do
         before :all do
-          Segment::Analytics::Defaults::Request::BACKOFF = 0.1
+          Segmentio::Analytics::Defaults::Request::BACKOFF = 0.1
         end
 
         after :all do
-          Segment::Analytics::Defaults::Request::BACKOFF = 30.0
+          Segmentio::Analytics::Defaults::Request::BACKOFF = 30.0
         end
 
         it 'does not error if the request fails' do
           expect do
-            Segment::Analytics::Transport
+            Segmentio::Analytics::Transport
               .any_instance
               .stub(:send)
-              .and_return(Segment::Analytics::Response.new(-1, 'Unknown error'))
+              .and_return(Segmentio::Analytics::Response.new(-1, 'Unknown error'))
 
             queue = Queue.new
             queue << {}
-            worker = Segment::Analytics::Worker.new(queue, 'secret')
+            worker = Segmentio::Analytics::Worker.new(queue, 'secret')
             worker.run
 
             expect(queue).to be_empty
 
-            Segment::Analytics::Transport.any_instance.unstub(:send)
+            Segmentio::Analytics::Transport.any_instance.unstub(:send)
           end.to_not raise_error
         end
 
         it 'executes the error handler if the request is invalid' do
-          Segment::Analytics::Transport
+          Segmentio::Analytics::Transport
             .any_instance
             .stub(:send)
-            .and_return(Segment::Analytics::Response.new(400, 'Some error'))
+            .and_return(Segmentio::Analytics::Response.new(400, 'Some error'))
 
           status = error = nil
           on_error = proc do |yielded_status, yielded_error|
@@ -67,7 +67,7 @@ module Segment
           sleep 0.1 # First give thread time to spin-up.
           sleep 0.01 while worker.is_requesting?
 
-          Segment::Analytics::Transport.any_instance.unstub(:send)
+          Segmentio::Analytics::Transport.any_instance.unstub(:send)
 
           expect(queue).to be_empty
           expect(status).to eq(400)
@@ -118,22 +118,22 @@ module Segment
       describe '#is_requesting?' do
         it 'does not return true if there isn\'t a current batch' do
           queue = Queue.new
-          worker = Segment::Analytics::Worker.new(queue, 'testsecret')
+          worker = Segmentio::Analytics::Worker.new(queue, 'testsecret')
 
           expect(worker.is_requesting?).to eq(false)
         end
 
         it 'returns true if there is a current batch' do
-          Segment::Analytics::Transport
+          Segmentio::Analytics::Transport
             .any_instance
             .stub(:send) {
               sleep(0.2)
-              Segment::Analytics::Response.new(200, 'Success')
+              Segmentio::Analytics::Response.new(200, 'Success')
             }
 
           queue = Queue.new
           queue << Requested::TRACK
-          worker = Segment::Analytics::Worker.new(queue, 'testsecret')
+          worker = Segmentio::Analytics::Worker.new(queue, 'testsecret')
 
           worker_thread = Thread.new { worker.run }
           eventually { expect(worker.is_requesting?).to eq(true) }
@@ -141,7 +141,7 @@ module Segment
           worker_thread.join
           expect(worker.is_requesting?).to eq(false)
 
-          Segment::Analytics::Transport.any_instance.unstub(:send)
+          Segmentio::Analytics::Transport.any_instance.unstub(:send)
         end
       end
     end

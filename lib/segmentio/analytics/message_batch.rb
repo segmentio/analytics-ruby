@@ -1,5 +1,5 @@
 require 'forwardable'
-require 'segment/analytics/logging'
+require 'segmentio/analytics/logging'
 
 module Segment
   class Analytics
@@ -8,8 +8,8 @@ module Segment
       class JSONGenerationError < StandardError; end
 
       extend Forwardable
-      include Segment::Analytics::Logging
-      include Segment::Analytics::Defaults::MessageBatch
+      include Segmentio::Analytics::Logging
+      include Segmentio::Analytics::Defaults::MessageBatch
 
       def initialize(max_message_count)
         @messages = []

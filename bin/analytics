@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'segment/analytics'
+require 'segmentio/analytics'
 require 'rubygems'
 require 'commander/import'
 require 'time'
@@ -42,7 +42,7 @@ command :send do |c|
   c.option '--previousId=<previousId>', String, 'the previous id'
 
   c.action do |args, options|
-    Analytics = Segment::Analytics.new({
+    Analytics = Segmentio::Analytics.new({
       write_key: options.writeKey,
       on_error: Proc.new { |status, msg| print msg }
     })

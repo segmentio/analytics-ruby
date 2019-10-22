@@ -1,4 +1,4 @@
-module Segment
+module Segmentio
   class Analytics
     module Defaults
       module Request

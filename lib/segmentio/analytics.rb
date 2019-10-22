@@ -1,14 +1,14 @@
-require 'segment/analytics/version'
-require 'segment/analytics/defaults'
-require 'segment/analytics/utils'
-require 'segment/analytics/field_parser'
-require 'segment/analytics/client'
-require 'segment/analytics/worker'
-require 'segment/analytics/transport'
-require 'segment/analytics/response'
-require 'segment/analytics/logging'
+require 'segmentio/analytics/version'
+require 'segmentio/analytics/defaults'
+require 'segmentio/analytics/utils'
+require 'segmentio/analytics/field_parser'
+require 'segmentio/analytics/client'
+require 'segmentio/analytics/worker'
+require 'segmentio/analytics/transport'
+require 'segmentio/analytics/response'
+require 'segmentio/analytics/logging'
 
-module Segment
+module Segmentio
   class Analytics
     # Initializes a new instance of {Segment::Analytics::Client}, to which all
     # method calls are proxied.
@@ -19,7 +19,7 @@ module Segment
     #   server and are stubbed to be successful.
     def initialize(options = {})
       Transport.stub = options[:stub] if options.has_key?(:stub)
-      @client = Segment::Analytics::Client.new options
+      @client = Segmentio::Analytics::Client.new options
     end
 
     def method_missing(message, *args, &block)
