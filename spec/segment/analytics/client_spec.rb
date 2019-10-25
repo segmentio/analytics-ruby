@@ -250,7 +250,12 @@ module Segment
       end
 
       describe '#flush' do
-        let(:client_with_worker) { Client.new(:write_key => WRITE_KEY) }
+        let(:client_with_worker) {
+          Client.new(:write_key => WRITE_KEY).tap { |client|
+            queue = client.instance_variable_get(:@queue)
+            client.instance_variable_set(:@worker, DummyWorker.new(queue))
+          }
+        }
 
         it 'waits for the queue to finish on a flush' do
           client_with_worker.identify Queued::IDENTIFY

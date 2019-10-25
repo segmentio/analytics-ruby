@@ -3,6 +3,10 @@ require 'spec_helper'
 module Segment
   class Analytics
     describe Worker do
+      before do
+        Segment::Analytics::Request.stub = true
+      end
+
       describe '#init' do
         it 'accepts string keys' do
           queue = Queue.new
@@ -23,9 +27,12 @@ module Segment
           Segment::Analytics::Defaults::Request::BACKOFF = 30.0
         end
 
-        it 'does not error if the endpoint is unreachable' do
+        it 'does not error if the request fails' do
           expect do
-            Net::HTTP.any_instance.stub(:post).and_raise(Exception)
+            Segment::Analytics::Request
+              .any_instance
+              .stub(:post)
+              .and_return(Segment::Analytics::Response.new(-1, 'Unknown error'))
 
             queue = Queue.new
             queue << {}
@@ -34,7 +41,7 @@ module Segment
 
             expect(queue).to be_empty
 
-            Net::HTTP.any_instance.unstub(:post)
+            Segment::Analytics::Request.any_instance.unstub(:post)
           end.to_not raise_error
         end
 
@@ -117,6 +124,13 @@ module Segment
         end
 
         it 'returns true if there is a current batch' do
+          Segment::Analytics::Request
+            .any_instance
+            .stub(:post) {
+              sleep(0.2)
+              Segment::Analytics::Response.new(200, 'Success')
+            }
+
           queue = Queue.new
           queue << Requested::TRACK
           worker = Segment::Analytics::Worker.new(queue, 'testsecret')
@@ -126,6 +140,8 @@ module Segment
 
           worker_thread.join
           expect(worker.is_requesting?).to eq(false)
+
+          Segment::Analytics::Request.any_instance.unstub(:post)
         end
       end
     end
