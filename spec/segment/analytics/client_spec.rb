@@ -281,7 +281,7 @@ module Segment
         let(:data) { { :user_id => 1, :group_id => 2, :previous_id => 3, :anonymous_id => 4, :message_id => 5, :event => 'coco barked', :name => 'coco' } }
 
         it 'does not convert ids given as fixnums to strings' do
-          [:track, :screen, :page, :identify].each do |s|
+          %i[track screen page identify].each do |s|
             client.send(s, data)
             message = queue.pop(true)
 
@@ -293,7 +293,7 @@ module Segment
         it 'returns false if queue is full' do
           client.instance_variable_set(:@max_queue_size, 1)
 
-          [:track, :screen, :page, :group, :identify, :alias].each do |s|
+          %i[track screen page group identify alias].each do |s|
             expect(client.send(s, data)).to eq(true)
             expect(client.send(s, data)).to eq(false) # Queue is full
             queue.pop(true)
@@ -301,7 +301,7 @@ module Segment
         end
 
         it 'converts message id to string' do
-          [:track, :screen, :page, :group, :identify, :alias].each do |s|
+          %i[track screen page group identify alias].each do |s|
             client.send(s, data)
             message = queue.pop(true)
 
@@ -330,7 +330,7 @@ module Segment
         end
 
         it 'sends integrations' do
-          [:track, :screen, :page, :group, :identify, :alias].each do |s|
+          %i[track screen page group identify alias].each do |s|
             client.send s, :integrations => { :All => true, :Salesforce => false }, :user_id => 1, :group_id => 2, :previous_id => 3, :anonymous_id => 4, :event => 'coco barked', :name => 'coco'
             message = queue.pop(true)
             expect(message[:integrations][:All]).to eq(true)
