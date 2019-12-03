@@ -1,3 +1,11 @@
+2.2.8.pre / 2019-11-29
+==================
+
+  * [Fix](https://github.com/segmentio/analytics-ruby/pull/212): Fix log message
+    for stubbed requests
+  * [Deprecate](https://github.com/segmentio/analytics-ruby/pull/209): Deprecate
+    Ruby <2.0 support
+
 2.2.7 / 2019-05-09
 ==================
 
