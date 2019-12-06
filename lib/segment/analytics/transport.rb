@@ -9,7 +9,7 @@ require 'json'
 
 module Segment
   class Analytics
-    class Request
+    class Transport
       include Segment::Analytics::Defaults::Request
       include Segment::Analytics::Utils
       include Segment::Analytics::Logging

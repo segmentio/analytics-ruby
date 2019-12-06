@@ -1,6 +1,6 @@
 require 'segment/analytics/defaults'
 require 'segment/analytics/message_batch'
-require 'segment/analytics/request'
+require 'segment/analytics/transport'
 require 'segment/analytics/utils'
 
 module Segment
@@ -41,7 +41,7 @@ module Segment
             consume_message_from_queue! until @batch.full? || @queue.empty?
           end
 
-          res = Request.new.post @write_key, @batch
+          res = Transport.new.post @write_key, @batch
           @on_error.call(res.status, res.error) unless res.status == 200
 
           @lock.synchronize { @batch.clear }

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module Segment
   class Analytics
-    describe Request do
+    describe Transport do
       before do
         # Try and keep debug statements out of tests
         allow(subject.logger).to receive(:error)
