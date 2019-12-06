@@ -31,7 +31,7 @@ module Segment
           expect do
             Segment::Analytics::Transport
               .any_instance
-              .stub(:post)
+              .stub(:send)
               .and_return(Segment::Analytics::Response.new(-1, 'Unknown error'))
 
             queue = Queue.new
@@ -41,14 +41,14 @@ module Segment
 
             expect(queue).to be_empty
 
-            Segment::Analytics::Transport.any_instance.unstub(:post)
+            Segment::Analytics::Transport.any_instance.unstub(:send)
           end.to_not raise_error
         end
 
         it 'executes the error handler if the request is invalid' do
           Segment::Analytics::Transport
             .any_instance
-            .stub(:post)
+            .stub(:send)
             .and_return(Segment::Analytics::Response.new(400, 'Some error'))
 
           status = error = nil
@@ -67,7 +67,7 @@ module Segment
           sleep 0.1 # First give thread time to spin-up.
           sleep 0.01 while worker.is_requesting?
 
-          Segment::Analytics::Transport.any_instance.unstub(:post)
+          Segment::Analytics::Transport.any_instance.unstub(:send)
 
           expect(queue).to be_empty
           expect(status).to eq(400)
@@ -126,7 +126,7 @@ module Segment
         it 'returns true if there is a current batch' do
           Segment::Analytics::Transport
             .any_instance
-            .stub(:post) {
+            .stub(:send) {
               sleep(0.2)
               Segment::Analytics::Response.new(200, 'Success')
             }
@@ -141,7 +141,7 @@ module Segment
           worker_thread.join
           expect(worker.is_requesting?).to eq(false)
 
-          Segment::Analytics::Transport.any_instance.unstub(:post)
+          Segment::Analytics::Transport.any_instance.unstub(:send)
         end
       end
     end

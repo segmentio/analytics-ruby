@@ -98,7 +98,7 @@ module Segment
         end
       end
 
-      describe '#post' do
+      describe '#send' do
         let(:response) {
           Net::HTTPResponse.new(http_version, status_code, response_body)
         }
@@ -125,14 +125,14 @@ module Segment
             path, default_headers
           ).and_call_original
 
-          subject.post(write_key, batch)
+          subject.send(write_key, batch)
         end
 
         it 'adds basic auth to the Net::HTTP::Post' do
           expect_any_instance_of(Net::HTTP::Post).to receive(:basic_auth)
             .with(write_key, nil)
 
-          subject.post(write_key, batch)
+          subject.send(write_key, batch)
         end
 
         context 'with a stub' do
@@ -141,16 +141,16 @@ module Segment
           end
 
           it 'returns a 200 response' do
-            expect(subject.post(write_key, batch).status).to eq(200)
+            expect(subject.send(write_key, batch).status).to eq(200)
           end
 
           it 'has a nil error' do
-            expect(subject.post(write_key, batch).error).to be_nil
+            expect(subject.send(write_key, batch).error).to be_nil
           end
 
           it 'logs a debug statement' do
             expect(subject.logger).to receive(:debug).with(/stubbed request to/)
-            subject.post(write_key, batch)
+            subject.send(write_key, batch)
           end
         end
 
@@ -171,7 +171,7 @@ module Segment
                 .exactly(retries - 1).times
                 .with(1)
                 .and_return(nil)
-              subject.post(write_key, batch)
+              subject.send(write_key, batch)
             end
           end
 
@@ -186,18 +186,18 @@ module Segment
               expect(subject)
                 .to receive(:sleep)
                 .never
-              subject.post(write_key, batch)
+              subject.send(write_key, batch)
             end
           end
 
           context 'request is successful' do
             let(:status_code) { 201 }
             it 'returns a response code' do
-              expect(subject.post(write_key, batch).status).to eq(status_code)
+              expect(subject.send(write_key, batch).status).to eq(status_code)
             end
 
             it 'returns a nil error' do
-              expect(subject.post(write_key, batch).error).to be_nil
+              expect(subject.send(write_key, batch).error).to be_nil
             end
           end
 
@@ -206,7 +206,7 @@ module Segment
             let(:response_body) { { error: error }.to_json }
 
             it 'returns the parsed error' do
-              expect(subject.post(write_key, batch).error).to eq(error)
+              expect(subject.send(write_key, batch).error).to eq(error)
             end
           end
 
@@ -227,11 +227,11 @@ module Segment
             subject { described_class.new(retries: 0) }
 
             it 'returns a -1 for status' do
-              expect(subject.post(write_key, batch).status).to eq(-1)
+              expect(subject.send(write_key, batch).status).to eq(-1)
             end
 
             it 'has a connection error' do
-              error = subject.post(write_key, batch).error
+              error = subject.send(write_key, batch).error
               expect(error).to match(/Malformed JSON/)
             end
 

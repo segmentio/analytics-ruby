@@ -41,7 +41,7 @@ module Segment
             consume_message_from_queue! until @batch.full? || @queue.empty?
           end
 
-          res = Transport.new.post @write_key, @batch
+          res = Transport.new.send @write_key, @batch
           @on_error.call(res.status, res.error) unless res.status == 200
 
           @lock.synchronize { @batch.clear }
