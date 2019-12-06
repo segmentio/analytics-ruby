@@ -29,6 +29,7 @@ module Segment
         batch_size = options[:batch_size] || Defaults::MessageBatch::MAX_SIZE
         @batch = MessageBatch.new(batch_size)
         @lock = Mutex.new
+        @transport = Transport.new
       end
 
       # public: Continuously runs the loop to check for new events
@@ -41,11 +42,13 @@ module Segment
             consume_message_from_queue! until @batch.full? || @queue.empty?
           end
 
-          res = Transport.new.send @write_key, @batch
+          res = @transport.send @write_key, @batch
           @on_error.call(res.status, res.error) unless res.status == 200
 
           @lock.synchronize { @batch.clear }
         end
+      ensure
+        @transport.shutdown
       end
 
       # public: Check whether we have outstanding requests.

@@ -110,6 +110,7 @@ module Segment
 
         before do
           http = subject.instance_variable_get(:@http)
+          allow(http).to receive(:start)
           allow(http).to receive(:request) { response }
           allow(response).to receive(:body) { response_body }
         end

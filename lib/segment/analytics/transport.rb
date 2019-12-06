@@ -57,6 +57,11 @@ module Segment
         end
       end
 
+      # Closes a persistent connection if it exists
+      def shutdown
+        @http.finish if @http.started?
+      end
+
       private
 
       def should_retry_request?(status_code, body)
@@ -115,6 +120,7 @@ module Segment
 
           [200, '{}']
         else
+          @http.start unless @http.started? # Maintain a persistent connection
           response = @http.request(request, payload)
           [response.code.to_i, response.body]
         end
