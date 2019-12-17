@@ -4,7 +4,7 @@ require 'segment/analytics/utils'
 require 'segment/analytics/field_parser'
 require 'segment/analytics/client'
 require 'segment/analytics/worker'
-require 'segment/analytics/request'
+require 'segment/analytics/transport'
 require 'segment/analytics/response'
 require 'segment/analytics/logging'
 
@@ -18,7 +18,7 @@ module Segment
     # @option options [Boolean] :stub (false) If true, requests don't hit the
     #   server and are stubbed to be successful.
     def initialize(options = {})
-      Request.stub = options[:stub] if options.has_key?(:stub)
+      Transport.stub = options[:stub] if options.has_key?(:stub)
       @client = Segment::Analytics::Client.new options
     end
 

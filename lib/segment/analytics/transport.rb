@@ -9,13 +9,11 @@ require 'json'
 
 module Segment
   class Analytics
-    class Request
+    class Transport
       include Segment::Analytics::Defaults::Request
       include Segment::Analytics::Utils
       include Segment::Analytics::Logging
 
-      # public: Creates a new request object to send analytics batch
-      #
       def initialize(options = {})
         options[:host] ||= HOST
         options[:port] ||= PORT
@@ -34,10 +32,10 @@ module Segment
         @http = http
       end
 
-      # public: Posts the write key and batch of messages to the API.
+      # Sends a batch of messages to the API
       #
-      # returns - Response of the status and error if it exists
-      def post(write_key, batch)
+      # @return [Response] API response
+      def send(write_key, batch)
         logger.debug("Sending request for #{batch.length} items")
 
         last_response, exception = retry_with_backoff(@retries) do
@@ -57,6 +55,11 @@ module Segment
         else
           last_response
         end
+      end
+
+      # Closes a persistent connection if it exists
+      def shutdown
+        @http.finish if @http.started?
       end
 
       private
@@ -117,6 +120,7 @@ module Segment
 
           [200, '{}']
         else
+          @http.start unless @http.started? # Maintain a persistent connection
           response = @http.request(request, payload)
           [response.code.to_i, response.body]
         end
