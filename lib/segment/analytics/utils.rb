@@ -64,12 +64,8 @@ module Segment
         end
       end
 
-      def time_in_iso8601(time, fraction_digits = 3)
-        fraction = if fraction_digits > 0
-                     ('.%06i' % time.usec)[0, fraction_digits + 1]
-                   end
-
-        "#{time.strftime('%Y-%m-%dT%H:%M:%S')}#{fraction}#{formatted_offset(time, true, 'Z')}"
+      def time_in_iso8601(time)
+        "#{time.strftime('%Y-%m-%dT%H:%M:%S.%6N')}#{formatted_offset(time, true, 'Z')}"
       end
 
       def date_in_iso8601(date)
