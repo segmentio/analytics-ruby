@@ -1,12 +1,10 @@
 language: ruby
 
 rvm:
-  - 2.0.0
-  - 2.1.10
-  - 2.2.9
-  - 2.3.6
   - 2.4.3
-  - 2.5.0 # Performs deploys. Change condition below when changing this.
+  - 2.5.0 
+  - 2.6.0
+  - 2.7.0 # Performs deploys. Change condition below when changing this.
 
 script:
   - make check
@@ -17,6 +15,6 @@ deploy:
   provider: rubygems
   on:
     tags: true
-    condition: "$TRAVIS_RUBY_VERSION == 2.5.0"
+    condition: "$TRAVIS_RUBY_VERSION == 2.7.0"
   api_key:
     secure: Ceq6J4aBpsoqRfSiC7z+/J4moOXNjcPMFb2Bfm5qE51cIZzeyuOIOc6zhrad9tUgoX6uTRRxLxkybyu4wNYSluMA3IXW20CJyXZeJEHIaTYIDTWFAIYyerBJyMujJycSo7XueWb0faKBENrBQKx1K1tS0EiXpA2rMhdA6RM3DOY=
