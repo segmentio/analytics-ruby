@@ -1,3 +1,9 @@
+2.3.0 / 2020-03-26
+==================
+
+  * [Improvement](https://github.com/segmentio/analytics-ruby/pull/225): Update timestamp for sub-millisecond reporting
+  * Update supported Ruby versions (2.4, 2.5, 2.6, 2.7), remove unsupported Ruby versions (2.0, 2.1, 2.2, 2.3)
+
 2.2.8 / 2020-02-10
 ==================
 
