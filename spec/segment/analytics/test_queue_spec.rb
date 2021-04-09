@@ -15,7 +15,7 @@ module Segment
         let(:message) do
           {
             type: type,
-            foo: "bar"
+            foo: 'bar'
           }
         end
 
@@ -140,21 +140,21 @@ module Segment
       describe '#count' do
         let(:message) do
           {
-            type: "alias",
-            foo: "bar"
+            type: 'alias',
+            foo: 'bar'
           }
         end
 
-        it "returns 0" do
+        it 'returns 0' do
           expect(test_queue.count).to eq(0)
         end
 
-        it "returns 1" do
+        it 'returns 1' do
           test_queue << message
           expect(test_queue.count).to eq(1)
         end
 
-        it "returns 2" do
+        it 'returns 2' do
           test_queue << message
           test_queue << message
           expect(test_queue.count).to eq(2)
@@ -164,29 +164,29 @@ module Segment
       describe '#[]' do
         let(:message1) do
           {
-            type: "alias",
-            foo: "bar"
+            type: 'alias',
+            foo: 'bar'
           }
         end
 
         let(:message2) do
           {
-            type: "identify",
-            foo: "baz"
+            type: 'identify',
+            foo: 'baz'
           }
         end
 
-        it "returns message1" do
+        it 'returns message1' do
           test_queue << message1
           expect(test_queue[0]).to eq(message1)
         end
 
-        it "returns message2" do
+        it 'returns message2' do
           test_queue << message2
           expect(test_queue[0]).to eq(message2)
         end
 
-        it "returns message2" do
+        it 'returns message2' do
           test_queue << message1
           test_queue << message2
           expect(test_queue[1]).to eq(message2)
@@ -196,12 +196,12 @@ module Segment
       describe '#reset!' do
         let(:message) do
           {
-            type: "alias",
-            foo: "bar"
+            type: 'alias',
+            foo: 'bar'
           }
         end
 
-        it "returns message" do
+        it 'returns message' do
           test_queue << message
           expect(test_queue.count).to eq(1)
           test_queue.reset!

@@ -105,7 +105,7 @@ client = Segment::Analytics.new(test: true)
 
 client.test_queue # => #<Segment::Analytics::TestQueue:0x00007f88d454e9a8 @messages={}>
 
-client.track(user_id: "foo", event: "bar")
+client.track(user_id: 'foo', event: 'bar')
 
 client.test_queue.all
 # [
