@@ -92,7 +92,78 @@ Documentation is available at [segment.com/docs/sources/server/ruby](https://seg
 
 ## Testing
 
-You can use the `stub` option to Segment::Analytics.new to cause all requests to be stubbed, making it easier to test with this library.
+You can use the `stub: true` option to Segment::Analytics.new to cause all requests to be stubbed, making it easier to test with this library.
+
+### Test Queue
+
+You can use the `test: true` option to Segment::Analytics.new to cause all requests to be saved to a test queue until manually reset. All events will process as specified by the configuration, and they will also be stored in a separate queue for inspection during testing.
+
+A test queue can be used as follows:
+
+```ruby
+client = Segment::Analytics.new(test: true)
+
+client.test_queue # => #<Segment::Analytics::TestQueue:0x00007f88d454e9a8 @messages={}>
+
+client.track(user_id: 'foo', event: 'bar')
+
+client.test_queue.all
+# [
+#     {
+#            :context => {
+#             :library => {
+#                    :name => "analytics-ruby",
+#                 :version => "2.2.8.pre"
+#             }
+#         },
+#          :messageId => "e9754cc0-1c5e-47e4-832a-203589d279e4",
+#          :timestamp => "2021-02-19T13:32:39.547+01:00",
+#             :userId => "foo",
+#               :type => "track",
+#              :event => "bar",
+#         :properties => {}
+#     }
+# ]
+
+client.test_queue.track
+# [
+#     {
+#            :context => {
+#             :library => {
+#                    :name => "analytics-ruby",
+#                 :version => "2.2.8.pre"
+#             }
+#         },
+#          :messageId => "e9754cc0-1c5e-47e4-832a-203589d279e4",
+#          :timestamp => "2021-02-19T13:32:39.547+01:00",
+#             :userId => "foo",
+#               :type => "track",
+#              :event => "bar",
+#         :properties => {}
+#     }
+# ]
+
+# Other available methods
+client.test_queue.alias # => []
+client.test_queue.group # => []
+client.test_queue.identify # => []
+client.test_queue.page # => []
+client.test_queue.screen # => []
+
+client.reset!
+
+client.test_queue.all # => []
+```
+
+Note: It is recommended to call `reset!` before each test to ensure your test queue is empty. For example, in rspec you may have the following:
+
+```ruby
+RSpec.configure do |config|
+  config.before do
+    Analytics.test_queue.reset!
+  end
+end
+```
 
 ## License
 

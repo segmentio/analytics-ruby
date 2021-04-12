@@ -127,6 +127,33 @@ module Segment
           end
         end
       end
+
+      describe '#test_queue' do
+        context 'when not in mode' do
+          let(:analytics) { Segment::Analytics.new :write_key => WRITE_KEY, :stub => true, :test => true }
+
+          it 'returns TestQueue' do
+            expect(analytics.test_queue).to be_a(TestQueue)
+          end
+
+          it 'returns event' do
+            analytics.track Queued::TRACK
+            expect(analytics.test_queue[0]).to include(Requested::TRACK)
+            expect(analytics.test_queue.track[0]).to include(Requested::TRACK)
+          end
+        end
+
+        context 'when not in test mode' do
+          let(:analytics) { Segment::Analytics.new :write_key => WRITE_KEY, :stub => true, :test => false }
+
+          it 'errors when not in test mode' do
+            expect(analytics.instance_variable_get(:@test)).to be_falsey
+            expect { analytics.test_queue }.to raise_error(
+              RuntimeError, 'Test queue only available when setting :test to true.'
+            )
+          end
+        end
+      end
     end
   end
 end

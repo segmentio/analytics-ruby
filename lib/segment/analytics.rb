@@ -7,6 +7,7 @@ require 'segment/analytics/worker'
 require 'segment/analytics/transport'
 require 'segment/analytics/response'
 require 'segment/analytics/logging'
+require 'segment/analytics/test_queue'
 
 module Segment
   class Analytics

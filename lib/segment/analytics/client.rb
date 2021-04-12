@@ -21,6 +21,7 @@ module Segment
         symbolize_keys!(opts)
 
         @queue = Queue.new
+        @test = opts[:test]
         @write_key = opts[:write_key]
         @max_queue_size = opts[:max_queue_size] || Defaults::Queue::MAX_SIZE
         @worker_mutex = Mutex.new
@@ -143,6 +144,14 @@ module Segment
         @queue.length
       end
 
+      def test_queue
+        unless @test
+          raise 'Test queue only available when setting :test to true.'
+        end
+
+        @test_queue ||= TestQueue.new
+      end
+
       private
 
       # private: Enqueues the action.
@@ -151,6 +160,8 @@ module Segment
       def enqueue(action)
         # add our request id for tracing purposes
         action[:messageId] ||= uid
+
+        test_queue << action if @test
 
         if @queue.length < @max_queue_size
           @queue << action
