@@ -1,3 +1,9 @@
+2.3.1 / 2020-04-13
+==================
+
+  * Add test option for easier testing (https://github.com/segmentio/analytics-ruby/pull/222)
+
+
 2.3.0 / 2020-03-26
 ==================
 
