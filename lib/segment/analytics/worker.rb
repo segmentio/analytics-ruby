@@ -29,7 +29,7 @@ module Segment
         batch_size = options[:batch_size] || Defaults::MessageBatch::MAX_SIZE
         @batch = MessageBatch.new(batch_size)
         @lock = Mutex.new
-        @transport = Transport.new
+        @transport = Transport.new(options)
       end
 
       # public: Continuously runs the loop to check for new events
