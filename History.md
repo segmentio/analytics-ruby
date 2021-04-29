@@ -1,3 +1,8 @@
+2.3.2 / 2020-04-28
+==================
+
+* Enable overriding options in Transport (<https://github.com/segmentio/analytics-ruby/pull/222>)
+
 2.3.1 / 2020-04-13
 ==================
 
