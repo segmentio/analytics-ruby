@@ -1,12 +1,8 @@
-2.3.3 / 2020-05-05
+2.4.0 / 2020-05-05
 ==================
 
 * Enable overriding transport Pass options when initializing Transport (<https://github.com/segmentio/analytics-ruby/pull/230>)
 
-2.3.2 / 2020-04-28
-==================
-
-* Enable overriding options in Transport (<https://github.com/segmentio/analytics-ruby/pull/222>)
 
 2.3.1 / 2020-04-13
 ==================
