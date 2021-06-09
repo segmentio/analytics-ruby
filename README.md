@@ -150,7 +150,7 @@ client.test_queue.identify # => []
 client.test_queue.page # => []
 client.test_queue.screen # => []
 
-client.reset!
+client.test_queue.reset!
 
 client.test_queue.all # => []
 ```
