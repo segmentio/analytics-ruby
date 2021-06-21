@@ -161,7 +161,10 @@ module Segment
         # add our request id for tracing purposes
         action[:messageId] ||= uid
 
-        test_queue << action if @test
+        if @test
+          test_queue << action
+          return true
+        end
 
         if @queue.length < @max_queue_size
           @queue << action
@@ -170,9 +173,7 @@ module Segment
           true
         else
           logger.warn(
-            'Queue is full, dropping events. The :max_queue_size ' \
-            'configuration parameter can be increased to prevent this from ' \
-            'happening.'
+            'Queue is full, dropping events. The :max_queue_size configuration parameter can be increased to prevent this from happening.'
           )
           false
         end
