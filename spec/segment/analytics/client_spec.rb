@@ -342,6 +342,21 @@ module Segment
             expect(message[:integrations][:Salesforce]).to eq(false)
           end
         end
+
+        it 'does not enqueue the action in test mode' do
+          client.instance_variable_set(:@test, true)
+          client.test_queue
+          test_queue = client.instance_variable_get(:@test_queue)
+
+          %i[track screen page group identify alias].each do |s|
+            old_test_queue_size = test_queue.count
+            queue_size = queue.length
+            client.send(s, data)
+
+            expect(queue.length).to eq(queue_size) # The "real" queue size should not change in test mode
+            expect(test_queue.count).to_not eq(old_test_queue_size) # The "test" queue size should change in test mode
+          end
+        end
       end
     end
   end
