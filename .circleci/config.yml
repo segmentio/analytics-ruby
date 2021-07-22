@@ -13,7 +13,6 @@ jobs:
       - run:
           name: Which bundler?
           command: bundle -v
-      - ruby/bundle-install
 
       - run:
           name: 'Running E2E tests'
