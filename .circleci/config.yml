@@ -13,3 +13,42 @@ jobs:
           name: Which bundler?
           command: bundle -v
       - ruby/bundle-install
+
+  multi-test: &multi-test
+    docker:
+      - image: ruby
+    steps:
+      - checkout
+      - run:
+          name: Which bundler?
+          command: bundle -v
+      - ruby/bundle-install
+
+      - run:
+          name: 'Running E2E tests'
+          command: '.buildscript/e2e.sh'
+
+  test-2.4.3:
+    <<: *multi-test
+    docker:
+      - image: circleci/ruby:2.4.3-stretch-node
+  test-2.5.0:
+    <<: *multi-test
+    docker:
+      - image: circleci/ruby:2.5.0-stretch-node
+  test-2.6.0:
+    <<: *multi-test
+    docker:
+      - image: circleci/ruby:2.6.0-stretch-node
+  test-2.7.0:
+    <<: *multi-test
+    docker:
+      - image: circleci/ruby:2.7.0-stretch-node
+workflows:
+  version: 2
+  multi-test:
+    jobs:
+      - test-2.4.3
+      - test-2.5.0 
+      - test-2.6.0
+      - test-2.7.0
