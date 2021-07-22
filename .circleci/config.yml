@@ -30,10 +30,10 @@ jobs:
     <<: *multi-test
     docker:
       - image: circleci/ruby:2.6.0-stretch-node
-  test-2.7.0:
+  test-2.7.3:
     <<: *multi-test
     docker:
-      - image: circleci/ruby:2.7.0-stretch-node
+      - image: circleci/ruby:2.7.3-stretch-node
 workflows:
   version: 2
   multi-test:
@@ -41,4 +41,4 @@ workflows:
       - test-2.4.3
       - test-2.5.0
       - test-2.6.0
-      - test-2.7.0
+      - test-2.7.3
