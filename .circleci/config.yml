@@ -1,22 +1,13 @@
 version: 2.1
 orbs:
-  ruby: circleci/ruby@0.1.2 
+  ruby: circleci/ruby@1.1.4
 
 jobs:
-  build:
-    docker:
-      - image: circleci/ruby:2.6.3-stretch-node
-    executor: ruby/default
-    steps:
-      - checkout
-      - run:
-          name: Which bundler?
-          command: bundle -v
-      - ruby/bundle-install
 
   multi-test: &multi-test
     docker:
       - image: ruby
+    executor: ruby/default      
     steps:
       - checkout
       - run:
@@ -45,7 +36,7 @@ jobs:
     docker:
       - image: circleci/ruby:2.7.0-stretch-node
 workflows:
-  version: 2
+  version: 2.1
   multi-test:
     jobs:
       - test-2.4.3
