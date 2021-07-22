@@ -33,7 +33,7 @@ jobs:
   test-2.7.3:
     <<: *multi-test
     docker:
-      - image: circleci/ruby:2.7.3-stretch-node
+      - image: cimg/ruby:2.7.3-node
 workflows:
   version: 2
   multi-test:
