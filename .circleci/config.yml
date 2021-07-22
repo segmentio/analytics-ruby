@@ -7,7 +7,7 @@ jobs:
   multi-test: &multi-test
     docker:
       - image: ruby
-    executor: ruby/default      
+    executor: docker      
     steps:
       - checkout
       - run:
