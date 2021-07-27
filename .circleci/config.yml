@@ -22,7 +22,7 @@ jobs:
           name: Publish to Rubygems
           command: |
             gem build analytics-ruby
-            gem push "analytics-ruby-$(git describe --tags).gem"          
+            gem push "analytics-ruby-$(git describe --tags).gem"
 
       - run:
           name: 'Running E2E tests'
