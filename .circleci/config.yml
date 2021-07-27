@@ -5,6 +5,9 @@ jobs:
   multi-test: &multi-test
     docker:
       - image: ruby
+
+    working_directory: ~/repo
+
     steps:
       - checkout
       - run:
@@ -18,8 +21,8 @@ jobs:
       - run:
           name: Publish to Rubygems
           command: |
-            gem build segment-analytics_spec
-            gem push "segment-analytics-$(git describe --tags).gem"          
+            gem build analytics-ruby
+            gem push "analytics-ruby-$(git describe --tags).gem"          
 
       - run:
           name: 'Running E2E tests'
