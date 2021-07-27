@@ -1,18 +1,25 @@
 version: 2
-orbs:
-  ruby: circleci/ruby@1.1.4
 
 jobs:
 
   multi-test: &multi-test
     docker:
       - image: ruby
-    executor: docker      
     steps:
       - checkout
       - run:
           name: Which bundler?
           command: bundle -v
+
+      - run:
+          name: Setup Rubygems
+          command: bash .circleci/setup-rubygems.sh
+      
+      - run:
+          name: Publish to Rubygems
+          command: |
+            gem build your-gem-name.gemspec
+            gem push "your-gem-name-$(git describe --tags).gem"          
 
       - run:
           name: 'Running E2E tests'
