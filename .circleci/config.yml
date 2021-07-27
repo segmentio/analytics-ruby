@@ -18,8 +18,8 @@ jobs:
       - run:
           name: Publish to Rubygems
           command: |
-            gem build segment.gemspec
-            gem push "segment-$(git describe --tags).gem"          
+            gem build segment.analytics_spec
+            gem push "segment-analytics-$(git describe --tags).gem"          
 
       - run:
           name: 'Running E2E tests'
