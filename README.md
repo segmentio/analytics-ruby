@@ -90,10 +90,6 @@ There are a few calls available, please check the documentation section.
 
 Documentation is available at [segment.com/docs/sources/server/ruby](https://segment.com/docs/sources/server/ruby/)
 
-## Testing
-
-You can use the `stub: true` option to Segment::Analytics.new to cause all requests to be stubbed, making it easier to test with this library.
-
 ### Test Queue
 
 You can use the `test: true` option to Segment::Analytics.new to cause all requests to be saved to a test queue until manually reset. All events will process as specified by the configuration, and they will also be stored in a separate queue for inspection during testing.
@@ -150,7 +146,7 @@ client.test_queue.identify # => []
 client.test_queue.page # => []
 client.test_queue.screen # => []
 
-client.reset!
+client.test_queue.reset!
 
 client.test_queue.all # => []
 ```

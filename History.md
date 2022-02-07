@@ -1,20 +1,16 @@
-2.3.3 / 2020-05-05
+2.4.0 / 2021-05-05
 ==================
 
 * Enable overriding transport Pass options when initializing Transport (<https://github.com/segmentio/analytics-ruby/pull/230>)
 
-2.3.2 / 2020-04-28
-==================
 
-* Enable overriding options in Transport (<https://github.com/segmentio/analytics-ruby/pull/222>)
-
-2.3.1 / 2020-04-13
+2.3.1 / 2021-04-13
 ==================
 
   * Add test option for easier testing (https://github.com/segmentio/analytics-ruby/pull/222)
 
 
-2.3.0 / 2020-03-26
+2.3.0 / 2021-03-26
 ==================
 
   * [Improvement](https://github.com/segmentio/analytics-ruby/pull/225): Update timestamp for sub-millisecond reporting
