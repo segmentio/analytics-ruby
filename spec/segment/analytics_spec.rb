@@ -12,8 +12,8 @@ module Segment
 
         it 'errors without user_id or anonymous_id' do
           expect { analytics.track :event => 'event' }.to raise_error(ArgumentError)
-          expect { analytics.track :event => 'event', user_id: ''}.to raise_error(ArgumentError)
-          expect { analytics.track :event => 'event', anonymous_id:''}.to raise_error(ArgumentError)
+          expect { analytics.track :event => 'event', user_id: '' }.to raise_error(ArgumentError)
+          expect { analytics.track :event => 'event', anonymous_id: '' }.to raise_error(ArgumentError)
           expect { analytics.track :event => 'event', user_id: '1234' }.to_not raise_error(ArgumentError)
           expect { analytics.track :event => 'event', anonymous_id: '2345' }.to_not raise_error(ArgumentError)
         end

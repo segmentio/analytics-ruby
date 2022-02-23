@@ -179,9 +179,7 @@ module Segment
         # obj    - String|Number that must be non-blank
         # name   - Name of the validated value
         def check_presence!(obj, name)
-          if blank?(obj)
-            raise ArgumentError, "#{name} must be given"
-          end
+          raise ArgumentError, "#{name} must be given" if blank?(obj)
         end
 
         def blank?(obj)
