@@ -161,6 +161,7 @@ RSpec.configure do |config|
 end
 ```
 
+And also to stub actions use `stub: true` along with `test: true` so that it doesn't send any real calls during specs.
 ## License
 
 ```
