@@ -2,9 +2,9 @@ module Segment
   class Analytics
     module Defaults
       module Request
-        HOST = 'api.segment.io'
+        HOST = 'api.june.so'
         PORT = 443
-        PATH = '/v1/import'
+        PATH = '/sdk/batch'
         SSL = true
         HEADERS = { 'Accept' => 'application/json',
                     'Content-Type' => 'application/json',
