@@ -3,7 +3,7 @@ require 'rspec/core/rake_task'
 default_tasks = []
 
 RSpec::Core::RakeTask.new(:spec) do |spec|
-  spec.pattern = 'spec/segment/**/*_spec.rb'
+  spec.pattern = 'spec/june/**/*_spec.rb'
 end
 
 default_tasks << :spec

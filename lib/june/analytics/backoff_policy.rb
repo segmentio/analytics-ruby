@@ -1,9 +1,9 @@
-require 'segment/analytics/defaults'
+require 'june/analytics/defaults'
 
-module Segment
+module June
   class Analytics
     class BackoffPolicy
-      include Segment::Analytics::Defaults::BackoffPolicy
+      include June::Analytics::Defaults::BackoffPolicy
 
       # @param [Hash] opts
       # @option opts [Numeric] :min_timeout_ms The minimum backoff timeout

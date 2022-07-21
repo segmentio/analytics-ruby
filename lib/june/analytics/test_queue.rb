@@ -1,4 +1,4 @@
-module Segment
+module June
   class Analytics
     class TestQueue
       attr_reader :messages

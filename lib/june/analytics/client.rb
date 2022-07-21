@@ -1,16 +1,16 @@
 require 'thread'
 require 'time'
 
-require 'segment/analytics/defaults'
-require 'segment/analytics/logging'
-require 'segment/analytics/utils'
-require 'segment/analytics/worker'
+require 'june/analytics/defaults'
+require 'june/analytics/logging'
+require 'june/analytics/utils'
+require 'june/analytics/worker'
 
-module Segment
+module June
   class Analytics
     class Client
-      include Segment::Analytics::Utils
-      include Segment::Analytics::Logging
+      include June::Analytics::Utils
+      include June::Analytics::Logging
 
       # @param [Hash] opts
       # @option opts [String] :write_key Your project's write_key

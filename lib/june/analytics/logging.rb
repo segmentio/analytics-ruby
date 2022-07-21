@@ -1,6 +1,6 @@
 require 'logger'
 
-module Segment
+module June
   class Analytics
     # Wraps an existing logger and adds a prefix to all messages
     class PrefixedLogger
@@ -35,7 +35,7 @@ module Segment
                           Rails.logger
                         else
                           logger = Logger.new STDOUT
-                          logger.progname = 'Segment::Analytics'
+                          logger.progname = 'June::Analytics'
                           logger
                         end
           @logger = PrefixedLogger.new(base_logger, '[analytics-ruby]')

@@ -1,4 +1,4 @@
-module Segment
+module June
   class Analytics
     module Defaults
       module Request
