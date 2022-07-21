@@ -1,19 +1,19 @@
-require 'segment/analytics/defaults'
-require 'segment/analytics/message_batch'
-require 'segment/analytics/transport'
-require 'segment/analytics/utils'
+require 'june/analytics/defaults'
+require 'june/analytics/message_batch'
+require 'june/analytics/transport'
+require 'june/analytics/utils'
 
-module Segment
+module June
   class Analytics
     class Worker
-      include Segment::Analytics::Utils
-      include Segment::Analytics::Defaults
-      include Segment::Analytics::Logging
+      include June::Analytics::Utils
+      include June::Analytics::Defaults
+      include June::Analytics::Logging
 
       # public: Creates a new worker
       #
       # The worker continuously takes messages off the queue
-      # and makes requests to the segment.io api
+      # and makes requests to the june.so api
       #
       # queue   - Queue synchronized between client and worker
       # write_key  - String of the project's Write key

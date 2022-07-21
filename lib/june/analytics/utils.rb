@@ -1,6 +1,6 @@
 require 'securerandom'
 
-module Segment
+module June
   class Analytics
     module Utils
       extend self

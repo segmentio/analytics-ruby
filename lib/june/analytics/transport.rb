@@ -1,18 +1,18 @@
-require 'segment/analytics/defaults'
-require 'segment/analytics/utils'
-require 'segment/analytics/response'
-require 'segment/analytics/logging'
-require 'segment/analytics/backoff_policy'
+require 'june/analytics/defaults'
+require 'june/analytics/utils'
+require 'june/analytics/response'
+require 'june/analytics/logging'
+require 'june/analytics/backoff_policy'
 require 'net/http'
 require 'net/https'
 require 'json'
 
-module Segment
+module June
   class Analytics
     class Transport
-      include Segment::Analytics::Defaults::Request
-      include Segment::Analytics::Utils
-      include Segment::Analytics::Logging
+      include June::Analytics::Defaults::Request
+      include June::Analytics::Utils
+      include June::Analytics::Logging
 
       def initialize(options = {})
         options[:host] ||= HOST
@@ -22,7 +22,7 @@ module Segment
         @path = options[:path] || PATH
         @retries = options[:retries] || RETRIES
         @backoff_policy =
-          options[:backoff_policy] || Segment::Analytics::BackoffPolicy.new
+          options[:backoff_policy] || June::Analytics::BackoffPolicy.new
 
         http = Net::HTTP.new(options[:host], options[:port])
         http.use_ssl = options[:ssl]

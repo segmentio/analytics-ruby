@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Segment
+module June
   class Analytics
     describe Client do
       let(:client) do

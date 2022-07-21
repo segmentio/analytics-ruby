@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'segment/analytics'
+require 'june/analytics'
 require 'rubygems'
 require 'commander/import'
 require 'time'
@@ -16,15 +16,13 @@ def json_hash(str)
   end
 end
 
-# analytics -method=<method> -segment-write-key=<segmentWriteKey> [options]
-
 default_command :send
 
 command :send do |c|
-  c.description = 'send a segment message'
+  c.description = 'send a june message'
 
-  c.option '--writeKey=<writeKey>', String, 'the Segment writeKey'
-  c.option '--type=<type>', String, 'The Segment message type'
+  c.option '--writeKey=<writeKey>', String, 'the June writeKey'
+  c.option '--type=<type>', String, 'The June message type'
 
   c.option '--userId=<userId>', String, 'the user id to send the event as'
   c.option '--anonymousId=<anonymousId>', String, 'the anonymous user id to send the event as'
@@ -42,7 +40,7 @@ command :send do |c|
   c.option '--previousId=<previousId>', String, 'the previous id'
 
   c.action do |args, options|
-    Analytics = Segment::Analytics.new({
+    Analytics = June::Analytics.new({
       write_key: options.writeKey,
       on_error: Proc.new { |status, msg| print msg }
     })
