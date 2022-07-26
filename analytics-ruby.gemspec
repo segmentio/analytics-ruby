@@ -1,7 +1,7 @@
 require File.expand_path('../lib/june/analytics/version', __FILE__)
 
 Gem::Specification.new do |spec|
-  spec.name = 'juneso-analytics-ruby'
+  spec.name = 'june-analytics-ruby'
   spec.version = June::Analytics::VERSION
   spec.files = Dir.glob("{lib,bin}/**/*")
   spec.require_paths = ['lib']
@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.summary = 'June.so analytics library'
   spec.description = 'The June.so ruby analytics library'
   spec.authors = ['June.so']
-  spec.email = 'work@june.so'
+  spec.email = 'eng@june.so'
   spec.homepage = 'https://github.com/juneHQ/analytics-ruby'
   spec.license = 'MIT'
   spec.required_ruby_version = '>= 2.0'
