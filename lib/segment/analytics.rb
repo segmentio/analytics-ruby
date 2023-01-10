@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'segment/analytics/version'
 require 'segment/analytics/defaults'
 require 'segment/analytics/utils'

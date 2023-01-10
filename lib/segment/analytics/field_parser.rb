@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Segment
   class Analytics
     # Handles parsing fields according to the Segment Spec
