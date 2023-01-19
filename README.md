@@ -61,7 +61,7 @@ gem install 'analytics-ruby'
 
 Create an instance of the Analytics object:
 ```ruby
-analytics = Segment::Analytics.new(write_key: 'YOUR_WRITE_KEY')
+analytics = SegmentIO::Analytics.new(write_key: 'YOUR_WRITE_KEY')
 ```
 
 Identify the user for the people section, see more [here](https://segment.com/docs/libraries/ruby/#identify).
@@ -92,14 +92,14 @@ Documentation is available at [segment.com/docs/sources/server/ruby](https://seg
 
 ### Test Queue
 
-You can use the `test: true` option to Segment::Analytics.new to cause all requests to be saved to a test queue until manually reset. All events will process as specified by the configuration, and they will also be stored in a separate queue for inspection during testing.
+You can use the `test: true` option to SegmentIO::Analytics.new to cause all requests to be saved to a test queue until manually reset. All events will process as specified by the configuration, and they will also be stored in a separate queue for inspection during testing.
 
 A test queue can be used as follows:
 
 ```ruby
-client = Segment::Analytics.new(test: true)
+client = SegmentIO::Analytics.new(test: true)
 
-client.test_queue # => #<Segment::Analytics::TestQueue:0x00007f88d454e9a8 @messages={}>
+client.test_queue # => #<SegmentIO::Analytics::TestQueue:0x00007f88d454e9a8 @messages={}>
 
 client.track(user_id: 'foo', event: 'bar')
 
