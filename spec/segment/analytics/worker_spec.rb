@@ -11,8 +11,8 @@ module SegmentIO
         it 'accepts string keys' do
           queue = Queue.new
           worker = SegmentIO::Analytics::Worker.new(queue,
-                                                  'secret',
-                                                  'batch_size' => 100)
+                                                    'secret',
+                                                    'batch_size' => 100)
           batch = worker.instance_variable_get(:@batch)
           expect(batch.instance_variable_get(:@max_message_count)).to eq(100)
         end
