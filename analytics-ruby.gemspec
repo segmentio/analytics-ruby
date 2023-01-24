@@ -19,15 +19,13 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'commander', '~> 4.4'
 
   # Used in specs
-  spec.add_development_dependency 'rake', '~> 10.3'
+  spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'tzinfo', '1.2.1'
-  spec.add_development_dependency 'activesupport', '~> 4.1.11'
-  if RUBY_VERSION >= '2.0' && RUBY_PLATFORM != 'java'
+  spec.add_development_dependency 'tzinfo', '~> 1.2'
+  spec.add_development_dependency 'activesupport', '~> 5.2.0'
+  if RUBY_PLATFORM != 'java'
     spec.add_development_dependency 'oj', '~> 3.6.2'
   end
-  if RUBY_VERSION >= '2.1'
-    spec.add_development_dependency 'rubocop', '~> 0.51.0'
-  end
-  spec.add_development_dependency 'codecov', '~> 0.1.4'
+  spec.add_development_dependency 'rubocop', '~> 1.0'
+  spec.add_development_dependency 'codecov', '~> 0.6'
 end
