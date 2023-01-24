@@ -1,10 +1,11 @@
 inherit_from: .rubocop_todo.yml
 
 AllCops:
-  # Rubocop doesn't support 2.0, so we'll use the minimum available
-  TargetRubyVersion: 2.1
+  TargetRubyVersion: '2.0'
+  SuggestExtensions: false
+  NewCops: disable
 
-Layout/IndentHash:
+Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
 
 Metrics/AbcSize:
@@ -23,7 +24,7 @@ Metrics/CyclomaticComplexity:
   Exclude:
     - "spec/**/*.rb"
 
-Metrics/LineLength:
+Layout/LineLength:
   Exclude:
     - "spec/**/*.rb"
 
@@ -40,15 +41,12 @@ Naming/FileName:
     - lib/analytics-ruby.rb # Gem name, added for easier Gemfile usage
 
 Naming/PredicateName:
-  NameWhitelist:
+  AllowedMethods:
     - is_requesting? # Can't be renamed, backwards compatibility
 
 Style/BlockDelimiters:
   Exclude:
     - 'spec/**/*'
-
-Style/BracesAroundHashParameters:
-  Enabled: false
 
 Style/DateTime:
   Exclude:
