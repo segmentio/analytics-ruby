@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # https://github.com/codecov/codecov-ruby#usage
 require 'simplecov'
 SimpleCov.start
