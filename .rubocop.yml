@@ -40,7 +40,7 @@ Naming/FileName:
     - lib/analytics-ruby.rb # Gem name, added for easier Gemfile usage
 
 Naming/PredicateName:
-  NameWhitelist:
+  NameAllowlist:
     - is_requesting? # Can't be renamed, backwards compatibility
 
 Style/BlockDelimiters:
