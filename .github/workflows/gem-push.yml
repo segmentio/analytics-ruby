@@ -15,11 +15,11 @@ jobs:
       packages: write
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Ruby 2.7
       uses: actions/setup-ruby@v1
       with:
-        ruby-version: 2.7.x
+        ruby-version: 2.7.6
 
     - name: Publish to GPR
       run: |
