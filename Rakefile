@@ -18,8 +18,9 @@ Dir.glob('spec/isolated/**/*.rb').each do |isolated_test_path|
   default_tasks << isolated_test_path
 end
 
-# Rubocop doesn't support < 2.1
-if RUBY_VERSION >= "2.1"
+# Older versions of Rubocop don't support a target Ruby version of 2.1
+require 'rubocop/version'
+if RuboCop::Version::STRING >= '1.30.0'
   require 'rubocop/rake_task'
 
   RuboCop::RakeTask.new(:rubocop) do |task|
