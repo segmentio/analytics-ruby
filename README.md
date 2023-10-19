@@ -97,7 +97,7 @@ You can use the `test: true` option to Segment::Analytics.new to cause all reque
 A test queue can be used as follows:
 
 ```ruby
-client = Segment::Analytics.new(test: true)
+client = Segment::Analytics.new(write_key: 'YOUR_WRITE_KEY', test: true)
 
 client.test_queue # => #<Segment::Analytics::TestQueue:0x00007f88d454e9a8 @messages={}>
 
