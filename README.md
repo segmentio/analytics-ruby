@@ -3,6 +3,9 @@ analytics-ruby
 
 analytics-ruby is a ruby client for [Segment](https://segment.com)
 
+### ⚠️ Maintenance ⚠️
+This library is in maintenance mode. It will send data as intended, but receive no new feature support and only critical maintenance updates from Segment.
+
 <div align="center">
   <img src="https://user-images.githubusercontent.com/16131737/53616965-fcdeb680-3b99-11e9-934c-53917ac1e563.png"/>
   <p><b><i>You can't fix what you can't measure</i></b></p>
