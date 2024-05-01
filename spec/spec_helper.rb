@@ -1,11 +1,5 @@
 # frozen_string_literal: true
 
-# https://github.com/codecov/codecov-ruby#usage
-require 'simplecov'
-SimpleCov.start
-require 'codecov'
-SimpleCov.formatter = SimpleCov::Formatter::Codecov
-
 require 'segment/analytics'
 require 'active_support/time'
 
