@@ -1,4 +1,2 @@
 ignore:
   - "spec/**/*"
-codecov:
-token: ${ secrets.CODECOV_TOKEN }
