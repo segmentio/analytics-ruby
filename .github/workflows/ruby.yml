@@ -30,3 +30,7 @@ jobs:
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - name: Run tests
       run: bundle exec rake
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v4.2.0
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
