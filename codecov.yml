@@ -1,4 +1,4 @@
 ignore:
   - "spec/**/*"
 codecov:
-token: ${{ secrets.CODECOV_TOKEN }}
+token: ${ secrets.CODECOV_TOKEN }
