@@ -1,0 +1,39 @@
+name: Create Jira Ticket
+
+on: 
+  issues:
+    types:
+      - opened
+
+jobs:
+  create_jira:
+    name: Create Jira Ticket
+    runs-on: ubuntu-latest
+    environment: IssueTracker
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+    - name: Login
+      uses: atlassian/gajira-login@master
+      env:
+        JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+        JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+        JIRA_API_TOKEN: ${{ secrets.JIRA_TOKEN }}
+        JIRA_EPIC_KEY: ${{ secrets.JIRA_EPIC_KEY }}
+        JIRA_PROJECT: ${{ secrets.JIRA_PROJECT }}
+
+    - name: Create
+      id: create
+      uses: atlassian/gajira-create@master
+      with:
+        project: ${{ secrets.JIRA_PROJECT }}
+        issuetype: Bug
+        summary: |
+          [${{ github.event.repository.name }}] (${{ github.event.issue.number }}): ${{ github.event.issue.title }}
+        description: |
+          Github Link: ${{ github.event.issue.html_url }}
+          ${{ github.event.issue.body }}
+        fields: '{"parent": {"key": "${{ secrets.JIRA_EPIC_KEY }}"}}'
+
+    - name: Log created issue
+      run: echo "Issue ${{ steps.create.outputs.issue }} was created"
