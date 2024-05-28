@@ -37,7 +37,7 @@ module Segment
         end
 
         it 'returns true once max size is almost exceeded' do
-          message = { a: "b" * (Defaults::Message::MAX_BYTES - 10) }
+          message = { a: 'b' * (Defaults::Message::MAX_BYTES - 10) }
 
           message_size = message.to_json.bytesize
 
