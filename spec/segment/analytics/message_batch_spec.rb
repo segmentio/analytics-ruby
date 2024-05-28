@@ -20,7 +20,7 @@ module Segment
           subject << message
           expect(subject.length).to eq(0)
 
-          expect { subject << message }.to raise_error("Message Exceeded Maximum Allowed Size")
+          expect { message }.to raise_error("Message Exceeded Maximum Allowed Size")
         end
       end
 
