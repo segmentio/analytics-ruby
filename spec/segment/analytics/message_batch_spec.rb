@@ -19,10 +19,7 @@ module Segment
 
           subject << message
           expect(subject.length).to eq(0)
-        end
-
-        it 'raises messages that exceed the maximum allowed size' do
-          expect { MessageBatch.new }.to raise_error("Message Exceeded Maximum Allowed Size")
+          expect { Message }.to raise_error("Message Exceeded Maximum Allowed Size")
         end
       end
 
