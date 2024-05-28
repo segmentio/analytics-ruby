@@ -18,8 +18,7 @@ module Segment
           message = { 'a' => 'b' * max_bytes }
 
           subject << message
-          expect(subject.length).to eq(0)
-          expect { raise StandardError }.to raise_error("Message Exceeded Maximum Allowed Size")
+          expect(subject.length).to eq(0).and_raise(JSONGenerationError.new("Message Exceeded Maximum Allowed Size"))
         end
       end
 
