@@ -9,7 +9,10 @@ module Segment
 
       describe '#<<' do
         it 'appends messages' do
+          expect(subject.length).to eq(0)
+
           subject << { 'a' => 'b' }
+
           expect(subject.length).to eq(1)
         end
 
@@ -17,8 +20,10 @@ module Segment
           max_bytes = Defaults::Message::MAX_BYTES
           message = { 'a' => 'b' * max_bytes }
 
-          subject << message
           expect(subject.length).to eq(0)
+
+          expect { subject << message }.to raise_error(MessageBatch::JSONGenerationError)
+            .with_message('Message Exceeded Maximum Allowed Size')
         end
       end
 
