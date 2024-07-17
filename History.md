@@ -1,3 +1,16 @@
+2.5.0 / 2024-07-17
+==================
+
+* Fix silent failures                           (https://github.com/segmentio/analytics-ruby/pull/269)
+* Update to Ruby 3.2                            (https://github.com/segmentio/analytics-ruby/pull/262)
+* Rename Segment namespace to SegmentIO         (https://github.com/segmentio/analytics-ruby/pull/259)
+* Lower allocated and retained strings          (https://github.com/segmentio/analytics-ruby/pull/258)
+* Modify timestamp to have 3 fractional digits  (https://github.com/segmentio/analytics-ruby/pull/250 && https://github.com/segmentio/analytics-ruby/pull/251)
+* Fix for empty user_id or anonymous_id         (https://github.com/segmentio/analytics-ruby/pull/245)
+* Not enqueuing test action in real queue       (https://github.com/segmentio/analytics-ruby/pull/237)
+* Fix test queue reset! documentation           (https://github.com/segmentio/analytics-ruby/pull/235)
+
+
 2.4.0 / 2021-05-05
 ==================
 
