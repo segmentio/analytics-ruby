@@ -18,7 +18,7 @@ module Segment
           allow(Net::HTTP).to receive(:new) { net_http }
         end
 
-        it 'sets an initalized Net::HTTP read_timeout' do
+        it 'sets an initalized Net::HTTP use_ssl' do
           expect(net_http).to receive(:use_ssl=)
           described_class.new
         end
@@ -75,6 +75,7 @@ module Segment
               backoff_policy: backoff_policy,
               host: host,
               port: port
+              ssl: false
             }
           end
 
@@ -95,6 +96,7 @@ module Segment
 
           it 'initializes a new Net::HTTP with passed in host and port' do
             expect(Net::HTTP).to receive(:new).with(host, port)
+            expect(Net::HTTP).to receive(:use_ssl).with(false)
             described_class.new(options)
           end
         end

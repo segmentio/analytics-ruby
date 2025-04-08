@@ -19,7 +19,7 @@ module Segment
       def initialize(options = {})
         options[:host] ||= HOST
         options[:port] ||= PORT
-        options[:ssl] ||= SSL
+        options.fetch(:ssl, SSL) == true
         @headers = options[:headers] || HEADERS
         @path = options[:path] || PATH
         @retries = options[:retries] || RETRIES
