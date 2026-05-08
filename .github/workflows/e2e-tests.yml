@@ -1,0 +1,57 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      e2e_tests_ref:
+        description: 'Branch or ref of sdk-e2e-tests to use'
+        required: false
+        default: 'main'
+
+jobs:
+  e2e-tests:
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout SDK
+        uses: actions/checkout@v4
+        with:
+          path: sdk
+
+      - name: Checkout sdk-e2e-tests
+        uses: actions/checkout@v4
+        with:
+          repository: segmentio/sdk-e2e-tests
+          ref: ${{ inputs.e2e_tests_ref || 'main' }}
+          token: ${{ secrets.E2E_TESTS_TOKEN }}
+          path: sdk-e2e-tests
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run E2E tests
+        working-directory: sdk-e2e-tests
+        run: |
+          ./scripts/run-tests.sh \
+            --sdk-dir "${{ github.workspace }}/sdk/e2e-cli" \
+            --cli "ruby ${{ github.workspace }}/sdk/e2e-cli/main.rb"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-results
+          path: sdk-e2e-tests/test-results/
+          if-no-files-found: ignore

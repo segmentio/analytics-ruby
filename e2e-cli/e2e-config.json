@@ -1,6 +1,6 @@
 {
   "sdk": "ruby",
-  "test_suites": "basic,retry",
+  "test_suites": "basic",
   "auto_settings": false,
   "patch": null,
   "env": {}

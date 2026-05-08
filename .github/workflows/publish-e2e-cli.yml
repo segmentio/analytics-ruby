@@ -1,0 +1,39 @@
+name: Publish E2E CLI
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'e2e-cli/**'
+      - 'lib/**'
+  schedule:
+    - cron: '0 0 1 * *'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout SDK
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Prepare artifact
+        run: |
+          mkdir -p artifact
+          cp e2e-cli/main.rb artifact/
+          cp e2e-cli/e2e-config.json artifact/
+          cp e2e-cli/run-e2e.sh artifact/
+          cp e2e-cli/Gemfile artifact/
+          cp -r lib artifact/lib
+
+      - name: Upload CLI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-cli-ruby
+          path: artifact/
+          retention-days: 90
