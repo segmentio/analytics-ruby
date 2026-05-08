@@ -133,6 +133,23 @@ client_opts[:ssl]        = ssl       unless ssl.nil?
 client_opts[:batch_size] = flush_at  if flush_at
 client_opts[:retries]    = max_retries if max_retries
 
+# Work around the Transport initializer using `||=` for :ssl, which causes
+# `ssl: false` to be overridden by the default `SSL = true`. Patch before
+# the client (and thus Transport) is instantiated.
+unless ssl.nil?
+  # Work around the `options[:ssl] ||= SSL` line in Transport#initialize which
+  # replaces a falsy `ssl: false` with the default `SSL = true`.
+  # Strategy: strip :ssl from options before super so ||= has nothing to
+  # override, then force-set use_ssl= on the Net::HTTP object after super runs.
+  override_ssl = ssl
+  Segment::Analytics::Transport.prepend(Module.new do
+    define_method(:initialize) do |options = {}|
+      super(options.reject { |k, _| k == :ssl })
+      @http.use_ssl = override_ssl
+    end
+  end)
+end
+
 warn "[analytics-ruby] Initializing client (host=#{host || 'default'}, batch_size=#{flush_at || 'default'})"
 
 begin
