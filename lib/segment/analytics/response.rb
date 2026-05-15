@@ -12,6 +12,10 @@ module Segment
         @status = status
         @error  = error
       end
+
+      def success?
+        status >= 200 && status < 400
+      end
     end
   end
 end

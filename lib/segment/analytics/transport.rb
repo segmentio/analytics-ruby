@@ -16,15 +16,25 @@ module Segment
       include Segment::Analytics::Utils
       include Segment::Analytics::Logging
 
+      RETRYABLE_4XX     = [408, 410, 429, 460].freeze
+      NON_RETRYABLE_5XX = [501, 505, 511].freeze
+
       def initialize(options = {})
         options[:host] ||= HOST
         options[:port] ||= PORT
-        options[:ssl] ||= SSL
+        options[:ssl]  ||= SSL
         @headers = options[:headers] || HEADERS
-        @path = options[:path] || PATH
+        @path    = options[:path]    || PATH
         @retries = options[:retries] || RETRIES
         @backoff_policy =
           options[:backoff_policy] || Segment::Analytics::BackoffPolicy.new
+
+        @max_total_backoff_duration = options[:max_total_backoff_duration] ||
+                                      MAX_TOTAL_BACKOFF_DURATION
+        @max_rate_limit_duration    = options[:max_rate_limit_duration] ||
+                                      MAX_RATE_LIMIT_DURATION
+        @rate_limit_retry_after_cap = options[:rate_limit_retry_after_cap] ||
+                                      RATE_LIMIT_RETRY_AFTER_CAP
 
         http = Net::HTTP.new(options[:host], options[:port])
         http.use_ssl = options[:ssl]
@@ -40,23 +50,68 @@ module Segment
       def send(write_key, batch)
         logger.debug("Sending request for #{batch.length} items")
 
-        last_response, exception = retry_with_backoff(@retries) do
-          status_code, body = send_request(write_key, batch)
-          error = JSON.parse(body)['error']
-          should_retry = should_retry_request?(status_code, body)
+        @backoff_policy.reset!
+
+        retry_count           = 0
+        retries_remaining     = @retries
+        backoff_start_time    = nil
+        rate_limit_start_time = nil
+
+        loop do
+          status_code, body, response_headers = send_request(write_key, batch, retry_count)
+          error = begin
+            JSON.parse(body)['error']
+          rescue StandardError
+            nil
+          end
           logger.debug("Response status code: #{status_code}")
           logger.debug("Response error: #{error}") if error
 
-          [Response.new(status_code, error), should_retry]
-        end
+          return Response.new(status_code, error) if success_status?(status_code)
 
-        if exception
-          logger.error(exception.message)
-          exception.backtrace.each { |line| logger.error(line) }
-          Response.new(-1, exception.to_s)
-        else
-          last_response
+          if status_code == 429
+            rate_limit_start_time ||= Time.now
+            if (Time.now - rate_limit_start_time) >= @max_rate_limit_duration
+              logger.error('Max rate limit duration exceeded for batch')
+              return Response.new(status_code, error)
+            end
+
+            retry_after = parse_retry_after(response_headers['retry-after'])
+            if retry_after
+              delay = [retry_after, @rate_limit_retry_after_cap].min
+              logger.debug("Rate limited with Retry-After: #{delay}s. Retrying after delay.")
+              sleep(delay)
+              retry_count += 1
+              next
+            end
+          end
+
+          unless retryable_status?(status_code)
+            logger.error(body)
+            return Response.new(status_code, error)
+          end
+
+          retries_remaining -= 1
+          if retries_remaining <= 0
+            logger.error('Retries exhausted for batch')
+            return Response.new(status_code, error)
+          end
+
+          backoff_start_time ||= Time.now
+          if (Time.now - backoff_start_time) >= @max_total_backoff_duration
+            logger.error('Max total backoff duration exceeded for batch')
+            return Response.new(status_code, error)
+          end
+
+          delay_ms = @backoff_policy.next_interval
+          logger.debug("Retrying request, #{retries_remaining} retries left. Waiting #{delay_ms}ms")
+          sleep(delay_ms.to_f / 1000)
+          retry_count += 1
         end
+      rescue StandardError => e
+        logger.error(e.message)
+        e.backtrace.each { |line| logger.error(line) }
+        Response.new(-1, e.to_s)
       end
 
       # Closes a persistent connection if it exists
@@ -66,65 +121,52 @@ module Segment
 
       private
 
-      def should_retry_request?(status_code, body)
-        if status_code >= 500
-          true # Server error
-        elsif status_code == 429
-          true # Rate limited
-        elsif status_code >= 400
-          logger.error(body)
-          false # Client error. Do not retry, but log
+      def success_status?(code)
+        code >= 200 && code < 400
+      end
+
+      def retryable_status?(code)
+        if code >= 500 && code < 600
+          !NON_RETRYABLE_5XX.include?(code)
         else
-          false
+          RETRYABLE_4XX.include?(code)
         end
       end
 
-      # Takes a block that returns [result, should_retry].
-      #
-      # Retries upto `retries_remaining` times, if `should_retry` is false or
-      # an exception is raised. `@backoff_policy` is used to determine the
-      # duration to sleep between attempts
-      #
-      # Returns [last_result, raised_exception]
-      def retry_with_backoff(retries_remaining, &block)
-        result, caught_exception = nil
-        should_retry = false
+      def parse_retry_after(value)
+        return nil if value.nil?
 
-        begin
-          result, should_retry = yield
-          return [result, nil] unless should_retry
-        rescue StandardError => e
-          should_retry = true
-          caught_exception = e
-        end
+        str = value.is_a?(Array) ? value.first : value
+        return nil if str.nil?
 
-        if should_retry && (retries_remaining > 1)
-          logger.debug("Retrying request, #{retries_remaining} retries left")
-          sleep(@backoff_policy.next_interval.to_f / 1000)
-          retry_with_backoff(retries_remaining - 1, &block)
-        else
-          [result, caught_exception]
-        end
+        str = str.strip
+        return nil unless str =~ /\A\d+\z/
+
+        seconds = str.to_i
+        seconds > 0 ? seconds : nil
       end
 
-      # Sends a request for the batch, returns [status_code, body]
-      def send_request(write_key, batch)
+      # Sends a request for the batch, returns [status_code, body, headers]
+      def send_request(write_key, batch, retry_count = 0)
         payload = JSON.generate(
           :sentAt => datetime_in_iso8601(Time.now),
           :batch => batch
         )
-        request = Net::HTTP::Post.new(@path, @headers)
+        headers = @headers.dup
+        headers['X-Retry-Count'] = retry_count.to_s if retry_count > 0
+
+        request = Net::HTTP::Post.new(@path, headers)
         request.basic_auth(write_key, nil)
 
         if self.class.stub
           logger.debug "stubbed request to #{@path}: " \
             "write key = #{write_key}, batch = #{JSON.generate(batch)}"
 
-          [200, '{}']
+          [200, '{}', {}]
         else
-          @http.start unless @http.started? # Maintain a persistent connection
+          @http.start unless @http.started?
           response = @http.request(request, payload)
-          [response.code.to_i, response.body]
+          [response.code.to_i, response.body, response.to_hash]
         end
       end
 
