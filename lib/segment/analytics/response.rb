@@ -14,7 +14,7 @@ module Segment
       end
 
       def success?
-        status >= 200 && status < 400
+        status >= 200 && status < 300
       end
     end
   end

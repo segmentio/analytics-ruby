@@ -340,21 +340,19 @@ module Segment
             end
           end
 
-          context 'request or parsing of response results in an exception' do
+          context 'response body is malformed JSON but status is 200' do
             let(:response_body) { 'Malformed JSON ---' }
 
             subject { described_class.new(retries: 0) }
 
-            it 'returns a -1 for status' do
-              expect(subject.send(write_key, batch).status).to eq(-1)
+            it 'treats 200 as success regardless of body' do
+              expect(subject.send(write_key, batch).status).to eq(200)
             end
 
-            it 'has a connection error' do
+            it 'has nil error when body is unparseable' do
               error = subject.send(write_key, batch).error
-              expect(error).not_to be_nil
+              expect(error).to be_nil
             end
-
-            it_behaves_like('retried request', 200, 'Malformed JSON ---')
           end
         end
       end

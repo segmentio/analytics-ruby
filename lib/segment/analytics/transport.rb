@@ -122,7 +122,7 @@ module Segment
       private
 
       def success_status?(code)
-        code >= 200 && code < 400
+        code >= 200 && code < 300
       end
 
       def retryable_status?(code)
