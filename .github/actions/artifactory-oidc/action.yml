@@ -1,0 +1,51 @@
+name: 'Artifactory OIDC Authentication'
+description: 'Exchanges a GitHub OIDC token for an Artifactory access token and configures Bundler to use the Artifactory RubyGems mirror.'
+
+inputs:
+  artifactory_url:
+    description: 'The base URL of the Artifactory instance (e.g., https://segment.jfrog.io)'
+    required: true
+
+outputs:
+  token:
+    description: 'The Artifactory access token'
+    value: ${{ steps.exchange.outputs.token }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Get OIDC token
+      id: oidc
+      shell: bash
+      run: |
+        OIDC_TOKEN=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+          "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=jfrog-github" | jq -r '.value')
+        echo "::add-mask::$OIDC_TOKEN"
+        echo "oidc_token=$OIDC_TOKEN" >> "$GITHUB_OUTPUT"
+
+    - name: Exchange for Artifactory token
+      id: exchange
+      shell: bash
+      env:
+        ARTIFACTORY_URL: ${{ inputs.artifactory_url }}
+      run: |
+        ART_TOKEN=$(curl -sS -X POST \
+          "${ARTIFACTORY_URL}/access/api/v1/oidc/token" \
+          -H "Content-Type: application/json" \
+          -d "{\"grant_type\": \"urn:ietf:params:oauth:grant-type:token-exchange\", \"subject_token\": \"${{ steps.oidc.outputs.oidc_token }}\", \"subject_token_type\": \"urn:ietf:params:oauth:token-type:id_token\", \"provider_name\": \"github\"}" \
+          | jq -r '.access_token')
+        echo "::add-mask::$ART_TOKEN"
+        echo "token=$ART_TOKEN" >> "$GITHUB_OUTPUT"
+
+    - name: Configure Bundler Artifactory mirror
+      shell: bash
+      env:
+        ART_TOKEN: ${{ steps.exchange.outputs.token }}
+        ARTIFACTORY_URL: ${{ inputs.artifactory_url }}
+      run: |
+        # Extract the hostname from the Artifactory URL
+        HOST=$(echo "$ARTIFACTORY_URL" | sed 's|https\?://||')
+
+        # Configure Bundler to mirror rubygems.org through Artifactory
+        bundle config mirror.https://rubygems.org "https://${HOST}/artifactory/api/gems/virtual-gems-thirdparty/"
+        bundle config "https://${HOST}/artifactory/api/gems/virtual-gems-thirdparty/" "${ART_TOKEN}"

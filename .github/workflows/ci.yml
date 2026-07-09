@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'ubuntu-x64' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@a2bbe5b1b236842c1cb7dd11e8e01a7b8b7f2007 # v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Authenticate with Artifactory
+        if: ${{ !github.event.pull_request.head.repo.fork }}
+        uses: ./.github/actions/artifactory-oidc
+        with:
+          artifactory_url: ${{ env.ARTIFACTORY_URL }}
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Run RuboCop
+        run: bundle exec rubocop
+
+  test:
+    name: Test (Ruby ${{ matrix.ruby-version }})
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'ubuntu-x64' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version: ['3.1', '3.2', '3.3']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@a2bbe5b1b236842c1cb7dd11e8e01a7b8b7f2007 # v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+
+      - name: Authenticate with Artifactory
+        if: ${{ !github.event.pull_request.head.repo.fork }}
+        uses: ./.github/actions/artifactory-oidc
+        with:
+          artifactory_url: ${{ env.ARTIFACTORY_URL }}
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Run tests
+        run: bundle exec rake
+
+  build:
+    name: Build
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'ubuntu-x64' }}
+    needs: [lint, test]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@a2bbe5b1b236842c1cb7dd11e8e01a7b8b7f2007 # v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Authenticate with Artifactory
+        if: ${{ !github.event.pull_request.head.repo.fork }}
+        uses: ./.github/actions/artifactory-oidc
+        with:
+          artifactory_url: ${{ env.ARTIFACTORY_URL }}
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Build gem
+        run: gem build analytics-ruby.gemspec
+
+      - name: Verify gem is installable
+        run: gem install ./analytics-ruby-*.gem
+
+      - name: Upload gem artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: analytics-ruby-gem
+          path: analytics-ruby-*.gem
+          if-no-files-found: error

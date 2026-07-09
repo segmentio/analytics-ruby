@@ -1,0 +1,62 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
+
+jobs:
+  test:
+    name: Verify
+    runs-on: ubuntu-x64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@a2bbe5b1b236842c1cb7dd11e8e01a7b8b7f2007 # v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Authenticate with Artifactory
+        uses: ./.github/actions/artifactory-oidc
+        with:
+          artifactory_url: ${{ env.ARTIFACTORY_URL }}
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Run tests
+        run: bundle exec rake
+
+  deploy:
+    name: Publish to RubyGems
+    runs-on: ubuntu-x64
+    needs: [test]
+    environment: rubygems
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@a2bbe5b1b236842c1cb7dd11e8e01a7b8b7f2007 # v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Build gem
+        run: gem build analytics-ruby.gemspec
+
+      - name: Publish to RubyGems (Trusted Publishing)
+        uses: rubygems/release-gem@612653d273a73bdba6a52d58baaac4a0d1aa8374 # v1
