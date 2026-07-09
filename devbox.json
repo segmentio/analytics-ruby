@@ -1,0 +1,31 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.14.2/.schema/devbox.schema.json",
+  "packages": {
+    "ruby": "3.2",
+    "bundler": "latest",
+    "jq": "latest"
+  },
+  "shell": {
+    "init_hook": [
+      "export PROJECT_ROOT=\"$(git rev-parse --show-toplevel 2>/dev/null || echo $DEVBOX_PROJECT_ROOT)\"",
+      "export GEM_HOME=\"$PROJECT_ROOT/.gem\"",
+      "export PATH=\"$GEM_HOME/bin:$PATH\"",
+      "if [ ! -f \"$PROJECT_ROOT/Gemfile.lock\" ] || [ \"$PROJECT_ROOT/Gemfile\" -nt \"$PROJECT_ROOT/Gemfile.lock\" ]; then echo 'Running bundle install...'; bundle install; fi"
+    ],
+    "scripts": {
+      "ci:install": ["bundle install"],
+      "check": [
+        "devbox run lint",
+        "devbox run test"
+      ],
+      "test": ["bundle exec rake spec"],
+      "lint": ["bundle exec rubocop"],
+      "build": [
+        "rm -f analytics-ruby-*.gem",
+        "gem build ./analytics-ruby.gemspec"
+      ],
+      "install": ["devbox run build", "gem install analytics-ruby-*.gem"],
+      "clean": ["rm -f analytics-ruby-*.gem", "rm -rf .gem", "rm -rf coverage"]
+    }
+  }
+}
