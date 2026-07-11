@@ -38,7 +38,10 @@ module Segment
       #
       def run
         until Thread.current[:should_exit]
-          return if @queue.empty?
+          if @queue.empty?
+            sleep(0.1)
+            next
+          end
 
           @lock.synchronize do
             consume_message_from_queue! until @batch.full? || @queue.empty?
