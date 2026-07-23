@@ -57,7 +57,8 @@ runs:
 
         if [ -z "$ART_TOKEN" ]; then
           echo "::error::OIDC token exchange failed."
-          echo "$RESP" | jq 'if .access_token then .access_token="<redacted>" else . end' 2>/dev/null || echo "$RESP"
+          echo "$RESP" | jq 'walk(if type == "object" then with_entries(if (.key | test("token"; "i")) then .value = "<redacted>" else . end) else . end)' 2>/dev/null \
+            || echo "::error::(response withheld — not valid JSON)"
           exit 1
         fi
         echo "::add-mask::$ART_TOKEN"
