@@ -1,0 +1,71 @@
+name: "Artifactory OIDC Auth"
+description: "Exchange GitHub OIDC token for Artifactory access token and configure Bundler"
+
+inputs:
+  artifactory-url:
+    description: "JFrog platform base URL. Falls back to ARTIFACTORY_URL env var."
+    required: false
+    default: ""
+  oidc-provider-name:
+    description: "OIDC provider name configured in Artifactory"
+    required: false
+    default: "github-actions-segmentio"
+  gems-repo:
+    description: "Artifactory virtual RubyGems repository name"
+    required: false
+    default: "virtual-gems-thirdparty"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Exchange GitHub OIDC token for Artifactory token
+      shell: bash
+      env:
+        INPUT_ARTIFACTORY_URL: ${{ inputs.artifactory-url }}
+        OIDC_PROVIDER_NAME: ${{ inputs.oidc-provider-name }}
+        GEMS_REPO: ${{ inputs.gems-repo }}
+      run: |
+        set -euo pipefail
+        ARTIFACTORY_URL="${INPUT_ARTIFACTORY_URL:-${ARTIFACTORY_URL:-}}"
+        if [ -z "${ARTIFACTORY_URL}" ]; then
+          echo "::error::ARTIFACTORY_URL is not set (pass as input or set as env var)"; exit 1
+        fi
+
+        OIDC_JWT=$(curl -sS \
+          "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${ARTIFACTORY_URL}" \
+          -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | jq -r '.value')
+
+        if [ -z "$OIDC_JWT" ] || [ "$OIDC_JWT" = "null" ]; then
+          echo "::error::Failed to obtain GitHub OIDC token"; exit 1
+        fi
+
+        decode_seg() { local s="${1}"; local m=$(( ${#s} % 4 )); [ $m -ne 0 ] && s="${s}$(printf '=%.0s' $(seq 1 $((4-m))))"; echo "$s" | tr '_-' '/+' | base64 -d 2>/dev/null; }
+        PAYLOAD=$(decode_seg "$(echo "$OIDC_JWT" | cut -d. -f2)")
+        echo "OIDC token claims:"
+        echo "  sub = $(echo "$PAYLOAD" | jq -r '.sub')"
+        echo "  aud = $(echo "$PAYLOAD" | jq -r '.aud')"
+        echo "  iss = $(echo "$PAYLOAD" | jq -r '.iss')"
+
+        RESP=$(curl -sS "${ARTIFACTORY_URL}/access/api/v1/oidc/token" \
+          -H 'Content-Type: application/json' \
+          -d "{\"grant_type\":\"urn:ietf:params:oauth:grant-type:token-exchange\",
+               \"subject_token_type\":\"urn:ietf:params:oauth:token-type:id_token\",
+               \"subject_token\":\"${OIDC_JWT}\",
+               \"provider_name\":\"${OIDC_PROVIDER_NAME}\"}")
+
+        ART_TOKEN=$(echo "$RESP" | jq -r '.access_token // empty')
+
+        if [ -z "$ART_TOKEN" ]; then
+          echo "::error::OIDC token exchange failed."
+          echo "$RESP" | jq 'walk(if type == "object" then with_entries(if (.key | test("token"; "i")) then .value = "<redacted>" else . end) else . end)' 2>/dev/null \
+            || echo "::error::(response withheld — not valid JSON)"
+          exit 1
+        fi
+        echo "::add-mask::$ART_TOKEN"
+
+        HOST=$(echo "${ARTIFACTORY_URL}" | sed -E 's#^https?://##')
+        MIRROR_URL="https://${HOST}/artifactory/api/gems/${GEMS_REPO}/"
+
+        bundle config mirror.https://rubygems.org "${MIRROR_URL}"
+        bundle config "https://${HOST}/artifactory/api/gems/${GEMS_REPO}/" ":${ART_TOKEN}"
+        echo "Configured Bundler to resolve through Artifactory (${GEMS_REPO})"

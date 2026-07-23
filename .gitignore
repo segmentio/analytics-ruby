@@ -1,4 +1,4 @@
 *.gem
-Gemfile.lock
 .ruby-version
 coverage/
+.claude/
