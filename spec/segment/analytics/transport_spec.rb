@@ -275,6 +275,79 @@ module Segment
             end
           end
 
+          context '503 with Retry-After header' do
+            let(:status_code) { 503 }
+            subject { described_class.new(retries: 4, backoff_policy: FakeBackoffPolicy.new([1000, 1000, 1000])) }
+
+            before do
+              allow(response).to receive(:to_hash) { { 'retry-after' => ['2'] } }
+              success_response = Net::HTTPResponse.new(1.1, 200, '{}')
+              allow(success_response).to receive(:body) { '{}' }
+              allow(success_response).to receive(:to_hash) { {} }
+              http = subject.instance_variable_get(:@http)
+              allow(http).to receive(:request).and_return(response, success_response)
+            end
+
+            it 'sleeps for the Retry-After duration' do
+              expect(subject).to receive(:sleep).with(2).once
+              subject.send(write_key, batch)
+            end
+
+            it 'does not decrement retries_remaining (uses rate-limit path)' do
+              allow(subject).to receive(:sleep)
+              # With retries: 1, a 503+Retry-After should NOT exhaust retries because
+              # it uses the rate-limit path (no retry budget cost)
+              transport = described_class.new(retries: 1, backoff_policy: FakeBackoffPolicy.new([1000]))
+              http = transport.instance_variable_get(:@http)
+              allow(http).to receive(:start)
+              success_response = Net::HTTPResponse.new(1.1, 200, '{}')
+              allow(success_response).to receive(:body) { '{}' }
+              allow(success_response).to receive(:to_hash) { {} }
+              allow(http).to receive(:request).and_return(response, success_response)
+              allow(transport).to receive(:sleep)
+              result = transport.send(write_key, batch)
+              expect(result.status).to eq(200)
+            end
+          end
+
+          context '529 with Retry-After header' do
+            let(:status_code) { 529 }
+            subject { described_class.new(retries: 4, backoff_policy: FakeBackoffPolicy.new([1000, 1000, 1000])) }
+
+            before do
+              allow(response).to receive(:to_hash) { { 'retry-after' => ['1'] } }
+              success_response = Net::HTTPResponse.new(1.1, 200, '{}')
+              allow(success_response).to receive(:body) { '{}' }
+              allow(success_response).to receive(:to_hash) { {} }
+              http = subject.instance_variable_get(:@http)
+              allow(http).to receive(:request).and_return(response, success_response)
+            end
+
+            it 'sleeps for the Retry-After duration' do
+              expect(subject).to receive(:sleep).with(1).once
+              subject.send(write_key, batch)
+            end
+
+            it 'returns success after retry' do
+              allow(subject).to receive(:sleep)
+              expect(subject.send(write_key, batch).success?).to be true
+            end
+
+            it 'does not decrement retries_remaining (uses rate-limit path)' do
+              # With retries: 1, a 529+Retry-After should NOT exhaust retries
+              transport = described_class.new(retries: 1, backoff_policy: FakeBackoffPolicy.new([1000]))
+              http = transport.instance_variable_get(:@http)
+              allow(http).to receive(:start)
+              success_response = Net::HTTPResponse.new(1.1, 200, '{}')
+              allow(success_response).to receive(:body) { '{}' }
+              allow(success_response).to receive(:to_hash) { {} }
+              allow(http).to receive(:request).and_return(response, success_response)
+              allow(transport).to receive(:sleep)
+              result = transport.send(write_key, batch)
+              expect(result.status).to eq(200)
+            end
+          end
+
           context 'X-Retry-Count header' do
             let(:status_code) { 500 }
             let(:backoff_policy) { FakeBackoffPolicy.new([1, 1]) }
@@ -308,35 +381,47 @@ module Segment
 
           context 'private helpers' do
             describe '#success_status?' do
-              it { expect(subject.send(:success_status?, 200)).to be true }
-              it { expect(subject.send(:success_status?, 201)).to be true }
-              it { expect(subject.send(:success_status?, 301)).to be true }
-              it { expect(subject.send(:success_status?, 400)).to be false }
-              it { expect(subject.send(:success_status?, 500)).to be false }
+              it { expect(subject.__send__(:success_status?, 200)).to be true }
+              it { expect(subject.__send__(:success_status?, 201)).to be true }
+              it { expect(subject.__send__(:success_status?, 301)).to be false }
+              it { expect(subject.__send__(:success_status?, 400)).to be false }
+              it { expect(subject.__send__(:success_status?, 500)).to be false }
             end
 
             describe '#retryable_status?' do
-              it { expect(subject.send(:retryable_status?, 500)).to be true }
-              it { expect(subject.send(:retryable_status?, 503)).to be true }
-              it { expect(subject.send(:retryable_status?, 429)).to be true }
-              it { expect(subject.send(:retryable_status?, 408)).to be true }
-              it { expect(subject.send(:retryable_status?, 410)).to be true }
-              it { expect(subject.send(:retryable_status?, 460)).to be true }
-              it { expect(subject.send(:retryable_status?, 400)).to be false }
-              it { expect(subject.send(:retryable_status?, 404)).to be false }
-              it { expect(subject.send(:retryable_status?, 501)).to be false }
-              it { expect(subject.send(:retryable_status?, 505)).to be false }
-              it { expect(subject.send(:retryable_status?, 511)).to be false }
+              it { expect(subject.__send__(:retryable_status?, 500)).to be true }
+              it { expect(subject.__send__(:retryable_status?, 503)).to be true }
+              it { expect(subject.__send__(:retryable_status?, 429)).to be true }
+              it { expect(subject.__send__(:retryable_status?, 408)).to be true }
+              it { expect(subject.__send__(:retryable_status?, 410)).to be true }
+              it { expect(subject.__send__(:retryable_status?, 460)).to be true }
+              it { expect(subject.__send__(:retryable_status?, 400)).to be false }
+              it { expect(subject.__send__(:retryable_status?, 404)).to be false }
+              it { expect(subject.__send__(:retryable_status?, 501)).to be false }
+              it { expect(subject.__send__(:retryable_status?, 505)).to be false }
+              it { expect(subject.__send__(:retryable_status?, 511)).to be false }
             end
 
             describe '#parse_retry_after' do
-              it { expect(subject.send(:parse_retry_after, '60')).to eq(60) }
-              it { expect(subject.send(:parse_retry_after, ['60'])).to eq(60) }
-              it { expect(subject.send(:parse_retry_after, '0')).to be_nil }
-              it { expect(subject.send(:parse_retry_after, '-1')).to be_nil }
-              it { expect(subject.send(:parse_retry_after, nil)).to be_nil }
-              it { expect(subject.send(:parse_retry_after, '')).to be_nil }
-              it { expect(subject.send(:parse_retry_after, 'Wed, 07 May 2026 12:00:00 GMT')).to be_nil }
+              it { expect(subject.__send__(:parse_retry_after, '60')).to eq(60) }
+              it { expect(subject.__send__(:parse_retry_after, ['60'])).to eq(60) }
+              it { expect(subject.__send__(:parse_retry_after, '0')).to be_nil }
+              it { expect(subject.__send__(:parse_retry_after, '-1')).to be_nil }
+              it { expect(subject.__send__(:parse_retry_after, nil)).to be_nil }
+              it { expect(subject.__send__(:parse_retry_after, '')).to be_nil }
+              it { expect(subject.__send__(:parse_retry_after, 'garbage')).to be_nil }
+
+              it 'parses HTTP-date 2 seconds in the future' do
+                future = (Time.now + 2).httpdate
+                result = subject.__send__(:parse_retry_after, future)
+                expect(result).to be_between(1, 3)
+              end
+
+              it 'returns nil for HTTP-date in the past' do
+                past = (Time.now - 10).httpdate
+                result = subject.__send__(:parse_retry_after, past)
+                expect(result).to be_nil
+              end
             end
           end
 

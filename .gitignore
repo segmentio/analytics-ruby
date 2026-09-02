@@ -2,3 +2,6 @@
 Gemfile.lock
 .ruby-version
 coverage/
+.bundle/
+vendor/
+*-plan.md

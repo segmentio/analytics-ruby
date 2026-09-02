@@ -8,6 +8,7 @@ require 'segment/analytics/backoff_policy'
 require 'net/http'
 require 'net/https'
 require 'json'
+require 'time'
 
 module Segment
   class Analytics
@@ -69,28 +70,27 @@ module Segment
 
           return Response.new(status_code, error) if success_status?(status_code)
 
-          if status_code == 429
-            rate_limit_start_time ||= Time.now
-            if (Time.now - rate_limit_start_time) >= @max_rate_limit_duration
-              logger.error('Max rate limit duration exceeded for batch')
-              return Response.new(status_code, error)
-            end
-
-            retry_after = parse_retry_after(response_headers['retry-after'])
-            if retry_after
-              delay = [retry_after, @rate_limit_retry_after_cap].min
-              logger.debug("Rate limited with Retry-After: #{delay}s. Retrying after delay.")
-              sleep(delay)
-              retry_count += 1
-              next
-            end
-          end
-
           unless retryable_status?(status_code)
             logger.error(body)
             return Response.new(status_code, error)
           end
 
+          # Any retryable status with Retry-After: use rate-limit path (no retry budget cost)
+          retry_after = parse_retry_after(response_headers['retry-after'])
+          if retry_after
+            rate_limit_start_time ||= Time.now
+            if (Time.now - rate_limit_start_time) >= @max_rate_limit_duration
+              logger.error('Max rate limit duration exceeded for batch')
+              return Response.new(status_code, error)
+            end
+            delay = [retry_after, @rate_limit_retry_after_cap].min
+            logger.debug("Retry-After: #{delay}s on #{status_code}. Retrying after delay.")
+            sleep(delay)
+            retry_count += 1
+            next
+          end
+
+          # No Retry-After: counted backoff
           retries_remaining -= 1
           if retries_remaining <= 0
             logger.error('Retries exhausted for batch')
@@ -140,10 +140,21 @@ module Segment
         return nil if str.nil?
 
         str = str.strip
-        return nil unless str =~ /\A\d+\z/
 
-        seconds = str.to_i
-        seconds > 0 ? seconds : nil
+        # Try integer seconds
+        if str =~ /\A\d+\z/
+          seconds = str.to_i
+          return seconds > 0 ? seconds : nil
+        end
+
+        # Try HTTP-date (RFC 7231 S7.1.1.1)
+        begin
+          target = Time.httpdate(str)
+          seconds = (target - Time.now).to_i
+          return seconds > 0 ? seconds : nil
+        rescue ArgumentError
+          nil
+        end
       end
 
       # Sends a request for the batch, returns [status_code, body, headers]
