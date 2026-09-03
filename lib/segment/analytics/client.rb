@@ -32,7 +32,14 @@ module Segment
 
         check_write_key!
 
-        at_exit { @worker_thread && @worker_thread[:should_exit] = true }
+        at_exit do
+          if @worker_thread
+            @worker_thread[:should_exit] = true
+            # Break any Retry-After or backoff sleep so shutdown is not held for
+            # up to rate_limit_retry_after_cap seconds.
+            @worker_thread.wakeup if @worker_thread.alive?
+          end
+        end
       end
 
       # Synchronously waits until the worker has flushed the queue.
