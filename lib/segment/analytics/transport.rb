@@ -51,15 +51,50 @@ module Segment
       def send(write_key, batch)
         logger.debug("Sending request for #{batch.length} items")
 
-        @backoff_policy.reset!
+        @backoff_policy.reset! if @backoff_policy.respond_to?(:reset!)
 
         retry_count           = 0
         retries_remaining     = @retries
         backoff_start_time    = nil
         rate_limit_start_time = nil
 
+        # Returns a Response when the batch should be abandoned, or nil to retry.
+        consume_backoff = lambda do |response_error, response_status|
+          retries_remaining -= 1
+          if retries_remaining <= 0
+            logger.error('Retries exhausted for batch')
+            next Response.new(response_status, response_error)
+          end
+
+          backoff_start_time ||= Time.now
+          if (Time.now - backoff_start_time) >= @max_total_backoff_duration
+            logger.error('Max total backoff duration exceeded for batch')
+            next Response.new(response_status, response_error)
+          end
+
+          delay_ms = @backoff_policy.next_interval
+          logger.debug("Retrying request, #{retries_remaining} retries left. Waiting #{delay_ms}ms")
+          sleep(delay_ms.to_f / 1000)
+          next Response.new(response_status, response_error) if Thread.current[:should_exit]
+
+          retry_count += 1
+          nil
+        end
+
         loop do
-          status_code, body, response_headers = send_request(write_key, batch, retry_count)
+          begin
+            status_code, body, response_headers = send_request(write_key, batch, retry_count)
+          rescue StandardError => e
+            # Connection reset, DNS failure, read timeout and friends. These were
+            # retried before this branch was refactored; they still are, on the
+            # counted backoff budget rather than for free.
+            logger.error("Network error: #{e.message}")
+            give_up = consume_backoff.call(e.to_s, -1)
+            return give_up if give_up
+
+            next
+          end
+
           error = begin
             JSON.parse(body)['error']
           rescue StandardError
@@ -86,27 +121,16 @@ module Segment
             delay = [retry_after, @rate_limit_retry_after_cap].min
             logger.debug("Retry-After: #{delay}s on #{status_code}. Retrying after delay.")
             sleep(delay)
+            # Client#shutdown wakes this thread, so the sleep above returns early.
+            return Response.new(status_code, error) if Thread.current[:should_exit]
+
             retry_count += 1
             next
           end
 
           # No Retry-After: counted backoff
-          retries_remaining -= 1
-          if retries_remaining <= 0
-            logger.error('Retries exhausted for batch')
-            return Response.new(status_code, error)
-          end
-
-          backoff_start_time ||= Time.now
-          if (Time.now - backoff_start_time) >= @max_total_backoff_duration
-            logger.error('Max total backoff duration exceeded for batch')
-            return Response.new(status_code, error)
-          end
-
-          delay_ms = @backoff_policy.next_interval
-          logger.debug("Retrying request, #{retries_remaining} retries left. Waiting #{delay_ms}ms")
-          sleep(delay_ms.to_f / 1000)
-          retry_count += 1
+          give_up = consume_backoff.call(error, status_code)
+          return give_up if give_up
         end
       rescue StandardError => e
         logger.error(e.message)
@@ -122,7 +146,8 @@ module Segment
       private
 
       def success_status?(code)
-        code >= 200 && code < 300
+        # Spec item 1: 2xx and 3xx are success.
+        code >= 200 && code < 400
       end
 
       def retryable_status?(code)

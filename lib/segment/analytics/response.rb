@@ -14,7 +14,8 @@ module Segment
       end
 
       def success?
-        status >= 200 && status < 300
+        # Spec item 1: 2xx and 3xx are success.
+        status >= 200 && status < 400
       end
     end
   end

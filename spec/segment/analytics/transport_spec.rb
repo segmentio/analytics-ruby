@@ -379,11 +379,47 @@ module Segment
             end
           end
 
+          context 'transient network error' do
+            it 'retries the request instead of dropping the batch' do
+              success_response = Net::HTTPResponse.new(1.1, 200, '{}')
+              allow(success_response).to receive(:body) { '{}' }
+              allow(success_response).to receive(:to_hash) { {} }
+
+              http = subject.instance_variable_get(:@http)
+              calls = 0
+              allow(http).to receive(:request) do
+                calls += 1
+                raise Errno::ECONNRESET, 'reset' if calls == 1
+
+                success_response
+              end
+              allow(subject).to receive(:sleep)
+
+              response = subject.send(write_key, batch)
+
+              expect(calls).to eq(2)
+              expect(response.status).to eq(200)
+            end
+
+            it 'gives up once the retry budget is spent' do
+              http = subject.instance_variable_get(:@http)
+              allow(http).to receive(:request).and_raise(Errno::ECONNRESET, 'reset')
+              allow(subject).to receive(:sleep)
+
+              response = subject.send(write_key, batch)
+
+              expect(response.status).to eq(-1)
+              expect(response.error).to match(/reset/)
+            end
+          end
+
           context 'private helpers' do
             describe '#success_status?' do
               it { expect(subject.__send__(:success_status?, 200)).to be true }
               it { expect(subject.__send__(:success_status?, 201)).to be true }
-              it { expect(subject.__send__(:success_status?, 301)).to be false }
+              # Spec item 1: 2xx and 3xx are success.
+              it { expect(subject.__send__(:success_status?, 301)).to be true }
+              it { expect(subject.__send__(:success_status?, 304)).to be true }
               it { expect(subject.__send__(:success_status?, 400)).to be false }
               it { expect(subject.__send__(:success_status?, 500)).to be false }
             end
