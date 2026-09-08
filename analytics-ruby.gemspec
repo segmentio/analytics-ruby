@@ -24,7 +24,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'tzinfo', '~> 1.2'
   spec.add_development_dependency 'activesupport', '~> 5.2.0'
   if RUBY_PLATFORM != 'java'
-    spec.add_development_dependency 'oj', '~> 3.6.2'
+    spec.add_development_dependency 'oj', '~> 3.6'
   end
   spec.add_development_dependency 'rubocop', '~> 1.0'
 end
