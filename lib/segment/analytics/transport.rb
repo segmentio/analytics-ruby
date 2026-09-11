@@ -85,9 +85,8 @@ module Segment
           begin
             status_code, body, response_headers = send_request(write_key, batch, retry_count)
           rescue StandardError => e
-            # Connection reset, DNS failure, read timeout and friends. These were
-            # retried before this branch was refactored; they still are, on the
-            # counted backoff budget rather than for free.
+            # Connection reset, DNS failure, read timeout and friends. Retried on
+            # the counted backoff budget, like a retryable status code.
             logger.error("Network error: #{e.message}")
             give_up = consume_backoff.call(e.to_s, -1)
             return give_up if give_up
