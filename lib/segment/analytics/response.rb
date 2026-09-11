@@ -12,6 +12,11 @@ module Segment
         @status = status
         @error  = error
       end
+
+      def success?
+        # Spec item 1: 2xx and 3xx are success.
+        status >= 200 && status < 400
+      end
     end
   end
 end

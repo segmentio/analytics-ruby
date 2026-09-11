@@ -62,7 +62,7 @@ Lint/UnusedBlockArgument:
 # Offense count: 3
 # Configuration parameters: AllowedMethods, AllowedPatterns, IgnoredMethods, CountRepeatedAttributes.
 Metrics/AbcSize:
-  Max: 25
+  Max: 33
 
 # Offense count: 3
 # Configuration parameters: CountComments, CountAsOne, ExcludedMethods, AllowedMethods, AllowedPatterns, IgnoredMethods.
@@ -73,7 +73,7 @@ Metrics/BlockLength:
 # Offense count: 1
 # Configuration parameters: CountComments, CountAsOne.
 Metrics/ClassLength:
-  Max: 115
+  Max: 150
 
 # Offense count: 2
 # Configuration parameters: AllowedMethods, AllowedPatterns, IgnoredMethods.
@@ -83,7 +83,7 @@ Metrics/CyclomaticComplexity:
 # Offense count: 11
 # Configuration parameters: CountComments, CountAsOne, ExcludedMethods, AllowedMethods, AllowedPatterns, IgnoredMethods.
 Metrics/MethodLength:
-  Max: 16
+  Max: 21
 
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).

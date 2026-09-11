@@ -67,6 +67,28 @@ module Segment
         end
       end
 
+      describe '#reset!' do
+        it 'resets attempts to 0' do
+          subject.next_interval
+          subject.next_interval
+          subject.next_interval
+          subject.reset!
+          expect(subject.instance_variable_get(:@attempts)).to eq(0)
+        end
+
+        it 'causes next_interval to restart from minimum' do
+          subject_with_params = described_class.new(
+            min_timeout_ms: 1000,
+            max_timeout_ms: 10000,
+            multiplier: 2,
+            randomization_factor: 0.5
+          )
+          3.times { subject_with_params.next_interval }
+          subject_with_params.reset!
+          expect(subject_with_params.next_interval).to be_within(500).of(1000)
+        end
+      end
+
       describe '#next_interval' do
         subject {
           described_class.new(
