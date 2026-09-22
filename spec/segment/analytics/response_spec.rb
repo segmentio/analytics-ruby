@@ -17,8 +17,10 @@ module Segment
         it { expect(described_class.new(200, nil).success?).to be true }
         it { expect(described_class.new(201, nil).success?).to be true }
         it { expect(described_class.new(204, nil).success?).to be true }
-        it { expect(described_class.new(301, nil).success?).to be true }
-        it { expect(described_class.new(302, nil).success?).to be true }
+        it { expect(described_class.new(300, nil).success?).to be false }
+        it { expect(described_class.new(301, nil).success?).to be false }
+        it { expect(described_class.new(302, nil).success?).to be false }
+        it { expect(described_class.new(304, nil).success?).to be false }
         it { expect(described_class.new(400, nil).success?).to be false }
         it { expect(described_class.new(429, nil).success?).to be false }
         it { expect(described_class.new(500, nil).success?).to be false }

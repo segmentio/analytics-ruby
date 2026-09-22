@@ -205,11 +205,13 @@ module Segment
             end
           end
 
-          context '3xx is treated as success' do
+          context '3xx is not retried and is not success' do
             let(:status_code) { 301 }
-            it 'returns status without retrying' do
+            it 'returns the status without retrying, and does not report success' do
               expect(subject).not_to receive(:sleep)
-              expect(subject.send(write_key, batch).status).to eq(301)
+              response = subject.send(write_key, batch)
+              expect(response.status).to eq(301)
+              expect(response.success?).to be false
             end
           end
 
@@ -417,9 +419,10 @@ module Segment
             describe '#success_status?' do
               it { expect(subject.__send__(:success_status?, 200)).to be true }
               it { expect(subject.__send__(:success_status?, 201)).to be true }
-              # Spec item 1: 2xx and 3xx are success.
-              it { expect(subject.__send__(:success_status?, 301)).to be true }
-              it { expect(subject.__send__(:success_status?, 304)).to be true }
+              # Only 2xx: Net::HTTP does not follow redirects, so a 3xx means
+              # nothing was uploaded.
+              it { expect(subject.__send__(:success_status?, 301)).to be false }
+              it { expect(subject.__send__(:success_status?, 304)).to be false }
               it { expect(subject.__send__(:success_status?, 400)).to be false }
               it { expect(subject.__send__(:success_status?, 500)).to be false }
             end

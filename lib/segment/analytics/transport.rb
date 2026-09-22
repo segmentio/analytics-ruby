@@ -81,7 +81,13 @@ module Segment
         return Response.new(status_code, error) if success_status?(status_code)
         return nil if retryable_status?(status_code)
 
-        logger.error(body)
+        if status_code >= 300 && status_code < 400
+          # Logging the body here would be useless: a redirect has none.
+          logger.error("Unexpected redirect (#{status_code}); batch not uploaded. " \
+                       'Check whether the configured host points at a proxy or redirector.')
+        else
+          logger.error(body)
+        end
         Response.new(status_code, error)
       end
 
@@ -144,9 +150,10 @@ module Segment
         nil
       end
 
+      # Only 2xx. Net::HTTP does not follow redirects, so a 3xx means nothing was
+      # uploaded; calling it success would drop the batch silently.
       def success_status?(code)
-        # Spec item 1: 2xx and 3xx are success.
-        code >= 200 && code < 400
+        code >= 200 && code < 300
       end
 
       def retryable_status?(code)
