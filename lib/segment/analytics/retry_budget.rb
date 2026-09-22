@@ -33,7 +33,7 @@ module Segment
         @retries_remaining -= 1
         return spent('Retries exhausted for batch') if @retries_remaining <= 0
 
-        @backoff_start_time ||= Time.now
+        @backoff_start_time ||= monotonic_now
         return spent('Max total backoff duration exceeded for batch') if elapsed?(@backoff_start_time, @max_total_backoff_duration)
 
         delay_ms = @backoff_policy.next_interval
@@ -42,7 +42,7 @@ module Segment
       end
 
       def next_rate_limit_delay(retry_after, status_code)
-        @rate_limit_start_time ||= Time.now
+        @rate_limit_start_time ||= monotonic_now
         return spent('Max rate limit duration exceeded for batch') if elapsed?(@rate_limit_start_time, @max_rate_limit_duration)
 
         delay = [retry_after, @rate_limit_retry_after_cap].min
@@ -57,7 +57,12 @@ module Segment
       private
 
       def elapsed?(start_time, limit)
-        (Time.now - start_time) >= limit
+        (monotonic_now - start_time) >= limit
+      end
+
+      # Wall-clock time can jump; these budgets must not expire or stretch with it.
+      def monotonic_now
+        Process.clock_gettime(Process::CLOCK_MONOTONIC)
       end
 
       def spent(message)

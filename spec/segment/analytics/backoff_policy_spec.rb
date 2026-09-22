@@ -106,9 +106,18 @@ module Segment
           expect(subject.next_interval).to be_within(4000).of(8000)
         end
 
-        it 'caps maximum duration at max_timeout_secs' do
+        it 'never exceeds max_timeout_ms once the ceiling is reached' do
           10.times { subject.next_interval }
-          expect(subject.next_interval).to eq(10000)
+          20.times do
+            expect(subject.next_interval).to be <= 10000
+          end
+        end
+
+        it 'jitters at the ceiling instead of returning a fixed value' do
+          10.times { subject.next_interval }
+          intervals = Array.new(20) { subject.next_interval }
+          expect(intervals.uniq.size).to be > 1
+          expect(intervals.min).to be >= 5000
         end
       end
     end
