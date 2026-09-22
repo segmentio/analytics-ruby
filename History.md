@@ -1,3 +1,25 @@
+Unreleased
+==========
+
+### Upgrade note: new request header and proxy allowlists
+
+This release sends an `X-Retry-Count` request header on retries. If your
+traffic to Segment goes through a proxy, gateway or WAF that allowlists
+request headers, add it before upgrading or retried uploads will be
+rejected. The `Authorization` header is unchanged: this client has always
+sent the write key as HTTP Basic credentials.
+
+* Send `X-Retry-Count` on retries, so the server can distinguish a retry from a first attempt. Omitted on the first attempt.
+* Unified retry handling: 429, 408, 410, 460 and 5xx (except 501, 505 and 511) are retried. `Retry-After` is honoured on all of them, not just 429, which brings 529 in through the generic 5xx rule.
+* `Retry-After` accepts numeric seconds and the RFC 7231 HTTP-date formats, capped at 300s (`rate_limit_retry_after_cap`).
+* Rate-limited retries are bounded by elapsed time rather than counted against the retry limit, so a long `Retry-After` no longer exhausts the budget.
+* New options `max_total_backoff_duration` and `max_rate_limit_duration` (default 12 hours each) bound the two waits.
+* Only 2xx responses count as a successful upload. A 3xx is now logged and retried rather than silently treated as delivered; the Segment endpoint does not redirect, so this only affects custom `host` values.
+* Network errors are retried on the same backoff schedule as failed responses instead of dropping the batch.
+* Backoff waits no longer block shutdown for the full delay.
+* Retry timing uses a monotonic clock, so a system clock change cannot stretch or collapse a backoff.
+* Backoff intervals are now jittered at the ceiling as well, so clients that back off together do not retry in lockstep.
+
 2.5.0 / 2024-07-17
 ==================
 
