@@ -14,7 +14,7 @@ sent the write key as HTTP Basic credentials.
 * `Retry-After` accepts numeric seconds and the RFC 7231 HTTP-date formats, capped at 300s (`rate_limit_retry_after_cap`).
 * Rate-limited retries are bounded by elapsed time rather than counted against the retry limit, so a long `Retry-After` no longer exhausts the budget.
 * New options `max_total_backoff_duration` and `max_rate_limit_duration` (default 12 hours each) bound the two waits.
-* Only 2xx responses count as a successful upload. A 3xx is now logged and retried rather than silently treated as delivered; the Segment endpoint does not redirect, so this only affects custom `host` values.
+* Only 2xx responses count as a successful upload. A 3xx is now reported as a failed upload rather than silently treated as delivered. It is not retried: a redirect `Net::HTTP` already declined to follow will not succeed on a retry. The Segment endpoint does not redirect, so this only affects custom `host` values.
 * Network errors are retried on the same backoff schedule as failed responses instead of dropping the batch.
 * Backoff waits no longer block shutdown for the full delay.
 * Retry timing uses a monotonic clock, so a system clock change cannot stretch or collapse a backoff.
