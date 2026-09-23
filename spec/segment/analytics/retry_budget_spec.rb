@@ -34,6 +34,52 @@ module Segment
           expect(delay).to be <= 2
         end
 
+        it 'never returns a negative delay when the budget has just run out' do
+          subject = budget(10)
+          subject.instance_variable_set(
+            :@rate_limit_start_time,
+            Process.clock_gettime(Process::CLOCK_MONOTONIC) -
+              Defaults::Request::MAX_RATE_LIMIT_DURATION
+          )
+
+          expect(subject.next_rate_limit_delay(60, 429)).to be_nil
+        end
+
+        it 'cannot return a negative delay if the budget expires mid-calculation' do
+          # Kernel#sleep raises ArgumentError on a negative interval rather than
+          # returning, so reading the clock once for the budget test and again for
+          # the delay lets the budget expire between them and crashes the worker.
+          # The stubbed clock advances past the budget on the later reading, which
+          # only a single-reading implementation is immune to.
+          budget_s = Defaults::Request::MAX_RATE_LIMIT_DURATION
+          start = 1000.0
+          subject = budget(10)
+          allow(subject).to receive(:monotonic_now).and_return(
+            start, # episode start
+            start + budget_s - 0.001, # a budget test, just inside
+            start + budget_s + 0.001  # any later reading, just outside
+          )
+
+          delay = subject.next_rate_limit_delay(60, 429)
+
+          expect(delay.nil? || delay >= 0).to be(true),
+                                              "returned #{delay.inspect}, which sleep would reject"
+        end
+
+        it 'returns a small positive delay at the very edge of the budget' do
+          subject = budget(10)
+          subject.instance_variable_set(
+            :@rate_limit_start_time,
+            Process.clock_gettime(Process::CLOCK_MONOTONIC) -
+              (Defaults::Request::MAX_RATE_LIMIT_DURATION - 0.5)
+          )
+
+          delay = subject.next_rate_limit_delay(60, 429)
+
+          expect(delay).to be > 0
+          expect(delay).to be <= 0.5
+        end
+
         it 'clamps the delay to the Retry-After cap' do
           expect(budget(10).next_rate_limit_delay(600, 429)).to eq(60)
         end

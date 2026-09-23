@@ -47,12 +47,17 @@ module Segment
 
       def next_rate_limit_delay(retry_after, status_code)
         @rate_limit_start_time ||= monotonic_now
-        return spent('Max rate limit duration exceeded for batch') if elapsed?(@rate_limit_start_time, @max_rate_limit_duration)
 
-        # Clamped to what is left of the budget as well as to the cap: the elapsed
-        # check above runs before the wait, so without this a check passing just
-        # inside the budget would sleep a full Retry-After on top and overshoot it.
+        # One clock reading serves both the budget test and the delay below. Reading
+        # it twice lets the budget expire between them, which yields a negative
+        # remaining and a negative delay — and Kernel#sleep raises ArgumentError on
+        # one rather than returning immediately.
         remaining = @max_rate_limit_duration - (monotonic_now - @rate_limit_start_time)
+        return spent('Max rate limit duration exceeded for batch') if remaining <= 0
+
+        # Clamped to what is left of the budget as well as to the cap: the check
+        # above runs before the wait, so without this a check passing just inside
+        # the budget would sleep a full Retry-After on top and overshoot it.
         delay = [retry_after, @rate_limit_retry_after_cap, remaining].min
         @logger.debug("Retry-After: #{delay}s on #{status_code}. Retrying after delay.")
         delay
