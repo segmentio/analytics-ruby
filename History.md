@@ -19,6 +19,8 @@ sent the write key as HTTP Basic credentials.
 * Backoff waits no longer block shutdown for the full delay.
 * Retry timing uses a monotonic clock, so a system clock change cannot stretch or collapse a backoff.
 * Backoff intervals are now jittered at the ceiling as well, so clients that back off together do not retry in lockstep.
+* **Default backoff pacing changed**: the base wait is 500ms (was 100ms), the ceiling is 60s (was 10s), and the multiplier is 2 (was 1.5). This aligns ruby with the other Segment SDKs, but it does mean a retry schedule that was previously 100ms, 150ms, 225ms… now starts at 500ms and climbs faster. Set `min_timeout_ms`, `max_timeout_ms` and `multiplier` on a `BackoffPolicy` to keep the old pacing.
+* A `backoff_policy` supplied by the caller that does not implement `reset!` now logs a warning. One policy instance serves every batch, so without `reset!` its attempt count accumulates and retries get slower the longer the process runs.
 * Fix `retries` granting one fewer attempt than configured. A configured 10 performed 9, and `retries: 1` performed none at all.
 
 2.5.0 / 2024-07-17

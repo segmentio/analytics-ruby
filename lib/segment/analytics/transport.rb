@@ -104,6 +104,19 @@ module Segment
         @retries = options[:retries] || RETRIES
         @backoff_policy =
           options[:backoff_policy] || Segment::Analytics::BackoffPolicy.new
+
+        # One policy instance serves every batch, so it has to be reset between
+        # them or attempt counts accumulate and each batch starts where the last
+        # one left off. reset! is not part of the older documented contract, which
+        # was next_interval alone, so a policy predating it still works — but it
+        # keeps that accumulation, and silently. Say so rather than letting an
+        # integrator find it as "retries get slower the longer we run".
+        unless @backoff_policy.respond_to?(:reset!)
+          logger.warn(
+            'backoff_policy does not implement reset!; attempt counts will ' \
+            'accumulate across batches. Add a reset! method that clears them.'
+          )
+        end
         @max_total_backoff_duration = options[:max_total_backoff_duration] ||
                                       MAX_TOTAL_BACKOFF_DURATION
         @max_rate_limit_duration    = options[:max_rate_limit_duration] ||

@@ -482,6 +482,31 @@ module Segment
         end
       end
 
+      describe 'a backoff_policy without reset!' do
+        # One policy instance serves every batch, so a policy predating reset!
+        # keeps accumulating attempts and gets slower the longer a process runs.
+        let(:legacy_policy) do
+          Class.new do
+            def next_interval
+              1
+            end
+          end.new
+        end
+
+        it 'warns that attempt counts will accumulate across batches' do
+          expect(legacy_policy).not_to respond_to(:reset!)
+          expect(Segment::Analytics::Logging.logger).to receive(:warn).with(/reset!/)
+
+          described_class.new(:backoff_policy => legacy_policy)
+        end
+
+        it 'stays quiet for a policy that implements it' do
+          expect(Segment::Analytics::Logging.logger).not_to receive(:warn)
+
+          described_class.new(:backoff_policy => Segment::Analytics::BackoffPolicy.new)
+        end
+      end
+
       describe '#interruptible_sleep' do
         subject { described_class.new }
 
