@@ -12,6 +12,9 @@ module Segment
                     'Content-Type' => 'application/json',
                     'User-Agent' => "analytics-ruby/#{Analytics::VERSION}" }
         RETRIES = 10
+        MAX_TOTAL_BACKOFF_DURATION = 43_200  # 12 hours in seconds
+        MAX_RATE_LIMIT_DURATION    = 43_200  # 12 hours in seconds
+        RATE_LIMIT_RETRY_AFTER_CAP = 300     # seconds
       end
 
       module Queue
@@ -28,9 +31,9 @@ module Segment
       end
 
       module BackoffPolicy
-        MIN_TIMEOUT_MS = 100
-        MAX_TIMEOUT_MS = 10000
-        MULTIPLIER = 1.5
+        MIN_TIMEOUT_MS = 500
+        MAX_TIMEOUT_MS = 60_000
+        MULTIPLIER = 2
         RANDOMIZATION_FACTOR = 0.5
       end
     end

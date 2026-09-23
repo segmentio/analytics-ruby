@@ -114,6 +114,8 @@ class FakeBackoffPolicy
     raise 'FakeBackoffPolicy has no values left' if @interval_values.empty?
     @interval_values.shift
   end
+
+  def reset!; end
 end
 
 # usage:
