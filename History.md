@@ -1,6 +1,9 @@
 Unreleased
 ==========
 
+* `max_rate_limit_duration` now defaults to 5 minutes rather than 12 hours, and `rate_limit_retry_after_cap` to 60s rather than 300s. The 12 hour value was a backstop meant to be unreachable, but rate-limited attempts are deliberately uncounted, so it was the only limit on that path — and with a single worker thread a stuck batch stalled all delivery, filled the 10,000-message queue and blocked `flush` for the same period. Five minutes matches the counted path's ~4 minute worst case.
+* The rate-limit delay is clamped to the remaining budget. The elapsed check runs before the wait, so a check passing just inside the budget previously slept a full `Retry-After` on top.
+
 ### Upgrade note: new request header and proxy allowlists
 
 This release sends an `X-Retry-Count` request header on retries. If your

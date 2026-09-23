@@ -11,11 +11,32 @@ module Segment
         described_class.new(
           :retries => retries,
           :backoff_policy => FakeBackoffPolicy.new(intervals || Array.new(retries, 1000)),
-          :max_total_backoff_duration => 43_200,
-          :max_rate_limit_duration => 43_200,
-          :rate_limit_retry_after_cap => 300,
+          :max_total_backoff_duration => Defaults::Request::MAX_TOTAL_BACKOFF_DURATION,
+          :max_rate_limit_duration => Defaults::Request::MAX_RATE_LIMIT_DURATION,
+          :rate_limit_retry_after_cap => Defaults::Request::RATE_LIMIT_RETRY_AFTER_CAP,
           :logger => logger
         )
+      end
+
+      describe '#next_rate_limit_delay' do
+        it 'clamps the delay to what is left of the budget' do
+          # The elapsed check runs before the wait, so without clamping a check
+          # passing just inside the budget sleeps a full Retry-After on top — at a
+          # 5 minute budget that doubles the bound rather than rounding it.
+          subject = budget(10)
+          subject.instance_variable_set(
+            :@rate_limit_start_time,
+            Process.clock_gettime(Process::CLOCK_MONOTONIC) - 299
+          )
+
+          delay = subject.next_rate_limit_delay(60, 429)
+
+          expect(delay).to be <= 2
+        end
+
+        it 'clamps the delay to the Retry-After cap' do
+          expect(budget(10).next_rate_limit_delay(600, 429)).to eq(60)
+        end
       end
 
       describe '#next_backoff_delay' do

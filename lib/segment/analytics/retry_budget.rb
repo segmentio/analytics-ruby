@@ -49,7 +49,11 @@ module Segment
         @rate_limit_start_time ||= monotonic_now
         return spent('Max rate limit duration exceeded for batch') if elapsed?(@rate_limit_start_time, @max_rate_limit_duration)
 
-        delay = [retry_after, @rate_limit_retry_after_cap].min
+        # Clamped to what is left of the budget as well as to the cap: the elapsed
+        # check above runs before the wait, so without this a check passing just
+        # inside the budget would sleep a full Retry-After on top and overshoot it.
+        remaining = @max_rate_limit_duration - (monotonic_now - @rate_limit_start_time)
+        delay = [retry_after, @rate_limit_retry_after_cap, remaining].min
         @logger.debug("Retry-After: #{delay}s on #{status_code}. Retrying after delay.")
         delay
       end
