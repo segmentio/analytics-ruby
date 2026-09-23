@@ -30,8 +30,12 @@ module Segment
       end
 
       def next_backoff_delay
-        @retries_remaining -= 1
+        # Checked before the decrement: decrementing first spent one retry on the
+        # exhaustion test itself, so a configured N only ever performed N-1, and
+        # retries: 1 and retries: 0 were indistinguishable.
         return spent('Retries exhausted for batch') if @retries_remaining <= 0
+
+        @retries_remaining -= 1
 
         @backoff_start_time ||= monotonic_now
         return spent('Max total backoff duration exceeded for batch') if elapsed?(@backoff_start_time, @max_total_backoff_duration)

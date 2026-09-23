@@ -19,6 +19,7 @@ sent the write key as HTTP Basic credentials.
 * Backoff waits no longer block shutdown for the full delay.
 * Retry timing uses a monotonic clock, so a system clock change cannot stretch or collapse a backoff.
 * Backoff intervals are now jittered at the ceiling as well, so clients that back off together do not retry in lockstep.
+* Fix `retries` granting one fewer attempt than configured. A configured 10 performed 9, and `retries: 1` performed none at all.
 
 2.5.0 / 2024-07-17
 ==================

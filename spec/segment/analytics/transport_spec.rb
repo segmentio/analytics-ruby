@@ -163,7 +163,7 @@ module Segment
             let(:status_code) { status_code }
             let(:body) { body }
             let(:retries) { 4 }
-            let(:backoff_policy) { FakeBackoffPolicy.new([1000, 1000, 1000]) }
+            let(:backoff_policy) { FakeBackoffPolicy.new([1000, 1000, 1000, 1000]) }
             subject {
               described_class.new(retries: retries,
                                   backoff_policy: backoff_policy)
@@ -171,10 +171,10 @@ module Segment
 
             it 'retries the request' do
               expect(subject)
-                .to receive(:sleep)
-                .exactly(retries - 1).times
+                .to receive(:interruptible_sleep)
+                .exactly(retries).times
                 .with(1)
-                .and_return(nil)
+                .and_return(true)
               subject.send(write_key, batch)
             end
           end
@@ -188,7 +188,7 @@ module Segment
 
             it 'does not retry the request' do
               expect(subject)
-                .to receive(:sleep)
+                .to receive(:interruptible_sleep)
                 .never
               subject.send(write_key, batch)
             end
@@ -208,7 +208,7 @@ module Segment
           context '3xx is not retried and is not success' do
             let(:status_code) { 301 }
             it 'returns the status without retrying, and does not report success' do
-              expect(subject).not_to receive(:sleep)
+              expect(subject).not_to receive(:interruptible_sleep)
               response = subject.send(write_key, batch)
               expect(response.status).to eq(301)
               expect(response.success?).to be false
@@ -261,18 +261,18 @@ module Segment
             end
 
             it 'sleeps for the Retry-After duration' do
-              expect(subject).to receive(:sleep).with(2).once
+              expect(subject).to receive(:interruptible_sleep).with(2).once.and_return(true)
               subject.send(write_key, batch)
             end
 
             it 'caps Retry-After at RATE_LIMIT_RETRY_AFTER_CAP' do
               allow(response).to receive(:to_hash) { { 'retry-after' => ['9999'] } }
-              expect(subject).to receive(:sleep).with(described_class::RATE_LIMIT_RETRY_AFTER_CAP).once
+              expect(subject).to receive(:interruptible_sleep).with(described_class::RATE_LIMIT_RETRY_AFTER_CAP).once.and_return(true)
               subject.send(write_key, batch)
             end
 
             it 'returns success after retry' do
-              allow(subject).to receive(:sleep)
+              allow(subject).to receive(:interruptible_sleep).and_return(true)
               expect(subject.send(write_key, batch).success?).to be true
             end
           end
@@ -291,12 +291,12 @@ module Segment
             end
 
             it 'sleeps for the Retry-After duration' do
-              expect(subject).to receive(:sleep).with(2).once
+              expect(subject).to receive(:interruptible_sleep).with(2).once.and_return(true)
               subject.send(write_key, batch)
             end
 
             it 'does not decrement retries_remaining (uses rate-limit path)' do
-              allow(subject).to receive(:sleep)
+              allow(subject).to receive(:interruptible_sleep).and_return(true)
               # With retries: 1, a 503+Retry-After should NOT exhaust retries because
               # it uses the rate-limit path (no retry budget cost)
               transport = described_class.new(retries: 1, backoff_policy: FakeBackoffPolicy.new([1000]))
@@ -306,7 +306,7 @@ module Segment
               allow(success_response).to receive(:body) { '{}' }
               allow(success_response).to receive(:to_hash) { {} }
               allow(http).to receive(:request).and_return(response, success_response)
-              allow(transport).to receive(:sleep)
+              allow(transport).to receive(:interruptible_sleep).and_return(true)
               result = transport.send(write_key, batch)
               expect(result.status).to eq(200)
             end
@@ -326,12 +326,12 @@ module Segment
             end
 
             it 'sleeps for the Retry-After duration' do
-              expect(subject).to receive(:sleep).with(1).once
+              expect(subject).to receive(:interruptible_sleep).with(1).once.and_return(true)
               subject.send(write_key, batch)
             end
 
             it 'returns success after retry' do
-              allow(subject).to receive(:sleep)
+              allow(subject).to receive(:interruptible_sleep).and_return(true)
               expect(subject.send(write_key, batch).success?).to be true
             end
 
@@ -344,7 +344,7 @@ module Segment
               allow(success_response).to receive(:body) { '{}' }
               allow(success_response).to receive(:to_hash) { {} }
               allow(http).to receive(:request).and_return(response, success_response)
-              allow(transport).to receive(:sleep)
+              allow(transport).to receive(:interruptible_sleep).and_return(true)
               result = transport.send(write_key, batch)
               expect(result.status).to eq(200)
             end
@@ -352,11 +352,11 @@ module Segment
 
           context 'X-Retry-Count header' do
             let(:status_code) { 500 }
-            let(:backoff_policy) { FakeBackoffPolicy.new([1, 1]) }
+            let(:backoff_policy) { FakeBackoffPolicy.new([1, 1, 1]) }
             subject { described_class.new(retries: 3, backoff_policy: backoff_policy) }
 
             it 'does not send X-Retry-Count on first attempt' do
-              allow(subject).to receive(:sleep)
+              allow(subject).to receive(:interruptible_sleep).and_return(true)
               first_request = nil
               http = subject.instance_variable_get(:@http)
               allow(http).to receive(:request) do |req, _|
@@ -368,7 +368,7 @@ module Segment
             end
 
             it 'sends X-Retry-Count incrementing on retries' do
-              allow(subject).to receive(:sleep)
+              allow(subject).to receive(:interruptible_sleep).and_return(true)
               requests = []
               http = subject.instance_variable_get(:@http)
               allow(http).to receive(:request) do |req, _|
@@ -378,6 +378,7 @@ module Segment
               subject.send(write_key, batch)
               expect(requests[1]['X-Retry-Count']).to eq('1')
               expect(requests[2]['X-Retry-Count']).to eq('2')
+              expect(requests[3]['X-Retry-Count']).to eq('3')
             end
           end
 
@@ -395,7 +396,7 @@ module Segment
 
                 success_response
               end
-              allow(subject).to receive(:sleep)
+              allow(subject).to receive(:interruptible_sleep).and_return(true)
 
               response = subject.send(write_key, batch)
 
@@ -406,7 +407,7 @@ module Segment
             it 'gives up once the retry budget is spent' do
               http = subject.instance_variable_get(:@http)
               allow(http).to receive(:request).and_raise(Errno::ECONNRESET, 'reset')
-              allow(subject).to receive(:sleep)
+              allow(subject).to receive(:interruptible_sleep).and_return(true)
 
               response = subject.send(write_key, batch)
 
@@ -478,6 +479,34 @@ module Segment
               expect(error).to be_nil
             end
           end
+        end
+      end
+
+      describe '#interruptible_sleep' do
+        subject { described_class.new }
+
+        it 'abandons the wait when shutdown is requested instead of sleeping it out' do
+          # The wait used to be a single sleep broken by Thread#wakeup, which only
+          # interrupts a sleep already in progress and raises ThreadError if the
+          # thread has finished. Slicing removes the need for it.
+          elapsed = nil
+
+          worker = Thread.new do
+            started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+            result = subject.__send__(:interruptible_sleep, 30)
+            elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - started
+            result
+          end
+
+          sleep 0.1
+          worker[:should_exit] = true
+
+          expect(worker.value).to be false
+          expect(elapsed).to be < 5
+        end
+
+        it 'reports completion when the delay elapses' do
+          expect(Thread.new { subject.__send__(:interruptible_sleep, 0) }.value).to be true
         end
       end
     end

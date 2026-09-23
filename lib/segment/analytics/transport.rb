@@ -120,6 +120,9 @@ module Segment
         http
       end
 
+      # How long a sliced retry wait sleeps before re-checking for shutdown.
+      SHUTDOWN_CHECK_INTERVAL = 1
+
       def new_retry_budget
         RetryBudget.new(
           :retries => @retries,
@@ -135,13 +138,29 @@ module Segment
       # RetryBudget keeps the wait on Transport, where callers stub it.
       def wait_to_retry(delay, budget)
         return false if delay.nil?
-
-        sleep(delay)
-        # Client#shutdown wakes this thread, so the sleep above returns early.
-        return false if Thread.current[:should_exit]
+        return false unless interruptible_sleep(delay)
 
         budget.record_retry
         true
+      end
+
+      # Sleeps in slices so shutdown is noticed within SHUTDOWN_CHECK_INTERVAL
+      # rather than after the whole delay, which can be rate_limit_retry_after_cap
+      # seconds. Returns false if shutdown was requested.
+      #
+      # Thread#wakeup is deliberately not used for this: it only cuts short a sleep
+      # already in progress, so a wakeup arriving while the worker is mid-request is
+      # lost and the next sleep still runs in full.
+      def interruptible_sleep(seconds)
+        remaining = seconds
+        while remaining > 0
+          return false if Thread.current[:should_exit]
+
+          slice = [remaining, SHUTDOWN_CHECK_INTERVAL].min
+          sleep(slice)
+          remaining -= slice
+        end
+        !Thread.current[:should_exit]
       end
 
       def parse_error(body)
