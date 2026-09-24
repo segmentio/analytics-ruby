@@ -87,8 +87,8 @@ module Segment
 
       describe '#next_backoff_delay' do
         it 'grants exactly as many retries as configured' do
-          # The count used to be decremented before the exhaustion check, so a
-          # configured N yielded N-1. go, python and java all grant N.
+          # N means N. Decrementing before the exhaustion check spends one retry on
+          # the check itself and silently yields N-1.
           subject = budget(3)
 
           expect(subject.next_backoff_delay).to eq(1.0)

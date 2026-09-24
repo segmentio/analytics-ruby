@@ -511,9 +511,9 @@ module Segment
         subject { described_class.new }
 
         it 'abandons the wait when shutdown is requested instead of sleeping it out' do
-          # The wait used to be a single sleep broken by Thread#wakeup, which only
-          # interrupts a sleep already in progress and raises ThreadError if the
-          # thread has finished. Slicing removes the need for it.
+          # Slicing the wait is what makes this work. Thread#wakeup is not a
+          # substitute: it only interrupts a sleep already in progress, and raises
+          # ThreadError if the thread has since finished.
           elapsed = nil
 
           worker = Thread.new do
