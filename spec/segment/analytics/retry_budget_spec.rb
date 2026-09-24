@@ -81,7 +81,14 @@ module Segment
         end
 
         it 'clamps the delay to the Retry-After cap' do
-          expect(budget(10).next_rate_limit_delay(600, 429)).to eq(60)
+          expect(budget(10).next_rate_limit_delay(600, 429))
+            .to eq(Defaults::Request::RATE_LIMIT_RETRY_AFTER_CAP)
+        end
+
+        it 'honours a Retry-After that fits inside the cap and the budget' do
+          # Waiting less than asked sends more requests at a server already
+          # rate-limiting us, so a value under the cap is used as given.
+          expect(budget(10).next_rate_limit_delay(120, 429)).to eq(120)
         end
       end
 

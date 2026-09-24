@@ -19,10 +19,11 @@ module Segment
         # counted-backoff path's own worst case.
         MAX_RATE_LIMIT_DURATION = 300 # seconds
 
-        # Kept well below MAX_RATE_LIMIT_DURATION so the budget buys several
-        # attempts rather than one long sleep. At the old 300s a single sleep
-        # consumed the whole budget.
-        RATE_LIMIT_RETRY_AFTER_CAP = 60 # seconds
+        # A guard against an absurd header, not a second budget. Waiting less than
+        # the server asked for does not make the next attempt more likely to
+        # succeed, it just sends more requests at something already rate-limiting
+        # us; how long we keep trying is MAX_RATE_LIMIT_DURATION's job.
+        RATE_LIMIT_RETRY_AFTER_CAP = 300 # seconds
       end
 
       module Queue
