@@ -45,23 +45,26 @@ module Segment
           expect(subject.next_rate_limit_delay(60, 429)).to be_nil
         end
 
-        it 'cannot return a negative delay if the budget expires mid-calculation' do
+        it 'reads the clock once, so the budget cannot expire mid-calculation' do
           # Kernel#sleep raises ArgumentError on a negative interval rather than
-          # returning, so reading the clock once for the budget test and again for
-          # the delay lets the budget expire between them and crashes the worker.
-          # The stubbed clock advances past the budget on the later reading, which
-          # only a single-reading implementation is immune to.
+          # returning, so a second reading lets the budget expire between the test
+          # and the delay and crashes the worker.
+          #
+          # The count is asserted directly because the returned value alone does not
+          # discriminate: a second reading past the budget makes the method return
+          # nil, which any "never negative" assertion accepts. Only the count
+          # separates the fix from the defect it guards.
           budget_s = Defaults::Request::MAX_RATE_LIMIT_DURATION
           start = 1000.0
           subject = budget(10)
           allow(subject).to receive(:monotonic_now).and_return(
-            start, # episode start
-            start + budget_s - 0.001, # a budget test, just inside
-            start + budget_s + 0.001  # any later reading, just outside
+            start,                    # episode start, budget test and delay share this
+            start + budget_s + 0.001  # any second reading, already past the budget
           )
 
           delay = subject.next_rate_limit_delay(60, 429)
 
+          expect(subject).to have_received(:monotonic_now).once
           expect(delay.nil? || delay >= 0).to be(true),
                                               "returned #{delay.inspect}, which sleep would reject"
         end

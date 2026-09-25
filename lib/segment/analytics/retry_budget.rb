@@ -46,13 +46,16 @@ module Segment
       end
 
       def next_rate_limit_delay(retry_after, status_code)
-        @rate_limit_start_time ||= monotonic_now
-
-        # One clock reading serves both the budget test and the delay below. Reading
-        # it twice lets the budget expire between them, which yields a negative
+        # One reading serves the episode start, the budget test and the delay. A
+        # second reading lets the budget expire between them, which yields a negative
         # remaining and a negative delay — and Kernel#sleep raises ArgumentError on
-        # one rather than returning immediately.
-        remaining = @max_rate_limit_duration - (monotonic_now - @rate_limit_start_time)
+        # one rather than returning immediately. It also leaves remaining a hair under
+        # the budget on an episode's first response, which is enough to lose an exact
+        # comparison against the cap.
+        now = monotonic_now
+        @rate_limit_start_time ||= now
+
+        remaining = @max_rate_limit_duration - (now - @rate_limit_start_time)
         return spent('Max rate limit duration exceeded for batch') if remaining <= 0
 
         # Clamped to what is left of the budget as well as to the cap: the check
