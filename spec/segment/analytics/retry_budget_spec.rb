@@ -21,12 +21,15 @@ module Segment
       describe '#next_rate_limit_delay' do
         it 'clamps the delay to what is left of the budget' do
           # The elapsed check runs before the wait, so without clamping a check
-          # passing just inside the budget sleeps a full Retry-After on top — at a
-          # 5 minute budget that doubles the bound rather than rounding it.
+          # passing just inside the budget sleeps a full Retry-After on top and
+          # overshoots it. Positioned one second from the end of whatever the budget
+          # is, rather than at a hardcoded elapsed time, so changing the default
+          # cannot quietly move this away from the edge it is testing.
           subject = budget(10)
           subject.instance_variable_set(
             :@rate_limit_start_time,
-            Process.clock_gettime(Process::CLOCK_MONOTONIC) - 299
+            Process.clock_gettime(Process::CLOCK_MONOTONIC) -
+              (Defaults::Request::MAX_RATE_LIMIT_DURATION - 1)
           )
 
           delay = subject.next_rate_limit_delay(60, 429)
