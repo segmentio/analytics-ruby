@@ -20,7 +20,7 @@ faster. Pass `min_timeout_ms`, `max_timeout_ms` and `multiplier` to a
 
 * Uploads are retried on 408, 410, 429, 460, and 5xx except 501, 505 and 511.
 * A `Retry-After` header is honoured on any retryable response, not only 429. Numeric seconds and the RFC 7231 HTTP-date formats are both accepted, and the value is capped at `rate_limit_retry_after_cap`.
-* Responses carrying `Retry-After` are retried for up to `max_rate_limit_duration` and do not consume the retry count. Other failures use exponential backoff limited by `retries` and by `max_total_backoff_duration` as an upper bound.
+* Responses carrying `Retry-After` are retried for up to `max_rate_limit_duration` and do not consume the retry count. A `Retry-After` that will not fit in what is left of the budget ends the episode rather than being shortened: retrying inside the window the server asked for sends a request it has already declined to serve, and the budget would be spent by then anyway. `max_total_backoff_duration` works the same way. Other failures use exponential backoff limited by `retries` and by `max_total_backoff_duration` as an upper bound.
 * New options, all in seconds: `max_rate_limit_duration` (default 1800), `max_total_backoff_duration` (default 43200) and `rate_limit_retry_after_cap` (default 300).
 * Network errors are retried on the same schedule as failed responses, rather than dropping the batch.
 * A pending retry no longer delays shutdown.

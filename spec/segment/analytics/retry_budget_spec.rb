@@ -19,12 +19,11 @@ module Segment
       end
 
       describe '#next_rate_limit_delay' do
-        it 'clamps the delay to what is left of the budget' do
-          # The elapsed check runs before the wait, so without clamping a check
-          # passing just inside the budget sleeps a full Retry-After on top and
-          # overshoots it. Positioned one second from the end of whatever the budget
-          # is, rather than at a hardcoded elapsed time, so changing the default
-          # cannot quietly move this away from the edge it is testing.
+        it 'gives up rather than retrying inside the window the server asked for' do
+          # Shortening the wait to fit would send the next request before the time
+          # the server named, and the budget is spent by then, so it would be the
+          # last attempt either way. Positioned relative to the constant so changing
+          # the default cannot move this away from the edge it is testing.
           subject = budget(10)
           subject.instance_variable_set(
             :@rate_limit_start_time,
@@ -32,9 +31,18 @@ module Segment
               (Defaults::Request::MAX_RATE_LIMIT_DURATION - 1)
           )
 
-          delay = subject.next_rate_limit_delay(60, 429)
+          expect(subject.next_rate_limit_delay(60, 429)).to be_nil
+        end
 
-          expect(delay).to be <= 2
+        it 'honours a wait that does fit, in full' do
+          # "Never shorten" must not become "never wait".
+          subject = budget(10)
+          subject.instance_variable_set(
+            :@rate_limit_start_time,
+            Process.clock_gettime(Process::CLOCK_MONOTONIC) - 60
+          )
+
+          expect(subject.next_rate_limit_delay(60, 429)).to eq(60)
         end
 
         it 'never returns a negative delay when the budget has just run out' do
@@ -72,7 +80,9 @@ module Segment
                                               "returned #{delay.inspect}, which sleep would reject"
         end
 
-        it 'returns a small positive delay at the very edge of the budget' do
+        it 'gives up at the very edge of the budget rather than returning a sliver' do
+          # 0.5s left against a 60s Retry-After: the wait cannot fit, so there is
+          # nothing useful to schedule.
           subject = budget(10)
           subject.instance_variable_set(
             :@rate_limit_start_time,
@@ -80,10 +90,7 @@ module Segment
               (Defaults::Request::MAX_RATE_LIMIT_DURATION - 0.5)
           )
 
-          delay = subject.next_rate_limit_delay(60, 429)
-
-          expect(delay).to be > 0
-          expect(delay).to be <= 0.5
+          expect(subject.next_rate_limit_delay(60, 429)).to be_nil
         end
 
         it 'clamps the delay to the Retry-After cap' do
@@ -95,6 +102,21 @@ module Segment
           # Waiting less than asked sends more requests at a server already
           # rate-limiting us, so a value under the cap is used as given.
           expect(budget(10).next_rate_limit_delay(120, 429)).to eq(120)
+        end
+      end
+
+      describe 'the shipped defaults' do
+        it 'leaves room for more than one maximal Retry-After' do
+          # At parity the rate-limit path degenerates: one capped wait spends the
+          # whole budget, so the episode ends having made a single attempt. The cap
+          # also stops binding, because whatever is left of the budget is then always
+          # the smaller of the two.
+          budget_s = Defaults::Request::MAX_RATE_LIMIT_DURATION
+          cap_s = Defaults::Request::RATE_LIMIT_RETRY_AFTER_CAP
+
+          expect(budget_s).to be > cap_s,
+                              "budget #{budget_s}s against a #{cap_s}s cap leaves no room to retry"
+          expect(budget_s / cap_s).to be >= 2
         end
       end
 

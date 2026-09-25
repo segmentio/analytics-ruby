@@ -37,12 +37,21 @@ module Segment
 
         @retries_remaining -= 1
 
-        @backoff_start_time ||= monotonic_now
-        return spent('Max total backoff duration exceeded for batch') if elapsed?(@backoff_start_time, @max_total_backoff_duration)
+        # One reading for the budget test and the fit check below, as on the
+        # rate-limit path.
+        now = monotonic_now
+        @backoff_start_time ||= now
 
-        delay_ms = @backoff_policy.next_interval
-        @logger.debug("Retrying request, #{@retries_remaining} retries left. Waiting #{delay_ms}ms")
-        delay_ms.to_f / 1000
+        remaining = @max_total_backoff_duration - (now - @backoff_start_time)
+        return spent('Max total backoff duration exceeded for batch') if remaining <= 0
+
+        # A backoff longer than what is left of the budget is a wait whose attempt
+        # can never run, so there is nothing to schedule.
+        delay = @backoff_policy.next_interval.to_f / 1000
+        return spent('Backoff interval does not fit the remaining budget') if delay > remaining
+
+        @logger.debug("Retrying request, #{@retries_remaining} retries left. Waiting #{delay}s")
+        delay
       end
 
       def next_rate_limit_delay(retry_after, status_code)
@@ -58,10 +67,14 @@ module Segment
         remaining = @max_rate_limit_duration - (now - @rate_limit_start_time)
         return spent('Max rate limit duration exceeded for batch') if remaining <= 0
 
-        # Clamped to what is left of the budget as well as to the cap: the check
-        # above runs before the wait, so without this a check passing just inside
-        # the budget would sleep a full Retry-After on top and overshoot it.
-        delay = [retry_after, @rate_limit_retry_after_cap, remaining].min
+        # Capped, then required to fit. Shortening the wait to fit would send the
+        # next request inside the window the server asked us to wait out — one it
+        # has already said it will not serve — and the budget is spent by then, so
+        # it would be the last attempt either way. Giving up loses the same batch
+        # and sends one request fewer at something already rate-limiting us.
+        delay = [retry_after, @rate_limit_retry_after_cap].min
+        return spent('Retry-After does not fit the remaining rate limit budget') if delay > remaining
+
         @logger.debug("Retry-After: #{delay}s on #{status_code}. Retrying after delay.")
         delay
       end
