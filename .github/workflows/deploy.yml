@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@a2bbe5b1b236842c1cb7dd11e8e01a7b8b7f2007 # v1
+        uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1
         with:
           ruby-version: '3.3'
           bundler-cache: true
@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@a2bbe5b1b236842c1cb7dd11e8e01a7b8b7f2007 # v1
+        uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1
         with:
           ruby-version: '3.3'
 
@@ -59,4 +59,4 @@ jobs:
         run: gem build analytics-ruby.gemspec
 
       - name: Publish to RubyGems (Trusted Publishing)
-        uses: rubygems/release-gem@612653d273a73bdba6a52d58baaac4a0d1aa8374 # v1
+        uses: rubygems/release-gem@7f9650160c1a4e7989fdc9855807bdbd421d8b6b # v1
