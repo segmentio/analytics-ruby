@@ -1,27 +1,36 @@
 Unreleased
 ==========
 
-### Upgrade note: new request header and proxy allowlists
+### Upgrade note: new request header
 
-This release sends an `X-Retry-Count` request header on retries. If your
-traffic to Segment goes through a proxy, gateway or WAF that allowlists
-request headers, add it before upgrading or retried uploads will be
-rejected. The `Authorization` header is unchanged: this client has always
-sent the write key as HTTP Basic credentials.
+This release sends an `X-Retry-Count` request header on retries. If traffic to
+Segment passes through a proxy, gateway or WAF that allowlists request headers,
+add it before upgrading or retried uploads will be rejected. The `Authorization`
+header is unchanged.
 
-* Send `X-Retry-Count` on retries, so the server can distinguish a retry from a first attempt. Omitted on the first attempt.
-* Unified retry handling: 429, 408, 410, 460 and 5xx (except 501, 505 and 511) are retried. `Retry-After` is honoured on all of them, not just 429, which brings 529 in through the generic 5xx rule.
-* `Retry-After` accepts numeric seconds and the RFC 7231 HTTP-date formats, capped at 300s (`rate_limit_retry_after_cap`).
-* Rate-limited retries are bounded by elapsed time rather than counted against the retry limit, so a long `Retry-After` no longer exhausts the budget.
-* New options `max_total_backoff_duration` and `max_rate_limit_duration` (default 12 hours each) bound the two waits.
-* Only 2xx responses count as a successful upload. A 3xx is now reported as a failed upload rather than silently treated as delivered. It is not retried: a redirect `Net::HTTP` already declined to follow will not succeed on a retry. The Segment endpoint does not redirect, so this only affects custom `host` values.
-* Network errors are retried on the same backoff schedule as failed responses instead of dropping the batch.
-* Backoff waits no longer block shutdown for the full delay.
-* Retry timing uses a monotonic clock, so a system clock change cannot stretch or collapse a backoff.
-* Backoff intervals are now jittered at the ceiling as well, so clients that back off together do not retry in lockstep.
-* **Default backoff pacing changed**: the base wait is 500ms (was 100ms), the ceiling is 60s (was 10s), and the multiplier is 2 (was 1.5). This aligns ruby with the other Segment SDKs, but it does mean a retry schedule that was previously 100ms, 150ms, 225ms… now starts at 500ms and climbs faster. Set `min_timeout_ms`, `max_timeout_ms` and `multiplier` on a `BackoffPolicy` to keep the old pacing.
-* A `backoff_policy` supplied by the caller that does not implement `reset!` now logs a warning. One policy instance serves every batch, so without `reset!` its attempt count accumulates and retries get slower the longer the process runs.
-* Fix `retries` granting one fewer attempt than configured. A configured 10 performed 9, and `retries: 1` performed none at all.
+### Upgrade note: backoff pacing
+
+The default backoff schedule has changed. The base wait is now 500ms rather than
+100ms, the ceiling 60s rather than 10s, and the multiplier 2 rather than 1.5. A
+schedule that previously ran 100ms, 150ms, 225ms now starts at 500ms and climbs
+faster. Pass `min_timeout_ms`, `max_timeout_ms` and `multiplier` to a
+`BackoffPolicy` to restore the previous pacing.
+
+### Retry handling
+
+* Uploads are retried on 408, 410, 429, 460, and 5xx except 501, 505 and 511.
+* A `Retry-After` header is honoured on any retryable response, not only 429. Numeric seconds and the RFC 7231 HTTP-date formats are both accepted, and the value is capped at `rate_limit_retry_after_cap`.
+* Responses carrying `Retry-After` are retried for up to `max_rate_limit_duration` and do not consume the retry count. A `Retry-After` that will not fit in what is left of the budget ends the episode rather than being shortened: retrying inside the window the server asked for sends a request it has already declined to serve, and the budget would be spent by then anyway. `max_total_backoff_duration` works the same way. Other failures use exponential backoff limited by `retries` and by `max_total_backoff_duration` as an upper bound.
+* New options, all in seconds: `max_rate_limit_duration` (default 1800), `max_total_backoff_duration` (default 43200) and `rate_limit_retry_after_cap` (default 300).
+* Network errors are retried on the same schedule as failed responses, rather than dropping the batch.
+* A pending retry no longer delays shutdown.
+* A `backoff_policy` supplied by the caller that does not implement `reset!` now logs a warning at construction. A single policy instance serves every batch, so without `reset!` its attempt count accumulates and retries grow longer over the life of the process.
+
+### Other changes
+
+* `X-Retry-Count` is sent on retries, allowing the server to distinguish a retry from a first attempt. It is omitted on the first attempt.
+* Only 2xx responses count as a successful upload. A 3xx is reported as a failed upload rather than treated as delivered, and is not retried: a redirect `Net::HTTP` has already declined to follow will not succeed on one. The Segment endpoint does not redirect, so this affects only custom `host` values.
+* `Response#success?` covers the whole 2xx range, so a 201 or 204 is no longer reported through `on_error`.
 
 2.5.0 / 2024-07-17
 ==================
