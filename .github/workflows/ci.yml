@@ -55,9 +55,11 @@ jobs:
       fail-fast: false
       matrix:
         # Bounded by what the runner image caches — see .github/actions/setup-ruby.
-        # 3.1 was dropped when ruby/setup-ruby went away: it left upstream support
-        # in March 2025 and the image does not carry it.
-        ruby-version: ['3.2', '3.3', '3.4']
+        # 3.1 left upstream support in March 2025 and the image does not carry it.
+        # 3.4 is cached and selectable, but activesupport 5.2 (a test-only dep)
+        # requires base64, which 3.4 removed from the default gems. Adding the
+        # base64 gem and regenerating Gemfile.lock would admit it.
+        ruby-version: ['3.2', '3.3']
 
     steps:
       - name: Checkout

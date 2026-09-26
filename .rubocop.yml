@@ -4,6 +4,10 @@ AllCops:
   TargetRubyVersion: '2.0'
   SuggestExtensions: false
   NewCops: disable
+  Exclude:
+    # Standalone cross-SDK test harness: carries its own Gemfile and is absent
+    # from the gemspec's spec.files, so it is not held to the gem's style.
+    - 'e2e-cli/**/*'
 
 Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
