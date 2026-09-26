@@ -26,9 +26,10 @@ jobs:
           ruby-version: '3.3'
 
       - name: Authenticate with Artifactory
-        uses: ./.github/actions/artifactory-oidc
+        uses: twilio/sdk-actions/artifactory-oidc@c94e420aa64ea686ff25bb03d4c66cdaf8e523e4 # main
         with:
-          artifactory_url: ${{ env.ARTIFACTORY_URL }}
+          ecosystem: ruby
+          provider-name: github-actions-segmentio
 
       - name: Install dependencies
         run: bundle install

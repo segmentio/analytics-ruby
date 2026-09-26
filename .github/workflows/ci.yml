@@ -36,9 +36,10 @@ jobs:
 
       - name: Authenticate with Artifactory
         if: ${{ !github.event.pull_request.head.repo.fork }}
-        uses: ./.github/actions/artifactory-oidc
+        uses: twilio/sdk-actions/artifactory-oidc@c94e420aa64ea686ff25bb03d4c66cdaf8e523e4 # main
         with:
-          artifactory_url: ${{ env.ARTIFACTORY_URL }}
+          ecosystem: ruby
+          provider-name: github-actions-segmentio
 
       - name: Install dependencies
         run: |
@@ -79,9 +80,10 @@ jobs:
 
       - name: Authenticate with Artifactory
         if: ${{ !github.event.pull_request.head.repo.fork }}
-        uses: ./.github/actions/artifactory-oidc
+        uses: twilio/sdk-actions/artifactory-oidc@c94e420aa64ea686ff25bb03d4c66cdaf8e523e4 # main
         with:
-          artifactory_url: ${{ env.ARTIFACTORY_URL }}
+          ecosystem: ruby
+          provider-name: github-actions-segmentio
 
       - name: Install dependencies
         run: |
@@ -114,9 +116,10 @@ jobs:
 
       - name: Authenticate with Artifactory
         if: ${{ !github.event.pull_request.head.repo.fork }}
-        uses: ./.github/actions/artifactory-oidc
+        uses: twilio/sdk-actions/artifactory-oidc@c94e420aa64ea686ff25bb03d4c66cdaf8e523e4 # main
         with:
-          artifactory_url: ${{ env.ARTIFACTORY_URL }}
+          ecosystem: ruby
+          provider-name: github-actions-segmentio
 
       - name: Install dependencies
         run: |
