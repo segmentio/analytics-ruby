@@ -1,0 +1,140 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'ubuntu-x64' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Set up Ruby
+        uses: ./.github/actions/setup-ruby
+        with:
+          ruby-version: '3.3'
+
+      - name: Restore gem cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: vendor/bundle
+          key: bundle-${{ runner.os }}-ruby3.3-${{ hashFiles('Gemfile.lock') }}
+          restore-keys: bundle-${{ runner.os }}-ruby3.3-
+
+      - name: Authenticate with Artifactory
+        if: ${{ !github.event.pull_request.head.repo.fork }}
+        uses: twilio/sdk-actions/artifactory-oidc@c94e420aa64ea686ff25bb03d4c66cdaf8e523e4 # main
+        with:
+          ecosystem: ruby
+          provider-name: github-actions-segmentio
+
+      - name: Install dependencies
+        run: |
+          bundle config set --local path vendor/bundle
+          bundle install --jobs 4
+
+      - name: Run RuboCop
+        run: bundle exec rubocop
+
+  test:
+    name: Test (Ruby ${{ matrix.ruby-version }})
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'ubuntu-x64' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Bounded by what the runner image caches — see .github/actions/setup-ruby.
+        # 3.1 left upstream support in March 2025 and the image does not carry it.
+        # 3.4 is cached and selectable, but activesupport 5.2 (a test-only dep)
+        # requires base64, which 3.4 removed from the default gems. Adding the
+        # base64 gem and regenerating Gemfile.lock would admit it.
+        ruby-version: ['3.2', '3.3']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Set up Ruby
+        uses: ./.github/actions/setup-ruby
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+
+      - name: Restore gem cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: vendor/bundle
+          key: bundle-${{ runner.os }}-ruby${{ matrix.ruby-version }}-${{ hashFiles('Gemfile.lock') }}
+          restore-keys: bundle-${{ runner.os }}-ruby${{ matrix.ruby-version }}-
+
+      - name: Authenticate with Artifactory
+        if: ${{ !github.event.pull_request.head.repo.fork }}
+        uses: twilio/sdk-actions/artifactory-oidc@c94e420aa64ea686ff25bb03d4c66cdaf8e523e4 # main
+        with:
+          ecosystem: ruby
+          provider-name: github-actions-segmentio
+
+      - name: Install dependencies
+        run: |
+          bundle config set --local path vendor/bundle
+          bundle install --jobs 4
+
+      - name: Run tests
+        run: bundle exec rake
+
+  build:
+    name: Build
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'ubuntu-x64' }}
+    needs: [lint, test]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Set up Ruby
+        uses: ./.github/actions/setup-ruby
+        with:
+          ruby-version: '3.3'
+
+      - name: Restore gem cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: vendor/bundle
+          key: bundle-${{ runner.os }}-ruby3.3-${{ hashFiles('Gemfile.lock') }}
+          restore-keys: bundle-${{ runner.os }}-ruby3.3-
+
+      - name: Authenticate with Artifactory
+        if: ${{ !github.event.pull_request.head.repo.fork }}
+        uses: twilio/sdk-actions/artifactory-oidc@c94e420aa64ea686ff25bb03d4c66cdaf8e523e4 # main
+        with:
+          ecosystem: ruby
+          provider-name: github-actions-segmentio
+
+      - name: Install dependencies
+        run: |
+          bundle config set --local path vendor/bundle
+          bundle install --jobs 4
+
+      - name: Build gem
+        run: gem build analytics-ruby.gemspec
+
+      - name: Verify gem is installable
+        run: gem install ./analytics-ruby-*.gem
+
+      - name: Upload gem artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: analytics-ruby-gem
+          path: analytics-ruby-*.gem
+          if-no-files-found: error
