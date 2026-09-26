@@ -21,10 +21,9 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1
+        uses: ./.github/actions/setup-ruby
         with:
           ruby-version: '3.3'
-          bundler-cache: true
 
       - name: Authenticate with Artifactory
         uses: ./.github/actions/artifactory-oidc
@@ -51,7 +50,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1
+        uses: ./.github/actions/setup-ruby
         with:
           ruby-version: '3.3'
 
