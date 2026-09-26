@@ -45,7 +45,7 @@ module Segment
           end
 
           res = @transport.send @write_key, @batch
-          @on_error.call(res.status, res.error) unless res.status == 200
+          @on_error.call(res.status, res.error) unless res.success?
 
           @lock.synchronize { @batch.clear }
         end

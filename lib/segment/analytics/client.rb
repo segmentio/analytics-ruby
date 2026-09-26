@@ -32,7 +32,11 @@ module Segment
 
         check_write_key!
 
-        at_exit { @worker_thread && @worker_thread[:should_exit] = true }
+        # The worker checks this between sleep slices, so a Retry-After or backoff
+        # wait is abandoned within a second rather than holding shutdown for up to
+        # rate_limit_retry_after_cap seconds. Assigning to a dead thread is safe;
+        # Thread#wakeup is not, and raising here would force a non-zero exit status.
+        at_exit { @worker_thread[:should_exit] = true if @worker_thread }
       end
 
       # Synchronously waits until the worker has flushed the queue.

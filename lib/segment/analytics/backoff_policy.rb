@@ -26,25 +26,17 @@ module Segment
       # @return [Numeric] the next backoff interval, in milliseconds.
       def next_interval
         interval = @min_timeout_ms * (@multiplier**@attempts)
-        interval = add_jitter(interval, @randomization_factor)
-
         @attempts += 1
 
-        [interval, @max_timeout_ms].min
+        # Clamp first, then jitter. Jittering before the clamp meant every attempt
+        # at the ceiling returned exactly max_timeout_ms, so a fleet that backed off
+        # together stayed in lockstep. Jitter only subtracts, so the ceiling holds.
+        capped = [interval, @max_timeout_ms].min
+        capped - (rand * capped * @randomization_factor)
       end
 
-      private
-
-      def add_jitter(base, randomization_factor)
-        random_number = rand
-        max_deviation = base * randomization_factor
-        deviation = random_number * max_deviation
-
-        if random_number < 0.5
-          base - deviation
-        else
-          base + deviation
-        end
+      def reset!
+        @attempts = 0
       end
     end
   end

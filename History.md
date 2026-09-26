@@ -1,3 +1,37 @@
+Unreleased
+==========
+
+### Upgrade note: new request header
+
+This release sends an `X-Retry-Count` request header on retries. If traffic to
+Segment passes through a proxy, gateway or WAF that allowlists request headers,
+add it before upgrading or retried uploads will be rejected. The `Authorization`
+header is unchanged.
+
+### Upgrade note: backoff pacing
+
+The default backoff schedule has changed. The base wait is now 500ms rather than
+100ms, the ceiling 60s rather than 10s, and the multiplier 2 rather than 1.5. A
+schedule that previously ran 100ms, 150ms, 225ms now starts at 500ms and climbs
+faster. Pass `min_timeout_ms`, `max_timeout_ms` and `multiplier` to a
+`BackoffPolicy` to restore the previous pacing.
+
+### Retry handling
+
+* Uploads are retried on 408, 410, 429, 460, and 5xx except 501, 505 and 511.
+* A `Retry-After` header is honoured on any retryable response, not only 429. Numeric seconds and the RFC 7231 HTTP-date formats are both accepted, and the value is capped at `rate_limit_retry_after_cap`.
+* Responses carrying `Retry-After` are retried for up to `max_rate_limit_duration` and do not consume the retry count. A `Retry-After` that will not fit in what is left of the budget ends the episode rather than being shortened: retrying inside the window the server asked for sends a request it has already declined to serve, and the budget would be spent by then anyway. `max_total_backoff_duration` works the same way. Other failures use exponential backoff limited by `retries` and by `max_total_backoff_duration` as an upper bound.
+* New options, all in seconds: `max_rate_limit_duration` (default 1800), `max_total_backoff_duration` (default 43200) and `rate_limit_retry_after_cap` (default 300).
+* Network errors are retried on the same schedule as failed responses, rather than dropping the batch.
+* A pending retry no longer delays shutdown.
+* A `backoff_policy` supplied by the caller that does not implement `reset!` now logs a warning at construction. A single policy instance serves every batch, so without `reset!` its attempt count accumulates and retries grow longer over the life of the process.
+
+### Other changes
+
+* `X-Retry-Count` is sent on retries, allowing the server to distinguish a retry from a first attempt. It is omitted on the first attempt.
+* Only 2xx responses count as a successful upload. A 3xx is reported as a failed upload rather than treated as delivered, and is not retried: a redirect `Net::HTTP` has already declined to follow will not succeed on one. The Segment endpoint does not redirect, so this affects only custom `host` values.
+* `Response#success?` covers the whole 2xx range, so a 201 or 204 is no longer reported through `on_error`.
+
 2.5.0 / 2024-07-17
 ==================
 
