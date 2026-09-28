@@ -1,0 +1,112 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
+
+jobs:
+  test:
+    name: Verify
+    runs-on: ubuntu-x64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Set up Ruby
+        uses: ./.github/actions/setup-ruby
+        with:
+          ruby-version: '3.3'
+
+      - name: Authenticate with Artifactory
+        uses: twilio/sdk-actions/artifactory-oidc@c94e420aa64ea686ff25bb03d4c66cdaf8e523e4 # main
+        with:
+          ecosystem: ruby
+          provider-name: github-actions-segmentio
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Run tests
+        run: bundle exec rake
+
+  deploy:
+    name: Publish to RubyGems
+    runs-on: ubuntu-x64
+    needs: [test]
+    # Must name an environment that already exists with its protection rules;
+    # GitHub silently creates an unprotected one for any name it does not know.
+    # `production` carries required_reviewers: libraries-web-team.
+    environment: production
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Set up Ruby
+        uses: ./.github/actions/setup-ruby
+        with:
+          ruby-version: '3.3'
+
+      - name: Verify tag matches the gem version
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF#refs/tags/}"
+          TAG="${TAG#v}"
+          VERSION=$(sed -nE "s/.*VERSION *= *'([^']+)'.*/\\1/p" lib/segment/analytics/version.rb)
+          if [ "$TAG" != "$VERSION" ]; then
+            echo "::error::Release tag $TAG does not match VERSION $VERSION in lib/segment/analytics/version.rb"
+            exit 1
+          fi
+          echo "Releasing $VERSION"
+
+      - name: Build gem
+        run: gem build analytics-ruby.gemspec
+
+      # RubyGems trusted publishing, done inline rather than via
+      # rubygems/release-gem. That action is not on the org allow-list (it also
+      # nests rubygems/configure-rubygems-credentials, so it would need two
+      # entries), and it drives `rake release`, whose tag name is always
+      # "v#{version}" — this gem has always tagged bare, e.g. 2.5.0.
+      - name: Publish to RubyGems (trusted publishing)
+        run: |
+          set -euo pipefail
+
+          # aud must equal the RubyGems host exactly; the exchange enforces it.
+          JWT=$(curl -sS \
+            -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=rubygems.org" \
+            | jq -r '.value')
+
+          if [ -z "$JWT" ] || [ "$JWT" = "null" ]; then
+            echo "::error::No GitHub OIDC token. The job needs 'permissions: id-token: write'."
+            exit 1
+          fi
+
+          # Returns a push-scoped key that expires in 15 minutes. Requires a
+          # trusted publisher registered on the gem for this repo, workflow
+          # filename and environment.
+          RESP=$(curl -sS -X POST \
+            --data-urlencode "jwt=${JWT}" \
+            https://rubygems.org/api/v1/oidc/trusted_publisher/exchange_token)
+
+          KEY=$(echo "$RESP" | jq -r '.rubygems_api_key // empty')
+          if [ -z "$KEY" ]; then
+            echo "::error::RubyGems token exchange failed."
+            echo "$RESP" | jq 'del(.rubygems_api_key)' 2>/dev/null \
+              || echo "::error::(response withheld - not valid JSON)"
+            exit 1
+          fi
+          echo "::add-mask::$KEY"
+
+          GEM_HOST_API_KEY="$KEY" gem push analytics-ruby-*.gem

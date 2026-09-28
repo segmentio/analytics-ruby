@@ -1,0 +1,67 @@
+name: "Setup Ruby"
+description: "Put a Ruby from the runner's tool cache on PATH"
+
+# The org Actions policy allows GitHub-owned actions/* only — no Marketplace, no
+# verified creators — so ruby/setup-ruby is unavailable here. The runner image
+# already ships a Ruby tool cache, so nothing is downloaded: this only selects
+# from what is on the box.
+#
+# Deliberately does NOT install gems. Bundler must run after the Artifactory OIDC
+# step has pointed it at the curated mirror; ruby/setup-ruby's `bundler-cache`
+# ran `bundle install` before that step, resolving straight from rubygems.org.
+
+inputs:
+  ruby-version:
+    description: "MAJOR.MINOR to select, e.g. '3.3'. The newest matching patch in the tool cache wins."
+    required: true
+
+outputs:
+  ruby-version:
+    description: "Exact version selected, e.g. '3.3.12'"
+    value: ${{ steps.select.outputs.ruby-version }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Select Ruby from the tool cache
+      id: select
+      shell: bash
+      env:
+        REQUESTED: ${{ inputs.ruby-version }}
+      run: |
+        set -euo pipefail
+
+        case "$(uname -m)" in
+          x86_64)        ARCH=x64 ;;
+          aarch64|arm64) ARCH=arm64 ;;
+          *) echo "::error::Unsupported runner architecture $(uname -m)"; exit 1 ;;
+        esac
+
+        CACHE="${RUNNER_TOOL_CACHE}/Ruby"
+        if [ ! -d "${CACHE}" ]; then
+          echo "::error::No Ruby tool cache at ${CACHE}. This runner image does not ship one; the matrix must be pinned to a version it does provide."
+          exit 1
+        fi
+
+        # sort -V so 3.3.10 ranks above 3.3.9.
+        SELECTED=""
+        while IFS= read -r candidate; do
+          [ -x "${candidate}/${ARCH}/bin/ruby" ] && SELECTED="${candidate}"
+        done < <(find "${CACHE}" -mindepth 1 -maxdepth 1 -type d -name "${REQUESTED}.*" | sort -V)
+
+        if [ -z "${SELECTED}" ]; then
+          echo "::error::Ruby ${REQUESTED}.x is not in the tool cache. Available: $(find "${CACHE}" -mindepth 1 -maxdepth 1 -type d -printf '%f ' 2>/dev/null)"
+          exit 1
+        fi
+
+        echo "${SELECTED}/${ARCH}/bin" >> "${GITHUB_PATH}"
+        echo "ruby-version=$(basename "${SELECTED}")" >> "${GITHUB_OUTPUT}"
+        echo "Selected Ruby $(basename "${SELECTED}") (${ARCH}) from the tool cache"
+
+    - name: Verify toolchain
+      shell: bash
+      run: |
+        set -euo pipefail
+        ruby --version
+        gem --version
+        bundle --version

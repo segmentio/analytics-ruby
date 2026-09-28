@@ -4,6 +4,18 @@ AllCops:
   TargetRubyVersion: '2.0'
   SuggestExtensions: false
   NewCops: disable
+  Exclude:
+    # Setting Exclude here REPLACES RuboCop's default exclude list rather than
+    # extending it, so the paths it normally skips have to be restated. Without
+    # them RuboCop walks vendor/bundle and loads the .rubocop.yml shipped inside
+    # gems there, which pulls in plugins this project does not depend on.
+    - 'vendor/**/*'
+    - '.gem/**/*'
+    - 'node_modules/**/*'
+    - '.git/**/*'
+    # Standalone cross-SDK test harness: carries its own Gemfile and is absent
+    # from the gemspec's spec.files, so it is not held to the gem's style.
+    - 'e2e-cli/**/*'
 
 Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent

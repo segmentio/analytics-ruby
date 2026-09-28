@@ -1,7 +1,7 @@
 *.gem
-Gemfile.lock
 .ruby-version
 coverage/
+.claude/
 .bundle/
 vendor/
 *-plan.md
