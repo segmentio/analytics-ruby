@@ -41,7 +41,10 @@ jobs:
     name: Publish to RubyGems
     runs-on: ubuntu-x64
     needs: [test]
-    environment: rubygems
+    # Must name an environment that already exists with its protection rules;
+    # GitHub silently creates an unprotected one for any name it does not know.
+    # `production` carries required_reviewers: libraries-web-team.
+    environment: production
     permissions:
       id-token: write
       contents: read
